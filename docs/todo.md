@@ -20,3 +20,4 @@ US-01
 - Add AppHeader component
 - In App.tsx, render components conditionally
 - Test ACs
+- Store user to localStorage
