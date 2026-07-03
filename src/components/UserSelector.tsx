@@ -6,13 +6,28 @@ import {
   Select,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
-import { mockUsers } from '../mocks/mockUsers'
+import { useEffect, useState } from 'react'
 import { useCurrentUser } from '../contexts/useCurrentUser'
+import type { User } from '../types/user'
+import { getUsers } from '../services/userService'
 
 export const UserSelector = () => {
   const [selectedUserId, setSelectedUserId] = useState('')
   const { setCurrentUserId } = useCurrentUser()
+  const [users, setUsers] = useState<User[]>([])
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await getUsers()
+        setUsers(data)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    fetchUsers()
+  }, [])
+
   const handleClick = () => {
     if (!selectedUserId) {
       return
@@ -24,15 +39,15 @@ export const UserSelector = () => {
     <>
       <Typography>Select User</Typography>
       <FormControl fullWidth>
-        <InputLabel id="user">User</InputLabel>
+        <InputLabel id="user-select-label">User</InputLabel>
         <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
+          labelId="user-select-label"
+          id="user-select"
           value={selectedUserId}
           label="User"
           onChange={(e) => setSelectedUserId(e.target.value)}
         >
-          {mockUsers.map((user) => {
+          {users.map((user) => {
             return (
               <MenuItem
                 key={user.id}
