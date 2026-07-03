@@ -1,7 +1,20 @@
+import { UserSelector } from './components/UserSelector'
+import { CurrentUserProvider } from './contexts/CurrentUserProvider'
+import { useCurrentUser } from './contexts/useCurrentUser'
+import { MainApp } from './layout/MainApp'
+
+const AppContent = () => {
+  const { currentUser } = useCurrentUser()
+  if (!currentUser) {
+    return <UserSelector />
+  }
+  return <MainApp />
+}
+
 export const App = () => {
   return (
-    <div>
-      <h1>Shift Management App</h1>
-    </div>
-  );
-};
+    <CurrentUserProvider>
+      <AppContent />
+    </CurrentUserProvider>
+  )
+}
