@@ -28,11 +28,11 @@ export const UserSelector = () => {
     fetchUsers()
   }, [])
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!selectedUserId) {
       return
     }
-    setCurrentUserId(selectedUserId)
+    await setCurrentUserId(selectedUserId)
   }
 
   return (

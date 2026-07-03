@@ -1,20 +1,32 @@
-import { useState, type ReactNode } from 'react'
-import { mockUsers } from '../mocks/mockUsers'
+import { useEffect, useState, type ReactNode } from 'react'
 import { CurrentUserContext } from './CurrentUserContext'
+import { getUserById, userExists } from '../services/userService'
+import type { User } from '../types/user'
+
+const CURRENT_USER_ID_STORAGE_KEY = 'currentUserId'
 
 export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
-  const CURRENT_USER_ID_STORAGE_KEY = 'currentUserId'
   const [currentUserId, setCurrentUserIdState] = useState<string | null>(() => {
     return localStorage.getItem(CURRENT_USER_ID_STORAGE_KEY)
   })
 
-  const currentUser =
-    mockUsers.find((user) => user.id === currentUserId) ?? null
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
 
-  const setCurrentUserId = (userId: string) => {
-    const userExists = mockUsers.some((user) => user.id === userId)
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!currentUserId) {
+        setCurrentUser(null)
+        return
+      }
+      const user = await getUserById(currentUserId)
+      setCurrentUser(user)
+    }
+    fetchCurrentUser()
+  }, [currentUserId])
 
-    if (!userExists) {
+  const setCurrentUserId = async (userId: string) => {
+    const exists = await userExists(userId)
+    if (!exists) {
       return
     }
 
