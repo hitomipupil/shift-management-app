@@ -8,18 +8,18 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import { mockUsers } from '../mocks/mockUsers'
-import { useCurrentUser } from 'src/contexts/useCurrentUser'
+import { useCurrentUser } from '../contexts/useCurrentUser'
 
 export const UserSelector = () => {
   const [selectedUserId, setSelectedUserId] = useState('')
-  const { setCurrentUserId, currentUser } = useCurrentUser()
+  const { setCurrentUserId } = useCurrentUser()
   const handleClick = () => {
     if (!selectedUserId) {
       return
     }
     setCurrentUserId(selectedUserId)
-    console.log('currentUser: ', currentUser)
   }
+
   return (
     <>
       <Typography>Select User</Typography>
