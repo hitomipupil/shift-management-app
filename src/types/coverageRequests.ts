@@ -1,4 +1,4 @@
-type CoverageRequestStatus = 'pending' | 'approved' | 'rejected'
+export type CoverageRequestStatus = 'pending' | 'approved' | 'rejected'
 
 export type CoverageRequest = {
   id: string
