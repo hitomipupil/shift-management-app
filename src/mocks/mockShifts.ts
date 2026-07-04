@@ -7,8 +7,8 @@ export const mockShifts: Shift[] = [
     assignedUserId: 'employee-1',
     coverageNeeded: true,
     day: '2026-06-30',
-    startTime: '09:00',
-    endTime: '13:00',
+    startTime: '14:00',
+    endTime: '18:00',
   },
   {
     id: 'shift-2',
