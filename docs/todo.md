@@ -14,7 +14,7 @@
 
 ### Implement
 
-US-01
+## US-01
 
 - [x] Add user type
 - [x] Add mockUsers
@@ -29,7 +29,7 @@ US-01
 - [x] Test ACs
 - [x] Store user to localStorage
 
-US-02
+## US-02
 
 - [x] Add Schedule type
 - [x] Add Shift type
@@ -40,9 +40,29 @@ US-02
 - [x] Add MyShiftsSection component
 - [x] Add WeeklyScheduleSection component
 - [x] Add ShiftCard component
+- [x] Use ScheduleView in MainApp
 - [x] Add shiftService
 - [ ] Add useDisplayedWeek hook
-- [ ] Add date utility functions
+- [x] Add date utility functions
 - [ ] Add useShifts hook
-- [ ] Use ScheduleView in MainApp
-- [ ] Test ACs
+- [x] Test ACs
+
+Refactor later:
+
+- [ ] Add useDisplayedWeek hook
+- [ ] Add useShifts hook
+
+## US-03
+
+- [x] Confirm coverageNeeded exists in Shift and mockShifts
+- [ ] Add markShiftAsCoverageNeeded to shiftService
+- [ ] Add selectedShift and dialog open/close state in ScheduleView
+- [ ] Make ShiftCard clickable
+- [ ] Pass onShiftClick through MyShiftsSection
+- [ ] Pass onShiftClick through WeeklyScheduleSection
+- [ ] Create ShiftDetailsDialog
+- [ ] Add Need Coverage button visibility logic
+- [ ] Connect button to service function
+- [ ] Refresh shifts after update
+- [ ] Add Coverage Needed chip to ShiftCard
+- [ ] Manually test ACs
