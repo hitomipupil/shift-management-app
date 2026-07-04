@@ -65,4 +65,19 @@ Refactor later:
 - [x] Connect button to service function
 - [x] Refresh shifts after update
 - [x] Add Coverage Needed chip to ShiftCard
+- [x] Manually test ACs
+
+## US-04
+
+- [x] Add coverageRequest type
+- [x] Add MockCoverageRequests
+- [ ] Add getPendingCoverageRequests to requestService
+- [ ] Add createCoverageRequest to requestService
+- [ ] Add coverageRequests state to ScheduleView
+- [ ] load pending request
+- [ ] Derive request Pending
+- [ ] Add request Pending chip to ShiftCard
+- [ ] Add Request to Cover button to ShiftDetailsDialog
+- [ ] Add handleRequestToCover
+- [ ] Display validation error
 - [ ] Manually test ACs

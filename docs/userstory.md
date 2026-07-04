@@ -212,74 +212,7 @@ Then the shift is shown as Request Pending and no additional Request to Cover ac
 
 ---
 
-## US-05: Manager creates weekly shifts
-
-As a manager,
-I want to create and assign weekly shifts,
-so that employees can see the official schedule.
-
-### UI
-
-- The manager can access the schedule in the main app.
-- The manager sees a **Create Shift** button.
-- When the manager clicks Create Shift, a dialog opens.
-- The manager selects an employee, day, start time, and end time.
-- The manager confirms the action by clicking **Create**.
-- The created shift appears in the weekly schedule.
-
-### Acceptance Criteria
-
-#### AC-01: Create Shift action is available only to Managers
-
-Given the current user has either the Manager or Employee role,
-When the schedule is displayed,
-Then the Create Shift action is available only to Managers.
-
-#### AC-02: Manager can open the create shift dialog
-
-Given the current user is a Manager,
-When the manager clicks Create Shift,
-Then the create shift dialog is displayed.
-
-#### AC-03: Manager can enter required shift details
-
-Given the manager opens the create shift dialog,
-When the dialog is displayed,
-Then it contains fields for employee, day, start time, and end time, as well as Create and Cancel actions.
-
-#### AC-04: Required fields are validated
-
-Given the manager opens the create shift dialog,
-When the assigned employee, day, start time, or end time is missing,
-Then the Create action is disabled.
-
-#### AC-05: Overlapping shifts for the same employee are prevented
-
-Given an employee already has a shift during a specific time period,  
-When the manager clicks Create for another shift assigned to the same employee with an overlapping time period,  
-Then the app prevents the shift from being created and shows a validation message.
-
-#### AC-06: Cancel closes the create shift dialog without creating a shift
-
-Given the manager has opened the create shift dialog,
-When the manager clicks Cancel,
-Then the dialog is closed and no new shift is created.
-
-#### AC-07: Newly created shifts appear in the weekly schedule
-
-Given the manager creates a valid shift,
-When the shift is saved,
-Then the new shift appears in the weekly schedule.
-
-#### AC-08: Newly created shifts are not Coverage Needed by default
-
-Given the manager creates a new shift,
-When the shift is saved,
-Then the shift is not shown as Coverage Needed by default.
-
----
-
-## US-06: Manager approves or rejects coverage requests
+## US-05: Manager approves or rejects coverage requests
 
 As a manager,
 I want to review pending coverage requests,
@@ -380,6 +313,73 @@ Then the request cannot be edited afterward.
 Given the manager has opened a request details dialog,  
 When the manager closes the dialog without approving or rejecting,  
 Then the request remains Pending.
+
+---
+
+## US-06: Manager creates weekly shifts
+
+As a manager,
+I want to create and assign weekly shifts,
+so that employees can see the official schedule.
+
+### UI
+
+- The manager can access the schedule in the main app.
+- The manager sees a **Create Shift** button.
+- When the manager clicks Create Shift, a dialog opens.
+- The manager selects an employee, day, start time, and end time.
+- The manager confirms the action by clicking **Create**.
+- The created shift appears in the weekly schedule.
+
+### Acceptance Criteria
+
+#### AC-01: Create Shift action is available only to Managers
+
+Given the current user has either the Manager or Employee role,
+When the schedule is displayed,
+Then the Create Shift action is available only to Managers.
+
+#### AC-02: Manager can open the create shift dialog
+
+Given the current user is a Manager,
+When the manager clicks Create Shift,
+Then the create shift dialog is displayed.
+
+#### AC-03: Manager can enter required shift details
+
+Given the manager opens the create shift dialog,
+When the dialog is displayed,
+Then it contains fields for employee, day, start time, and end time, as well as Create and Cancel actions.
+
+#### AC-04: Required fields are validated
+
+Given the manager opens the create shift dialog,
+When the assigned employee, day, start time, or end time is missing,
+Then the Create action is disabled.
+
+#### AC-05: Overlapping shifts for the same employee are prevented
+
+Given an employee already has a shift during a specific time period,  
+When the manager clicks Create for another shift assigned to the same employee with an overlapping time period,  
+Then the app prevents the shift from being created and shows a validation message.
+
+#### AC-06: Cancel closes the create shift dialog without creating a shift
+
+Given the manager has opened the create shift dialog,
+When the manager clicks Cancel,
+Then the dialog is closed and no new shift is created.
+
+#### AC-07: Newly created shifts appear in the weekly schedule
+
+Given the manager creates a valid shift,
+When the shift is saved,
+Then the new shift appears in the weekly schedule.
+
+#### AC-08: Newly created shifts are not Coverage Needed by default
+
+Given the manager creates a new shift,
+When the shift is saved,
+Then the shift is not shown as Coverage Needed by default.
 
 ---
 
