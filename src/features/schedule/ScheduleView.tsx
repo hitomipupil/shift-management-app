@@ -33,40 +33,25 @@ export const ScheduleView = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetchShifts = async () => {
+    const fetchScheduleData = async () => {
       try {
         setIsLoading(true)
-        const shifts = await getShiftsByWeek(weekStartDate)
-        setShifts(shifts)
+        const [shiftsData, usersData, pendingRequestsData] = await Promise.all([
+          getShiftsByWeek(weekStartDate),
+          getUsers(),
+          getPendingCoverageRequests(),
+        ])
+
+        setShifts(shiftsData)
+        setUsers(usersData)
+        setCoverageRequests(pendingRequestsData)
       } catch (e) {
         console.error(e)
       } finally {
         setIsLoading(false)
       }
     }
-
-    const fetchUsers = async () => {
-      try {
-        setIsLoading(true)
-        const data = await getUsers()
-        setUsers(data)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-
-    const fetchCoverageRequests = async () => {
-      try {
-        setIsLoading(true)
-        const data = await getPendingCoverageRequests()
-        setCoverageRequests(data)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-    fetchShifts()
-    fetchUsers()
-    fetchCoverageRequests()
+    fetchScheduleData()
   }, [weekStartDate])
 
   if (!currentUser) {
