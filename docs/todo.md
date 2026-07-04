@@ -55,14 +55,14 @@ Refactor later:
 ## US-03
 
 - [x] Confirm coverageNeeded exists in Shift and mockShifts
-- [ ] Add markShiftAsCoverageNeeded to shiftService
-- [ ] Add selectedShift and dialog open/close state in ScheduleView
-- [ ] Make ShiftCard clickable
-- [ ] Pass onShiftClick through MyShiftsSection
-- [ ] Pass onShiftClick through WeeklyScheduleSection
-- [ ] Create ShiftDetailsDialog
-- [ ] Add Need Coverage button visibility logic
-- [ ] Connect button to service function
-- [ ] Refresh shifts after update
-- [ ] Add Coverage Needed chip to ShiftCard
+- [x] Add markShiftAsCoverageNeeded to shiftService
+- [x] Add selectedShift and dialog open/close state in ScheduleView
+- [x] Make ShiftCard clickable
+- [x] Pass onShiftClick through MyShiftsSection
+- [x] Pass onShiftClick through WeeklyScheduleSection
+- [x] Create ShiftDetailsDialog
+- [x] Add Need Coverage button visibility logic
+- [x] Connect button to service function
+- [x] Refresh shifts after update
+- [x] Add Coverage Needed chip to ShiftCard
 - [ ] Manually test ACs

@@ -121,8 +121,7 @@ so that another employee can request to cover it.
 - A shift details dialog opens.
 - If the shift belongs to the employee and is not already marked as Coverage Needed, the dialog shows a **Need Coverage** action.
 - The dialog explains that the shift remains assigned to the employee until a manager approves another employee's request.
-- After the action is completed, the shift is shown with a **Coverage Needed** label or chip.
-- Coverage Needed should not be represented by color alone.
+- After the action is completed, the shift is shown with a **Coverage Needed** chip.
 
 ### Acceptance Criteria
 

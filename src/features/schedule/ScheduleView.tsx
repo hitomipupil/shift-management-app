@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { WeekNavigator } from './WeekNavigator'
 import { MyShiftsSection } from './MyShiftsSection'
 import { WeeklyScheduleSection } from './WeeklyScheduleSection'
@@ -15,6 +15,7 @@ import {
   addDaysToDateString,
   getCurrentWeekStartDate,
 } from '../../utils/dateUtils'
+import { ShiftDetailsDialog } from './ShiftDetailsDialog'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
@@ -23,19 +24,25 @@ export const ScheduleView = () => {
   const [weekStartDate, setWeekStartDate] = useState<string>(
     getCurrentWeekStartDate(),
   )
+  const [selectedShift, setSelectedShift] = useState<Shift | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchShifts = async () => {
       try {
+        setIsLoading(true)
         const shifts = await getShiftsByWeek(weekStartDate)
         setShifts(shifts)
       } catch (e) {
         console.error(e)
+      } finally {
+        setIsLoading(false)
       }
     }
 
     const fetchUsers = async () => {
       try {
+        setIsLoading(true)
         const data = await getUsers()
         setUsers(data)
       } catch (e) {
@@ -98,11 +105,15 @@ export const ScheduleView = () => {
         gap: 2,
       }}
     >
-      <WeekNavigator
-        weekRangeLabel={weekRangeLabel}
-        onPreviousWeek={handlePreviousWeek}
-        onNextWeek={handleNextWeek}
-      />
+      {isLoading ? (
+        <Typography>Loading schedule...</Typography>
+      ) : (
+        <>
+          <WeekNavigator
+            weekRangeLabel={weekRangeLabel}
+            onPreviousWeek={handlePreviousWeek}
+            onNextWeek={handleNextWeek}
+          />
           <MyShiftsSection
             currentUser={currentUser}
             myShifts={myShifts}
