@@ -72,12 +72,41 @@ Refactor later:
 - [x] Add coverageRequest type
 - [x] Add MockCoverageRequests
 - [x] Add getPendingCoverageRequests to requestService
-- [ ] Add createCoverageRequest to requestService
-- [ ] Add coverageRequests state to ScheduleView
-- [ ] load pending request
-- [ ] Derive request Pending
-- [ ] Add request Pending chip to ShiftCard
-- [ ] Add Request to Cover button to ShiftDetailsDialog
-- [ ] Add handleRequestToCover
+- [x] Add createCoverageRequest to requestService
+- [x] Add coverageRequests state to ScheduleView
+- [x] load pending request
+- [x] Derive request Pending
+- [x] Add request Pending chip to ShiftCard
+- [x] Add Request to Cover button to ShiftDetailsDialog
+- [x] Add handleRequestToCover
+- [x] Display validation error
+- [ ] Manually test ACs
+
+## US-05
+
+- [ ] Add approveCoverageRequest to coverageRequestService
+- [ ] Add rejectCoverageRequest to coverageRequestService
+- [ ] Validate reviewer is a manager
+- [ ] Validate request exists
+- [ ] Validate request is still pending
+- [ ] Validate target shift exists
+- [ ] Validate shift is still assigned to originalAssignedUserId
+- [ ] Validate requested user has no overlapping assigned shift
+- [ ] Update request status to approved on approve
+- [ ] Set reviewedByUserId and reviewedAt on approve
+- [ ] Update shift assignedUserId to requestedByUserId on approve
+- [ ] Set shift coverageNeeded to false on approve
+- [ ] Update request status to rejected on reject
+- [ ] Set reviewedByUserId and reviewedAt on reject
+- [ ] Keep shift unchanged on reject
+- [ ] Add ManagerRequestsSection component
+- [ ] Show ManagerRequestsSection only for manager users
+- [ ] Display pending requests
+- [ ] Add RequestCard component
+- [ ] Add RequestDetailsDialog component
+- [ ] Add Approve and Reject buttons to RequestDetailsDialog
+- [ ] Add handleApproveRequest to ScheduleView
+- [ ] Add handleRejectRequest to ScheduleView
+- [ ] Reload shifts and pending requests after approve/reject
 - [ ] Display validation error
 - [ ] Manually test ACs
