@@ -1,3 +1,4 @@
+import type { User } from '../types/user'
 import { mockCoverageRequests } from '../mocks/mockCoverageRequests'
 import { mockShifts } from '../mocks/mockShifts'
 import type { CoverageRequest } from '../types/coverageRequests'
@@ -102,4 +103,80 @@ export const createCoverageRequest = async (
 
   mockCoverageRequests.push(request)
   return request
+}
+
+export const approveCoverageRequest = async (
+  requestId: string,
+  currentUser: User,
+): Promise<CoverageRequest> => {
+  if (currentUser.role !== 'manager') {
+    throw new Error('Only managers can approve requests')
+  }
+  const targetRequest = mockCoverageRequests.find((req) => req.id === requestId)
+  if (!targetRequest) {
+    throw new Error('Request not found')
+  }
+  if (targetRequest.status !== 'pending') {
+    throw new Error('Request is no longer pending')
+  }
+  const targetShift = mockShifts.find(
+    (shift) => shift.id === targetRequest.shiftId,
+  )
+  if (!targetShift) {
+    throw new Error('Shift not found')
+  }
+  if (targetShift.assignedUserId !== targetRequest.originalAssignedUserId) {
+    throw new Error('Shift is no longer assigned to the original employee')
+  }
+
+  const requesterShifts = mockShifts.filter(
+    (shift) => shift.assignedUserId === targetRequest.requestedByUserId,
+  )
+  const hasOverlappingShift = requesterShifts.some((shift) => {
+    if (shift.day !== targetShift.day) {
+      return false
+    }
+
+    return hasOverlappingTime(
+      targetShift.startTime,
+      targetShift.endTime,
+      shift.startTime,
+      shift.endTime,
+    )
+  })
+
+  if (hasOverlappingShift) {
+    throw new Error('Requested user already has an overlapping shift')
+  }
+
+  targetRequest.status = 'approved'
+  targetRequest.reviewedByUserId = currentUser.id
+  targetRequest.reviewedAt = new Date().toISOString()
+
+  targetShift.assignedUserId = targetRequest.requestedByUserId
+  targetShift.coverageNeeded = false
+
+  return targetRequest
+}
+
+export const rejectCoverageRequest = async (
+  requestId: string,
+  currentUser: User,
+): Promise<CoverageRequest> => {
+  if (currentUser.role !== 'manager') {
+    throw new Error('Only managers can reject requests')
+  }
+  const targetRequest = mockCoverageRequests.find((req) => req.id === requestId)
+  if (!targetRequest) {
+    throw new Error('Request not found')
+  }
+  if (targetRequest.status !== 'pending') {
+    throw new Error('Request is no longer pending')
+  }
+
+  targetRequest.status = 'rejected'
+  targetRequest.reviewedByUserId = currentUser.id
+  targetRequest.reviewedAt = new Date().toISOString()
+
+  return targetRequest
 }
