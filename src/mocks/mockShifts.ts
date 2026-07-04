@@ -46,4 +46,13 @@ export const mockShifts: Shift[] = [
     startTime: '11:00',
     endTime: '16:00',
   },
+  {
+    id: 'shift-6',
+    scheduleId: 'schedule-2026-07-06',
+    assignedUserId: 'employee-1',
+    coverageNeeded: false,
+    day: '2026-07-08',
+    startTime: '11:00',
+    endTime: '16:00',
+  },
 ]

@@ -1,13 +1,13 @@
 import { Box, IconButton, Typography } from '@mui/material'
 
 type WeekNavigatorProps = {
-  weekStartDate: string
+  weekRangeLabel: string
   onPreviousWeek: () => void
   onNextWeek: () => void
 }
 
 export const WeekNavigator = ({
-  weekStartDate,
+  weekRangeLabel,
   onPreviousWeek,
   onNextWeek,
 }: WeekNavigatorProps) => {
@@ -22,7 +22,7 @@ export const WeekNavigator = ({
       }}
     >
       <IconButton onClick={onPreviousWeek}>{'<'}</IconButton>
-      <Typography variant="h6">{weekStartDate}</Typography>
+      <Typography variant="h6">{weekRangeLabel}</Typography>
       <IconButton onClick={onNextWeek}>{'>'}</IconButton>
     </Box>
   )

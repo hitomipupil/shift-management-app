@@ -8,17 +8,18 @@ import { getShiftsByWeek } from '../../services/shiftService'
 import { type Shift } from '../../types/shift'
 import type { User } from '../../types/user'
 import { getUsers } from '../../services/userService'
-import { addDaysToDateString } from '../../utils/addDate'
+import {
+  addDaysToDateString,
+  getCurrentWeekStartDate,
+} from '../../utils/dateUtils'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
   const [shifts, setShifts] = useState<Shift[]>([])
   const [users, setUsers] = useState<User[]>([])
-  const [weekStartDate, setWeekStartDate] = useState<string>('2026-06-29')
-
-  if (!currentUser) {
-    throw new Error('Current user is required to view schedule')
-  }
+  const [weekStartDate, setWeekStartDate] = useState<string>(
+    getCurrentWeekStartDate(),
+  )
 
   useEffect(() => {
     const fetchShifts = async () => {
@@ -42,6 +43,10 @@ export const ScheduleView = () => {
     fetchUsers()
   }, [weekStartDate])
 
+  if (!currentUser) {
+    throw new Error('Current user is required to view schedule')
+  }
+
   const myShifts = shifts.filter(
     (shift) => shift.assignedUserId === currentUser.id,
   )
@@ -54,6 +59,9 @@ export const ScheduleView = () => {
     setWeekStartDate((current) => addDaysToDateString(current, 7))
   }
 
+  const weekEndDate = addDaysToDateString(weekStartDate, 6)
+  const weekRangeLabel = `${weekStartDate} - ${weekEndDate}`
+
   return (
     <Box
       sx={{
@@ -64,7 +72,7 @@ export const ScheduleView = () => {
       }}
     >
       <WeekNavigator
-        weekStartDate={weekStartDate}
+        weekRangeLabel={weekRangeLabel}
         onPreviousWeek={handlePreviousWeek}
         onNextWeek={handleNextWeek}
       />
