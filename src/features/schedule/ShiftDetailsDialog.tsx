@@ -19,6 +19,8 @@ type ShiftDetailsDialogProps = {
   assignedUser: User
   onMarkCoverageNeeded: (shiftId: string) => void
   onClose: () => void
+  onRequestToCover: (shiftId: string) => void
+  isRequestPending: boolean
 }
 
 export const ShiftDetailsDialog = ({
@@ -28,9 +30,13 @@ export const ShiftDetailsDialog = ({
   assignedUser,
   onMarkCoverageNeeded,
   onClose,
+  onRequestToCover,
+  isRequestPending,
 }: ShiftDetailsDialogProps) => {
-  const displayCoverageNeededButton =
-    targetShift.assignedUserId === currentUser.id && !targetShift.coverageNeeded
+  const isOwnShift = targetShift.assignedUserId === currentUser.id
+  const canMarkCoverageNeeded = isOwnShift && !targetShift.coverageNeeded
+  const canRequestToCover =
+    !isOwnShift && targetShift.coverageNeeded && !isRequestPending
 
   return (
     <Dialog onClose={onClose} open={open}>
@@ -48,7 +54,7 @@ export const ShiftDetailsDialog = ({
           <ListItemText primary={`end time: ${targetShift.endTime}`} />
           <ListItemText primary={`assigned to: ${assignedUser.name}`} />
           <DialogActions sx={{ display: 'flex', flexDirection: 'column' }}>
-            {displayCoverageNeededButton && (
+            {canMarkCoverageNeeded && (
               <>
                 <Button onClick={() => onMarkCoverageNeeded(targetShift.id)}>
                   Need Coverage
@@ -56,10 +62,19 @@ export const ShiftDetailsDialog = ({
                 <ListItemText secondary="shift remains assigned to you until a manager approves another employee's request" />
               </>
             )}
-
-            {targetShift.coverageNeeded && (
-              <ListItemText secondary="This shift is already marked as Coverage Needed." />
+            {canRequestToCover && (
+              <Button onClick={() => onRequestToCover(targetShift.id)}>
+                Request to cover this shift
+              </Button>
             )}
+
+            {isRequestPending ? (
+              <ListItemText
+                secondary={`A coverage request is already pending for this shift.`}
+              />
+            ) : targetShift.coverageNeeded ? (
+              <ListItemText secondary="This shift is marked as Coverage Needed." />
+            ) : null}
           </DialogActions>
         </ListItem>
       </List>
