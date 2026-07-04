@@ -62,21 +62,26 @@ export const ShiftDetailsDialog = ({
                 <Button onClick={() => onMarkCoverageNeeded(targetShift.id)}>
                   Need Coverage
                 </Button>
-                <ListItemText secondary="shift remains assigned to you until a manager approves another employee's request" />
+                <ListItemText secondary="Shift remains assigned to you until a manager approves another employee's request" />
               </>
             )}
             {canRequestToCover && (
-              <Button onClick={() => onRequestToCover(targetShift.id)}>
-                Request to cover this shift
-              </Button>
+              <>
+                <Button onClick={() => onRequestToCover(targetShift.id)}>
+                  Request to cover this shift
+                </Button>
+                <ListItemText secondary="A manager must approve the request before the shift is assigned to the employee" />
+              </>
             )}
 
             {isRequestPending ? (
               <ListItemText
-                secondary={`A coverage request is already pending for this shift.`}
+                secondary={
+                  'A coverage request is already pending for this shift'
+                }
               />
             ) : targetShift.coverageNeeded ? (
-              <ListItemText secondary="This shift is marked as Coverage Needed." />
+              <ListItemText secondary="This shift is marked as Coverage Needed" />
             ) : null}
             {requestErrorMessage && (
               <Typography color="error" variant="body2">

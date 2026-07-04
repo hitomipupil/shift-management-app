@@ -118,6 +118,7 @@ export const ScheduleView = () => {
 
   const handleCloseShiftDetails = () => {
     setSelectedShift(null)
+    setRequestErrorMessage(null)
   }
 
   const weekEndDate = addDaysToDateString(weekStartDate, 6)
