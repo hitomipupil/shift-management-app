@@ -8,6 +8,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Typography,
 } from '@mui/material'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
@@ -17,10 +18,11 @@ type ShiftDetailsDialogProps = {
   targetShift: Shift
   currentUser: User
   assignedUser: User
-  onMarkCoverageNeeded: (shiftId: string) => void
+  onMarkCoverageNeeded: (shiftId: string) => Promise<void>
   onClose: () => void
-  onRequestToCover: (shiftId: string) => void
+  onRequestToCover: (shiftId: string) => Promise<void>
   isRequestPending: boolean
+  requestErrorMessage: string
 }
 
 export const ShiftDetailsDialog = ({
@@ -32,6 +34,7 @@ export const ShiftDetailsDialog = ({
   onClose,
   onRequestToCover,
   isRequestPending,
+  requestErrorMessage,
 }: ShiftDetailsDialogProps) => {
   const isOwnShift = targetShift.assignedUserId === currentUser.id
   const canMarkCoverageNeeded = isOwnShift && !targetShift.coverageNeeded
@@ -75,6 +78,11 @@ export const ShiftDetailsDialog = ({
             ) : targetShift.coverageNeeded ? (
               <ListItemText secondary="This shift is marked as Coverage Needed." />
             ) : null}
+            {requestErrorMessage && (
+              <Typography color="error" variant="body2">
+                {requestErrorMessage}
+              </Typography>
+            )}
           </DialogActions>
         </ListItem>
       </List>

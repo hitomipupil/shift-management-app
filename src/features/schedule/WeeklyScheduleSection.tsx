@@ -39,7 +39,7 @@ export const WeeklyScheduleSection = ({
               assignedUserName={assignedUser.name}
               onShiftClick={onShiftClick}
               isRequestPending={coverageRequests.some(
-                (req) => req.shiftId === shift.id && req.status === 'pending',
+                (req) => req.shiftId === shift.id,
               )}
             />
           )

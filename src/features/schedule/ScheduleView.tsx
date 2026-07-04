@@ -34,6 +34,9 @@ export const ScheduleView = () => {
     [],
   )
   const [isLoading, setIsLoading] = useState(true)
+  const [requestErrorMessage, setRequestErrorMessage] = useState<string | null>(
+    null,
+  )
 
   useEffect(() => {
     const fetchScheduleData = async () => {
@@ -87,11 +90,16 @@ export const ScheduleView = () => {
   const handleRequestToCover = async (shiftId: string) => {
     try {
       await createCoverageRequest(shiftId, currentUser.id)
+      setRequestErrorMessage(null)
       const updatedCoverageRequests = await getPendingCoverageRequests()
       setCoverageRequests(updatedCoverageRequests)
       setSelectedShift(null)
     } catch (e) {
-      console.error(e)
+      if (e instanceof Error) {
+        setRequestErrorMessage(e.message)
+      } else {
+        setRequestErrorMessage('Something went wrong')
+      }
     }
   }
 
@@ -155,6 +163,7 @@ export const ScheduleView = () => {
               onClose={handleCloseShiftDetails}
               onRequestToCover={handleRequestToCover}
               isRequestPending={isSelectedShiftRequestPending}
+              requestErrorMessage={requestErrorMessage}
             />
           )}
         </>
