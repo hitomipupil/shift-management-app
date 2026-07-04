@@ -15,3 +15,21 @@ export const getShiftsByWeek = async (
 
   return shifts
 }
+
+export const markShiftAsCoverageNeeded = async (
+  shiftId: string,
+  currentUserId: string,
+) => {
+  const targetShift = mockShifts.find((shift) => shift.id === shiftId)
+  if (!targetShift) {
+    throw new Error('Shift not found')
+  }
+  if (targetShift.assignedUserId !== currentUserId) {
+    throw new Error('Access denied')
+  }
+  if (targetShift.coverageNeeded === true) {
+    throw new Error('Shift already offered')
+  }
+  targetShift.coverageNeeded = true
+  return
+}

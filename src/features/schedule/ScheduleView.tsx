@@ -4,7 +4,10 @@ import { MyShiftsSection } from './MyShiftsSection'
 import { WeeklyScheduleSection } from './WeeklyScheduleSection'
 import { useCurrentUser } from '../../contexts/useCurrentUser'
 import { useEffect, useState } from 'react'
-import { getShiftsByWeek } from '../../services/shiftService'
+import {
+  getShiftsByWeek,
+  markShiftAsCoverageNeeded,
+} from '../../services/shiftService'
 import { type Shift } from '../../types/shift'
 import type { User } from '../../types/user'
 import { getUsers } from '../../services/userService'
@@ -57,6 +60,30 @@ export const ScheduleView = () => {
 
   const handleNextWeek = () => {
     setWeekStartDate((current) => addDaysToDateString(current, 7))
+  }
+
+  const handleMarkCoverageNeeded = async (shiftId: string) => {
+    try {
+      await markShiftAsCoverageNeeded(shiftId, currentUser.id)
+      const updatedShifts = await getShiftsByWeek(weekStartDate)
+      setShifts(updatedShifts)
+      setSelectedShift(null)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const selectedShiftAssignedUser =
+    selectedShift === null
+      ? null
+      : users.find((user) => user.id === selectedShift.assignedUserId)
+
+  const handleOpenShiftDetails = (shift: Shift) => {
+    setSelectedShift(shift)
+  }
+
+  const handleCloseShiftDetails = () => {
+    setSelectedShift(null)
   }
 
   const weekEndDate = addDaysToDateString(weekStartDate, 6)
