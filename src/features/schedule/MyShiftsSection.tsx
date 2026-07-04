@@ -31,7 +31,7 @@ export const MyShiftsSection = ({
             shift={myShift}
             assignedUserName={currentUser.name}
             onShiftClick={onShiftClick}
-            isPending={coverageRequests.some(
+            isRequestPending={coverageRequests.some(
               (req) => req.shiftId === myShift.id,
             )}
           />
