@@ -17,7 +17,10 @@ import {
 } from '../../utils/dateUtils'
 import { ShiftDetailsDialog } from './ShiftDetailsDialog'
 import { type CoverageRequest } from '../../types/coverageRequests'
-import { getPendingCoverageRequests } from '../../services/coverageRequestService'
+import {
+  createCoverageRequest,
+  getPendingCoverageRequests,
+} from '../../services/coverageRequestService'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
@@ -81,10 +84,25 @@ export const ScheduleView = () => {
     }
   }
 
+  const handleRequestToCover = async (shiftId: string) => {
+    try {
+      await createCoverageRequest(shiftId, currentUser.id)
+      const updatedCoverageRequests = await getPendingCoverageRequests()
+      setCoverageRequests(updatedCoverageRequests)
+      setSelectedShift(null)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const selectedShiftAssignedUser =
     selectedShift === null
       ? null
       : users.find((user) => user.id === selectedShift.assignedUserId)
+
+  const isSelectedShiftRequestPending =
+    selectedShift !== null &&
+    coverageRequests.some((request) => request.shiftId === selectedShift.id)
 
   const handleOpenShiftDetails = (shift: Shift) => {
     setSelectedShift(shift)
@@ -135,6 +153,8 @@ export const ScheduleView = () => {
               assignedUser={selectedShiftAssignedUser}
               onMarkCoverageNeeded={handleMarkCoverageNeeded}
               onClose={handleCloseShiftDetails}
+              onRequestToCover={handleRequestToCover}
+              isRequestPending={isSelectedShiftRequestPending}
             />
           )}
         </>
