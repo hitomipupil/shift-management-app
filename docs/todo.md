@@ -71,7 +71,7 @@ Refactor later:
 
 - [x] Add coverageRequest type
 - [x] Add MockCoverageRequests
-- [ ] Add getPendingCoverageRequests to requestService
+- [x] Add getPendingCoverageRequests to requestService
 - [ ] Add createCoverageRequest to requestService
 - [ ] Add coverageRequests state to ScheduleView
 - [ ] load pending request

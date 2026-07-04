@@ -23,6 +23,8 @@
   - dialog open / close
   - form values
   - active tab
+  - loading states
+  - error messages
 
 - Custom hooks
   - displayed week
@@ -65,36 +67,36 @@ src/
 
 ```ts
 type User = {
-  id: string;
-  name: string;
-  role: "manager" | "employee";
-};
+  id: string
+  name: string
+  role: 'manager' | 'employee'
+}
 
 type Schedule = {
-  id: string;
-  weekStartDate: string; // YYYY-MM-DD
-};
+  id: string
+  weekStartDate: string // YYYY-MM-DD
+}
 
 type Shift = {
-  id: string;
-  scheduleId: string;
-  assignedUserId: string;
-  coverageNeeded: boolean;
-  day: string; // YYYY-MM-DD
-  startTime: string; // HH:mm
-  endTime: string; // HH:mm
-};
+  id: string
+  scheduleId: string
+  assignedUserId: string
+  coverageNeeded: boolean
+  day: string // YYYY-MM-DD
+  startTime: string // HH:mm
+  endTime: string // HH:mm
+}
 
 type CoverageRequest = {
-  id: string;
-  shiftId: string;
-  originalAssignedUserId: string;
-  requestedByUserId: string;
-  status: "pending" | "approved" | "rejected";
-  reviewedByUserId: string | null;
-  reviewedAt: Timestamp | null;
-  createdAt: Timestamp;
-};
+  id: string
+  shiftId: string
+  originalAssignedUserId: string
+  requestedByUserId: string
+  status: 'pending' | 'approved' | 'rejected'
+  reviewedByUserId: string | null
+  reviewedAt: Timestamp | null
+  createdAt: Timestamp
+}
 ```
 
 ---

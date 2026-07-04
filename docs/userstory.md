@@ -171,6 +171,7 @@ so that I can take over the shift if a manager approves my request.
 - The dialog explains that a manager must approve the request before the shift is assigned to the employee.
 - A Coverage Needed shift with no pending request is visually distinct from a normal shift and shows a **Coverage Needed** label.
 - A Coverage Needed shift with a pending request is visually distinct and shows a **Request Pending** label.
+- If the employee cannot request the shift because of an overlapping assigned shift or an overlapping pending request, the dialog shows an explanation and does not allow the request.
 
 ### Acceptance Criteria
 
@@ -186,25 +187,31 @@ Given a shift already has a pending coverage request,
 When another employee tries to request to cover the same shift,
 Then a new pending request is not created.
 
-#### AC-03: Employee cannot request an overlapping shift
+#### AC-03: Employee cannot request a shift that overlaps with an assigned shift
 
 Given the employee already has an assigned shift that overlaps with the target shift,
 When the employee tries to request to cover the target shift,
 Then the request is prevented.
 
-#### AC-04: Coverage request is created as Pending
+#### AC-04: Employee cannot request a shift that overlaps with their own pending request
+
+Given the employee already has a pending coverage request for another shift that overlaps with the target shift,
+When the employee tries to request to cover the target shift,
+Then the request is prevented.
+
+#### AC-05: Coverage request is created as Pending
 
 Given the employee opens an eligible Coverage Needed shift,  
 When the employee clicks Request to Cover,  
 Then a pending coverage request is created for that shift.
 
-#### AC-05: Creating a request does not change the shift assignment
+#### AC-06: Creating a request does not change the shift assignment
 
 Given the employee creates a coverage request,
 When the request is Pending,
 Then the shift remains assigned to the original employee.
 
-#### AC-06: Shift is shown as Request Pending after a request is created
+#### AC-07: Shift is shown as Request Pending after a request is created
 
 Given a pending coverage request exists for a shift,  
 When the weekly schedule is displayed,  

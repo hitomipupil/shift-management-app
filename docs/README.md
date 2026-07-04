@@ -26,7 +26,9 @@ To reduce ambiguity, the following assumptions were made:
   - their own assigned shifts
   - shifts that have been marked as needing coverage by another employee
 - A shift remains assigned to its current employee until a manager approves a change.
-- One employee cannot have overlapping approved shifts.
+- One employee cannot have overlapping assigned shifts.
+- Employees cannot create a coverage request if it overlaps with one of their assigned shifts.
+- Employees cannot create a coverage request if it overlaps with another pending coverage request they have already submitted.
 
 ---
 
@@ -84,11 +86,13 @@ Requests can have one of the following states:
 
 ## Validation Rules
 
-The application validates the following before approving a request:
+The application validates the following when creating or approving a coverage request:
 
 - Employees cannot request to cover their own shifts.
 - A shift can only have one pending request at a time.
-- The employee does not already have an overlapping shift.
+- Employees cannot create a coverage request if they already have:
+  - an assigned shift that overlaps with the target shift.
+  - a pending coverage request for another shift that overlaps with the target shift.
 - The shift is still assigned to the original employee.
 - Only managers can approve requests.
 
