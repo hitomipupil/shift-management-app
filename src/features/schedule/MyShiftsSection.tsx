@@ -6,11 +6,13 @@ import { Typography } from '@mui/material'
 type MyShiftsSectionProps = {
   currentUser: User
   myShifts: Shift[]
+  onShiftClick: (shift: Shift) => void
 }
 
 export const MyShiftsSection = ({
   currentUser,
   myShifts,
+  onShiftClick,
 }: MyShiftsSectionProps) => {
   return (
     <>
@@ -25,6 +27,7 @@ export const MyShiftsSection = ({
             key={myShift.id}
             shift={myShift}
             assignedUserName={currentUser.name}
+            onShiftClick={onShiftClick}
           />
         ))
       )}

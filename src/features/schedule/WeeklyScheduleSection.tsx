@@ -6,11 +6,13 @@ import { Typography } from '@mui/material'
 type WeeklyScheduleSectionProps = {
   shifts: Shift[]
   users: User[]
+  onShiftClick: (shift: Shift) => void
 }
 
 export const WeeklyScheduleSection = ({
   shifts,
   users,
+  onShiftClick,
 }: WeeklyScheduleSectionProps) => {
   return (
     <>
@@ -32,6 +34,7 @@ export const WeeklyScheduleSection = ({
               key={shift.id}
               shift={shift}
               assignedUserName={assignedUser.name}
+              onShiftClick={onShiftClick}
             />
           )
         })
