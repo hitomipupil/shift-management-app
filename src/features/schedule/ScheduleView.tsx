@@ -16,6 +16,8 @@ import {
   getCurrentWeekStartDate,
 } from '../../utils/dateUtils'
 import { ShiftDetailsDialog } from './ShiftDetailsDialog'
+import { type CoverageRequest } from '../../types/coverageRequests'
+import { getPendingCoverageRequests } from '../../services/coverageRequestService'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
@@ -25,6 +27,9 @@ export const ScheduleView = () => {
     getCurrentWeekStartDate(),
   )
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null)
+  const [coverageRequests, setCoverageRequests] = useState<CoverageRequest[]>(
+    [],
+  )
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -49,8 +54,19 @@ export const ScheduleView = () => {
         console.error(e)
       }
     }
+
+    const fetchCoverageRequests = async () => {
+      try {
+        setIsLoading(true)
+        const data = await getPendingCoverageRequests()
+        setCoverageRequests(data)
+      } catch (e) {
+        console.error(e)
+      }
+    }
     fetchShifts()
     fetchUsers()
+    fetchCoverageRequests()
   }, [weekStartDate])
 
   if (!currentUser) {
@@ -118,11 +134,13 @@ export const ScheduleView = () => {
             currentUser={currentUser}
             myShifts={myShifts}
             onShiftClick={handleOpenShiftDetails}
+            coverageRequests={coverageRequests}
           />
           <WeeklyScheduleSection
             shifts={shifts}
             users={users}
             onShiftClick={handleOpenShiftDetails}
+            coverageRequests={coverageRequests}
           />
           {selectedShift && selectedShiftAssignedUser && (
             <ShiftDetailsDialog

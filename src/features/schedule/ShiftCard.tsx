@@ -11,12 +11,14 @@ type ShiftCardProps = {
   shift: Shift
   assignedUserName: string
   onShiftClick: (shift: Shift) => void
+  isPending: boolean
 }
 
 export const ShiftCard = ({
   shift,
   assignedUserName,
   onShiftClick,
+  isPending,
 }: ShiftCardProps) => {
   return (
     <Card>
@@ -25,9 +27,11 @@ export const ShiftCard = ({
           <Typography>{shift.day}</Typography>
           <Typography>{`${shift.startTime} - ${shift.endTime}`}</Typography>
           <Typography>{assignedUserName}</Typography>
-          {shift.coverageNeeded && (
+          {isPending ? (
+            <Chip label="Request Pending" size="small" />
+          ) : shift.coverageNeeded ? (
             <Chip label="Coverage Needed" size="small" />
-          )}
+          ) : null}
         </CardContent>
       </CardActionArea>
     </Card>

@@ -2,17 +2,20 @@ import type { Shift } from 'src/types/shift'
 import { ShiftCard } from './ShiftCard'
 import type { User } from 'src/types/user'
 import { Typography } from '@mui/material'
+import type { CoverageRequest } from 'src/types/coverageRequests'
 
 type WeeklyScheduleSectionProps = {
   shifts: Shift[]
   users: User[]
   onShiftClick: (shift: Shift) => void
+  coverageRequests: CoverageRequest[]
 }
 
 export const WeeklyScheduleSection = ({
   shifts,
   users,
   onShiftClick,
+  coverageRequests,
 }: WeeklyScheduleSectionProps) => {
   return (
     <>
@@ -35,6 +38,9 @@ export const WeeklyScheduleSection = ({
               shift={shift}
               assignedUserName={assignedUser.name}
               onShiftClick={onShiftClick}
+              isPending={coverageRequests.some(
+                (req) => req.shiftId === shift.id && req.status === 'pending',
+              )}
             />
           )
         })
