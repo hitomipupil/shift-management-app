@@ -8,13 +8,13 @@ import { getShiftsByWeek } from '../../services/shiftService'
 import { type Shift } from '../../types/shift'
 import type { User } from '../../types/user'
 import { getUsers } from '../../services/userService'
-
-const weekStartDate = '2026-06-29'
+import { addDaysToDateString } from '../../utils/addDate'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
   const [shifts, setShifts] = useState<Shift[]>([])
   const [users, setUsers] = useState<User[]>([])
+  const [weekStartDate, setWeekStartDate] = useState<string>('2026-06-29')
 
   if (!currentUser) {
     throw new Error('Current user is required to view schedule')
@@ -40,11 +40,19 @@ export const ScheduleView = () => {
     }
     fetchShifts()
     fetchUsers()
-  }, [])
+  }, [weekStartDate])
 
   const myShifts = shifts.filter(
     (shift) => shift.assignedUserId === currentUser.id,
   )
+
+  const handlePreviousWeek = () => {
+    setWeekStartDate((current) => addDaysToDateString(current, -7))
+  }
+
+  const handleNextWeek = () => {
+    setWeekStartDate((current) => addDaysToDateString(current, 7))
+  }
 
   return (
     <Box
@@ -55,7 +63,11 @@ export const ScheduleView = () => {
         gap: 2,
       }}
     >
-      <WeekNavigator />
+      <WeekNavigator
+        weekStartDate={weekStartDate}
+        onPreviousWeek={handlePreviousWeek}
+        onNextWeek={handleNextWeek}
+      />
       <MyShiftsSection currentUser={currentUser} myShifts={myShifts} />
       <WeeklyScheduleSection shifts={shifts} users={users} />
     </Box>

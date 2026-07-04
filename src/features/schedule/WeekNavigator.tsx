@@ -1,6 +1,16 @@
 import { Box, IconButton, Typography } from '@mui/material'
 
-export const WeekNavigator = () => {
+type WeekNavigatorProps = {
+  weekStartDate: string
+  onPreviousWeek: () => void
+  onNextWeek: () => void
+}
+
+export const WeekNavigator = ({
+  weekStartDate,
+  onPreviousWeek,
+  onNextWeek,
+}: WeekNavigatorProps) => {
   return (
     <Box
       sx={{
@@ -11,9 +21,9 @@ export const WeekNavigator = () => {
         justifyContent: 'space-around',
       }}
     >
-      <IconButton>{'<'}</IconButton>
-      <Typography variant="h6">Jun 29 - Jul 5, 2026</Typography>
-      <IconButton>{'>'}</IconButton>
+      <IconButton onClick={onPreviousWeek}>{'<'}</IconButton>
+      <Typography variant="h6">{weekStartDate}</Typography>
+      <IconButton onClick={onNextWeek}>{'>'}</IconButton>
     </Box>
   )
 }
