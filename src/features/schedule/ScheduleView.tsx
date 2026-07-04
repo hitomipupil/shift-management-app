@@ -103,8 +103,28 @@ export const ScheduleView = () => {
         onPreviousWeek={handlePreviousWeek}
         onNextWeek={handleNextWeek}
       />
-      <MyShiftsSection currentUser={currentUser} myShifts={myShifts} />
-      <WeeklyScheduleSection shifts={shifts} users={users} />
+          <MyShiftsSection
+            currentUser={currentUser}
+            myShifts={myShifts}
+            onShiftClick={handleOpenShiftDetails}
+          />
+          <WeeklyScheduleSection
+            shifts={shifts}
+            users={users}
+            onShiftClick={handleOpenShiftDetails}
+          />
+          {selectedShift && selectedShiftAssignedUser && (
+            <ShiftDetailsDialog
+              open={selectedShift !== null}
+              targetShift={selectedShift}
+              currentUser={currentUser}
+              assignedUser={selectedShiftAssignedUser}
+              onMarkCoverageNeeded={handleMarkCoverageNeeded}
+              onClose={handleCloseShiftDetails}
+            />
+          )}
+        </>
+      )}
     </Box>
   )
 }
