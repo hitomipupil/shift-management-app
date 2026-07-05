@@ -3,15 +3,13 @@ import { WeekNavigator } from 'src/features/schedule/WeekNavigator'
 import { MyShiftsSection } from 'src/features/schedule/MyShiftsSection'
 import { WeeklyScheduleSection } from 'src/features/schedule/WeeklyScheduleSection'
 import { useCurrentUser } from 'src/contexts/useCurrentUser'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   getAllShifts,
   getShiftsByWeek,
   markShiftAsCoverageNeeded,
 } from 'src/services/shiftService'
 import { type Shift } from 'src/types/shift'
-import type { User } from 'src/types/user'
-import { getUsers } from 'src/services/userService'
 import { ShiftDetailsDialog } from 'src/features/schedule/ShiftDetailsDialog'
 import { type CoverageRequest } from 'src/types/coverageRequests'
 import {
@@ -26,71 +24,34 @@ import { ManagerRequestsSection } from 'src/features/requests/ManagerRequestsSec
 import { RequestDetailsDialog } from 'src/features/requests/RequestDetailsDialog'
 import { useDisplayedWeek } from 'src/features/schedule/useDisplayedWeek'
 import { MyCoverageRequestsSection } from '../requests/MyCoverageRequestsSection'
+import { useScheduleData } from './useScheduleData'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
-  const [shiftsOfThisWeek, setShiftsOfThisWeek] = useState<Shift[]>([])
-  const [allShifts, setAllShifts] = useState<Shift[]>([])
-  const [users, setUsers] = useState<User[]>([])
-
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null)
-  const [pendingCoverageRequests, setPendingCoverageRequests] = useState<
-    CoverageRequest[]
-  >([])
   const [selectedRequest, setSelectedRequest] =
     useState<CoverageRequest | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [coverageRequestErrorMessage, setCoverageRequestErrorMessage] =
     useState<string | null>(null)
   const [requestReviewErrorMessage, setRequestReviewErrorMessage] = useState<
     string | null
   >(null)
-  const [myCoverageRequests, setMyCoverageRequests] = useState<
-    CoverageRequest[]
-  >([])
-  const [reviewedCoverageRequests, setReviewedCoverageRequests] = useState<
-    CoverageRequest[]
-  >([])
   const { weekStartDate, weekRangeLabel, handlePreviousWeek, handleNextWeek } =
     useDisplayedWeek()
-
-  useEffect(() => {
-    const fetchScheduleData = async () => {
-      if (!currentUser) {
-        return
-      }
-      try {
-        setIsLoading(true)
-        const [
-          shiftsData,
-          usersData,
-          pendingRequestsData,
-          allShiftsData,
-          myRequestsData,
-          reviewedCoverageRequestsData,
-        ] = await Promise.all([
-          getShiftsByWeek(weekStartDate),
-          getUsers(),
-          getPendingCoverageRequests(),
-          getAllShifts(),
-          getRequestsByUser(currentUser.id),
-          getReviewedCoverageRequests(),
-        ])
-
-        setShiftsOfThisWeek(shiftsData)
-        setUsers(usersData)
-        setPendingCoverageRequests(pendingRequestsData)
-        setAllShifts(allShiftsData)
-        setMyCoverageRequests(myRequestsData)
-        setReviewedCoverageRequests(reviewedCoverageRequestsData)
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchScheduleData()
-  }, [weekStartDate, currentUser])
+  const {
+    shiftsOfThisWeek,
+    setShiftsOfThisWeek,
+    allShifts,
+    setAllShifts,
+    users,
+    pendingCoverageRequests,
+    setPendingCoverageRequests,
+    isLoading,
+    myCoverageRequests,
+    setMyCoverageRequests,
+    reviewedCoverageRequests,
+    setReviewedCoverageRequests,
+  } = useScheduleData(currentUser, weekStartDate)
 
   if (!currentUser) {
     throw new Error('Current user is required to view schedule')
