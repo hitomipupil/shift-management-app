@@ -24,6 +24,7 @@ import {
 import { ManagerRequestsSection } from 'src/features/requests/ManagerRequestsSection'
 import { RequestDetailsDialog } from 'src/features/requests/RequestDetailsDialog'
 import { useDisplayedWeek } from 'src/features/schedule/useDisplayedWeek'
+import { MyCoverageRequestsSection } from '../requests/MyCoverageRequestsSection'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
@@ -235,13 +236,19 @@ export const ScheduleView = () => {
               coverageRequests={pendingCoverageRequests}
             />
           )}
+          {currentUser.role === 'employee' && (
+            <MyCoverageRequestsSection
+              myRequests={myCoverageRequests}
+              shifts={allShifts}
+              users={users}
+            />
+          )}
           <WeeklyScheduleSection
             shifts={shiftsOfThisWeek}
             users={users}
             onShiftClick={handleOpenShiftDetails}
             coverageRequests={pendingCoverageRequests}
           />
-
           {currentUser.role === 'manager' && (
             <ManagerRequestsSection
               pendingRequests={pendingCoverageRequests}

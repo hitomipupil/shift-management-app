@@ -334,7 +334,7 @@ so that I know whether my requests are pending, approved, or rejected.
 - The schedule page for employee includes a **My Coverage Requests** section.
 - This section shows only requests submitted by the current employee.
 - Each request shows the related shift, assigned employee before approval, and request status.
-- Status is shown with text labels.
+- Status is shown with a chip.
 - Approved and Rejected are shown as request statuses.
 - If a request is approved, the shift appears as a normal assigned shift for the new employee.
 - If a request is rejected, the original shift assignment remains unchanged.

@@ -115,17 +115,13 @@ Refactor later:
 - [x] Add myCoverageRequests state in ScheduleView
 - [x] Fetch current employee's coverage requests in ScheduleView
 - [x] Update myCoverageRequests after creating a coverage request
-- [ ] Create MyCoverageRequestsSection component
-- [ ] Show empty state when the employee has no coverage requests
-- [ ] Display each request's related shift information
-- [ ] Display the original assigned employee for each request
-- [ ] Display request status as Pending, Approved, or Rejected
-- [ ] Add status label or chip to each request
-- [ ] Render MyCoverageRequestsSection only for employees
-- [ ] Place MyCoverageRequestsSection below My Shifts
-- [ ] Add mock data for pending, approved, and rejected requests if needed
-- [ ] Manually test pending request status
-- [ ] Manually test approved request status
-- [ ] Manually test rejected request status
-- [ ] Manually test that approved requests are reflected in the schedule
-- [ ] Manually test that rejected requests do not change the shift assignment
+- [x] Create MyCoverageRequestsSection component
+- [x] Show empty state when the employee has no coverage requests
+- [x] Display each request's related shift information
+- [x] Display the original assigned employee for each request
+- [x] Display request status as Pending, Approved, or Rejected
+- [x] Add status label or chip to each request
+- [x] Render MyCoverageRequestsSection only for employees
+- [x] Place MyCoverageRequestsSection below My Shifts
+- [x] Add mock data for pending, approved, and rejected requests if needed
+- [x] Manually test ACs
