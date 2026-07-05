@@ -1,41 +1,63 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { CurrentUserContext } from 'src/contexts/CurrentUserContext'
-import { getUserById, userExists } from 'src/services/userService'
+import { logout, subscribeToAuthUser } from 'src/services/authService'
+import { getUserById } from 'src/services/userService'
 import type { User } from 'src/types/user'
 
-const CURRENT_USER_ID_STORAGE_KEY = 'currentUserId'
+type CurrentUserProviderProps = {
+  children: ReactNode
+}
 
-export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
-  const [currentUserId, setCurrentUserIdState] = useState<string | null>(() => {
-    return localStorage.getItem(CURRENT_USER_ID_STORAGE_KEY)
-  })
-
+export const CurrentUserProvider = ({ children }: CurrentUserProviderProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [isLoadingCurrentUser, setIsLoadingCurrentUser] = useState(true)
+  const [currentUserError, setCurrentUserError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      if (!currentUserId) {
+    const unsubscribe = subscribeToAuthUser(async (authUser) => {
+      setIsLoadingCurrentUser(true)
+      setCurrentUserError(null)
+
+      try {
+        if (!authUser) {
+          setCurrentUser(null)
+          return
+        }
+
+        const user = await getUserById(authUser.uid)
+
+        if (!user) {
+          setCurrentUser(null)
+          setCurrentUserError('User profile was not found')
+          return
+        }
+
+        setCurrentUser(user)
+      } catch (error) {
+        console.error(error)
         setCurrentUser(null)
-        return
+        setCurrentUserError('Failed to load current user')
+      } finally {
+        setIsLoadingCurrentUser(false)
       }
-      const user = await getUserById(currentUserId)
-      setCurrentUser(user)
-    }
-    fetchCurrentUser()
-  }, [currentUserId])
+    })
 
-  const setCurrentUserId = async (userId: string) => {
-    const exists = await userExists(userId)
-    if (!exists) {
-      return
-    }
+    return unsubscribe
+  }, [])
 
-    localStorage.setItem(CURRENT_USER_ID_STORAGE_KEY, userId)
-    setCurrentUserIdState(userId)
+  const logoutCurrentUser = async () => {
+    await logout()
   }
 
   return (
-    <CurrentUserContext.Provider value={{ currentUser, setCurrentUserId }}>
+    <CurrentUserContext.Provider
+      value={{
+        currentUser,
+        isLoadingCurrentUser,
+        currentUserError,
+        logoutCurrentUser,
+      }}
+    >
       {children}
     </CurrentUserContext.Provider>
   )

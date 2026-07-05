@@ -6,33 +6,40 @@ import {
   Select,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
-import { useCurrentUser } from 'src/contexts/useCurrentUser'
-import type { User } from 'src/types/user'
-import { getUsers } from 'src/services/userService'
+import { useState } from 'react'
+import { demoLoginUsers } from 'src/config/demoLoginUsers'
+import { loginWithEmailAndPassword } from 'src/services/authService'
 
 export const UserSelector = () => {
-  const [selectedUserId, setSelectedUserId] = useState('')
-  const { setCurrentUserId } = useCurrentUser()
-  const [users, setUsers] = useState<User[]>([])
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const data = await getUsers()
-        setUsers(data)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-    fetchUsers()
-  }, [])
+  const [selectedEmail, setSelectedEmail] = useState('')
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
 
   const handleClick = async () => {
-    if (!selectedUserId) {
+    if (!selectedEmail) {
       return
     }
-    await setCurrentUserId(selectedUserId)
+    const selectedDemoUser = demoLoginUsers.find(
+      (user) => user.email === selectedEmail,
+    )
+    if (!selectedDemoUser) {
+      setErrorMessage('Selected demo user was not found')
+      return
+    }
+
+    try {
+      setIsLoggingIn(true)
+      setErrorMessage(null)
+      await loginWithEmailAndPassword(
+        selectedDemoUser.email,
+        selectedDemoUser.password,
+      )
+    } catch (error) {
+      console.error(error)
+      setErrorMessage('Failed to log in')
+    } finally {
+      setIsLoggingIn(false)
+    }
   }
 
   return (
@@ -43,22 +50,24 @@ export const UserSelector = () => {
         <Select
           labelId="user-select-label"
           id="user-select"
-          value={selectedUserId}
+          value={selectedEmail}
           label="User"
-          onChange={(e) => setSelectedUserId(e.target.value)}
+          onChange={(e) => setSelectedEmail(e.target.value)}
         >
-          {users.map((user) => {
+          {demoLoginUsers.map((user) => {
             return (
-              <MenuItem
-                key={user.id}
-                value={user.id}
-              >{`${user.name} - ${user.role}`}</MenuItem>
+              <MenuItem key={user.email} value={user.email}>
+                {user.label}
+              </MenuItem>
             )
           })}
         </Select>
       </FormControl>
-      <Button disabled={!selectedUserId} onClick={handleClick}>
-        Go to App
+
+      {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+
+      <Button disabled={!selectedEmail || isLoggingIn} onClick={handleClick}>
+        {isLoggingIn ? 'Logging in...' : 'Go to App'}
       </Button>
     </>
   )
