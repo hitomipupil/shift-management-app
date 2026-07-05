@@ -1,18 +1,46 @@
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from 'src/firebase'
 import { mockShifts } from 'src/mocks/mockShifts'
 import { mockUsers } from 'src/mocks/mockUsers'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
 import { addDaysToDateString } from 'src/utils/dateUtils'
 
+const sortShiftsByDateAndTime = (shifts: Shift[]): Shift[] => {
+  return [...shifts].sort((a, b) => {
+    if (a.date !== b.date) {
+      return a.date.localeCompare(b.date)
+    }
+
+    return a.startTime.localeCompare(b.startTime)
+  })
+}
+
 export const getAllShifts = async (): Promise<Shift[]> => {
-  return [...mockShifts]
+  const shiftsSnapshot = await getDocs(collection(db, 'shifts'))
+
+  const shifts = shiftsSnapshot.docs.map((shiftDocument) => {
+    const data = shiftDocument.data()
+
+    return {
+      id: shiftDocument.id,
+      assignedUserId: data.assignedUserId,
+      coverageNeeded: data.coverageNeeded,
+      date: data.date,
+      startTime: data.startTime,
+      endTime: data.endTime,
+    } as Shift
+  })
+
+  return sortShiftsByDateAndTime(shifts)
 }
 
 export const getShiftsByWeek = async (
   weekStartDate: string,
 ): Promise<Shift[]> => {
   const weekEndDate = addDaysToDateString(weekStartDate, 6)
-  return mockShifts.filter(
+  const shifts = await getAllShifts()
+  return shifts.filter(
     (shift) => shift.date >= weekStartDate && shift.date <= weekEndDate,
   )
 }
