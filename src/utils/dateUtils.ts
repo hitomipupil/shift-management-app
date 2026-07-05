@@ -28,3 +28,17 @@ export const addDaysToDateString = (
 
   return formatDateToDateString(date)
 }
+
+export const formatDateTime = (dateTimeString: string | null): string => {
+  if (!dateTimeString) {
+    return 'No date'
+  }
+
+  return new Date(dateTimeString).toLocaleString(undefined, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}

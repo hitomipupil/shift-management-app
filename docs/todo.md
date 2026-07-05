@@ -125,3 +125,25 @@ Refactor later:
 - [x] Place MyCoverageRequestsSection below My Shifts
 - [x] Add mock data for pending, approved, and rejected requests if needed
 - [x] Manually test ACs
+
+## US-07: Manager views request history
+
+- [x] Add getReviewedCoverageRequests to coverageRequestService
+- [x] Filter only approved and rejected requests in getReviewedCoverageRequests
+- [x] Sort reviewed requests by reviewedAt, newest first
+- [x] Add reviewedCoverageRequests state in ScheduleView
+- [x] Fetch reviewed coverage requests when ScheduleView loads
+- [x] Refresh reviewed coverage requests after approving a request
+- [x] Refresh reviewed coverage requests after rejecting a request
+- [x] Pass reviewedCoverageRequests to ManagerRequestsSection
+- [x] Create RequestHistoryCard for read-only history items
+- [x] Display shift details in RequestHistoryCard
+- [x] Display requesting employee in RequestHistoryCard
+- [x] Display final status chip in RequestHistoryCard
+- [x] Display reviewing manager in RequestHistoryCard
+- [x] Display review timestamp in RequestHistoryCard
+- [x] Render reviewed requests inside the Request History tab
+- [x] Show empty state when there is no request history
+- [x] Confirm pending requests are not shown in Request History
+- [x] Confirm history items have no approve / reject actions
+- [ ] Manually test ACs
