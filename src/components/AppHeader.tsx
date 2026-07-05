@@ -3,6 +3,11 @@ import { useCurrentUser } from '../contexts/useCurrentUser'
 
 export const AppHeader = () => {
   const { currentUser } = useCurrentUser()
+
+  if (!currentUser) {
+    throw new Error('AppHeader requires a signed-in user')
+  }
+
   return (
     <Box
       sx={{
