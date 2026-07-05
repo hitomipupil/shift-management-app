@@ -1,40 +1,35 @@
 import { Box, Typography } from '@mui/material'
-import { WeekNavigator } from './WeekNavigator'
-import { MyShiftsSection } from './MyShiftsSection'
-import { WeeklyScheduleSection } from './WeeklyScheduleSection'
-import { useCurrentUser } from '../../contexts/useCurrentUser'
+import { WeekNavigator } from 'src/features/schedule/WeekNavigator'
+import { MyShiftsSection } from 'src/features/schedule/MyShiftsSection'
+import { WeeklyScheduleSection } from 'src/features/schedule/WeeklyScheduleSection'
+import { useCurrentUser } from 'src/contexts/useCurrentUser'
 import { useEffect, useState } from 'react'
 import {
   getAllShifts,
   getShiftsByWeek,
   markShiftAsCoverageNeeded,
-} from '../../services/shiftService'
-import { type Shift } from '../../types/shift'
-import type { User } from '../../types/user'
-import { getUsers } from '../../services/userService'
-import {
-  addDaysToDateString,
-  getCurrentWeekStartDate,
-} from '../../utils/dateUtils'
-import { ShiftDetailsDialog } from './ShiftDetailsDialog'
-import { type CoverageRequest } from '../../types/coverageRequests'
+} from 'src/services/shiftService'
+import { type Shift } from 'src/types/shift'
+import type { User } from 'src/types/user'
+import { getUsers } from 'src/services/userService'
+import { ShiftDetailsDialog } from 'src/features/schedule/ShiftDetailsDialog'
+import { type CoverageRequest } from 'src/types/coverageRequests'
 import {
   approveCoverageRequest,
   createCoverageRequest,
   getPendingCoverageRequests,
   rejectCoverageRequest,
-} from '../../services/coverageRequestService'
-import { ManagerRequestsSection } from '../requests/ManagerRequestsSection'
-import { RequestDetailsDialog } from '../requests/RequestDetailsDialog'
+} from 'src/services/coverageRequestService'
+import { ManagerRequestsSection } from 'src/features/requests/ManagerRequestsSection'
+import { RequestDetailsDialog } from 'src/features/requests/RequestDetailsDialog'
+import { useDisplayedWeek } from 'src/features/schedule/useDisplayedWeek'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
   const [shiftsOfThisWeek, setShiftsOfThisWeek] = useState<Shift[]>([])
   const [allShifts, setAllShifts] = useState<Shift[]>([])
   const [users, setUsers] = useState<User[]>([])
-  const [weekStartDate, setWeekStartDate] = useState<string>(
-    getCurrentWeekStartDate(),
-  )
+
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null)
   const [pendingCoverageRequests, setPendingCoverageRequests] = useState<
     CoverageRequest[]
@@ -47,6 +42,8 @@ export const ScheduleView = () => {
   const [requestReviewErrorMessage, setRequestReviewErrorMessage] = useState<
     string | null
   >(null)
+  const { weekStartDate, weekRangeLabel, handlePreviousWeek, handleNextWeek } =
+    useDisplayedWeek()
 
   useEffect(() => {
     const fetchScheduleData = async () => {
@@ -80,14 +77,6 @@ export const ScheduleView = () => {
   const myShifts = shiftsOfThisWeek.filter(
     (shift) => shift.assignedUserId === currentUser.id,
   )
-
-  const handlePreviousWeek = () => {
-    setWeekStartDate((current) => addDaysToDateString(current, -7))
-  }
-
-  const handleNextWeek = () => {
-    setWeekStartDate((current) => addDaysToDateString(current, 7))
-  }
 
   const handleMarkCoverageNeeded = async (shiftId: string) => {
     try {
@@ -203,9 +192,6 @@ export const ScheduleView = () => {
       ? null
       : (users.find((user) => user.id === selectedRequest.requestedByUserId) ??
         null)
-
-  const weekEndDate = addDaysToDateString(weekStartDate, 6)
-  const weekRangeLabel = `${weekStartDate} - ${weekEndDate}`
 
   return (
     <Box
