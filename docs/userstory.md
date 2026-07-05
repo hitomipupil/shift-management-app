@@ -411,7 +411,7 @@ Then pending requests are not displayed in the history section.
 
 Given request history is displayed,
 When the manager views a history item,
-Then it shows the shift details, requesting employee, final status, reviewing manager, and review timestamp.
+Then it shows the shift details, originally assigned employee, requesting employee, final status, reviewing manager, and review timestamp.
 
 #### AC-04: Request history is read-only
 

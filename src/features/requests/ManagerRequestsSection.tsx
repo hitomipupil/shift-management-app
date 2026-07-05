@@ -94,7 +94,14 @@ export const ManagerRequestsSection = ({
               const reviewedManager = users.find(
                 (user) => user.id === req.reviewedByUserId,
               )
-              if (!requestedEmployee || !reviewedManager) {
+              const originallyAssignedEmployee = users.find(
+                (user) => user.id === req.originalAssignedUserId,
+              )
+              if (
+                !requestedEmployee ||
+                !reviewedManager ||
+                !originallyAssignedEmployee
+              ) {
                 return null
               }
               return (
@@ -104,6 +111,7 @@ export const ManagerRequestsSection = ({
                   targetShift={targetShift}
                   requestedEmployee={requestedEmployee}
                   reviewedManager={reviewedManager}
+                  originallyAssignedEmployee={originallyAssignedEmployee}
                 />
               )
             })
