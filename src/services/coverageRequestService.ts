@@ -9,6 +9,7 @@ import {
   getDoc,
   getDocs,
   query,
+  updateDoc,
   where,
 } from 'firebase/firestore'
 import { db } from 'src/firebase'
@@ -291,17 +292,30 @@ export const rejectCoverageRequest = async (
   if (currentUser.role !== 'manager') {
     throw new Error('Only managers can reject requests')
   }
-  const targetRequest = mockCoverageRequests.find((req) => req.id === requestId)
-  if (!targetRequest) {
+  const requestRef = doc(db, 'coverageRequests', requestId)
+  const requestSnapshot = await getDoc(requestRef)
+  if (!requestSnapshot.exists()) {
     throw new Error('Request not found')
   }
-  if (targetRequest.status !== 'pending') {
+  const data = requestSnapshot.data()
+  if (data.status !== 'pending') {
     throw new Error('Request is no longer pending')
   }
 
-  targetRequest.status = 'rejected'
-  targetRequest.reviewedByUserId = currentUser.id
-  targetRequest.reviewedAt = new Date().toISOString()
+  await updateDoc(requestRef, {
+    status: 'rejected',
+    reviewedByUserId: currentUser.id,
+    reviewedAt: new Date().toISOString(),
+  })
 
-  return targetRequest
+  return {
+    id: requestSnapshot.id,
+    shiftId: data.shiftId,
+    originalAssignedUserId: data.originalAssignedUserId,
+    requestedByUserId: data.requestedByUserId,
+    status: 'rejected',
+    reviewedByUserId: currentUser.id,
+    reviewedAt: data.reviewedAt,
+    createdAt: data.createdAt,
+  }
 }
