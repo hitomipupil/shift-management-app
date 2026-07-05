@@ -1,7 +1,7 @@
-import type { User } from '../types/user'
-import { mockCoverageRequests } from '../mocks/mockCoverageRequests'
-import { mockShifts } from '../mocks/mockShifts'
-import type { CoverageRequest } from '../types/coverageRequests'
+import type { User } from 'src/types/user'
+import { mockCoverageRequests } from 'src/mocks/mockCoverageRequests'
+import { mockShifts } from 'src/mocks/mockShifts'
+import type { CoverageRequest } from 'src/types/coverageRequests'
 
 export const getPendingCoverageRequests = async (): Promise<
   CoverageRequest[]

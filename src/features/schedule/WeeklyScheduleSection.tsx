@@ -1,5 +1,5 @@
 import type { Shift } from 'src/types/shift'
-import { ShiftCard } from './ShiftCard'
+import { ShiftCard } from 'src/features/schedule/ShiftCard'
 import type { User } from 'src/types/user'
 import { Typography } from '@mui/material'
 import type { CoverageRequest } from 'src/types/coverageRequests'

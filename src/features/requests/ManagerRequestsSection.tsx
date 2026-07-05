@@ -1,10 +1,10 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material'
-import type { CoverageRequest } from '../../types/coverageRequests'
-import { PendingRequestCard } from './PendingRequestCard'
-import type { Shift } from '../../types/shift'
-import type { User } from '../../types/user'
+import type { CoverageRequest } from 'src/types/coverageRequests'
+import { PendingRequestCard } from 'src/features/requests/PendingRequestCard'
+import type { Shift } from 'src/types/shift'
+import type { User } from 'src/types/user'
 import { useState } from 'react'
-import { useCurrentUser } from '../../contexts/useCurrentUser'
+import { useCurrentUser } from 'src/contexts/useCurrentUser'
 
 type ManagerRequestsSectionProps = {
   pendingRequests: CoverageRequest[]

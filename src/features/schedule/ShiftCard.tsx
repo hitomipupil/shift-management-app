@@ -5,7 +5,7 @@ import {
   Chip,
   Typography,
 } from '@mui/material'
-import type { Shift } from '../../types/shift'
+import type { Shift } from 'src/types/shift'
 
 type ShiftCardProps = {
   shift: Shift

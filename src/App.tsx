@@ -1,7 +1,7 @@
-import { UserSelector } from './components/UserSelector'
-import { CurrentUserProvider } from './contexts/CurrentUserProvider'
-import { useCurrentUser } from './contexts/useCurrentUser'
-import { MainApp } from './features/layout/MainApp'
+import { UserSelector } from 'src/components/UserSelector'
+import { CurrentUserProvider } from 'src/contexts/CurrentUserProvider'
+import { useCurrentUser } from 'src/contexts/useCurrentUser'
+import { MainApp } from 'src/features/layout/MainApp'
 
 const AppContent = () => {
   const { currentUser } = useCurrentUser()

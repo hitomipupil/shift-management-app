@@ -1,4 +1,4 @@
-import type { Schedule } from '../types/schedule'
+import type { Schedule } from 'src/types/schedule'
 
 export const mockSchedules: Schedule[] = [
   {

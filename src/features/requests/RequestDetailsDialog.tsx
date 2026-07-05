@@ -10,9 +10,9 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
-import type { CoverageRequest } from '../../types/coverageRequests'
-import type { Shift } from '../../types/shift'
-import type { User } from '../../types/user'
+import type { CoverageRequest } from 'src/types/coverageRequests'
+import type { Shift } from 'src/types/shift'
+import type { User } from 'src/types/user'
 
 type RequestDetailsDialogProps = {
   open: boolean

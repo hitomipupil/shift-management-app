@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { CurrentUserContext } from './CurrentUserContext'
-import { getUserById, userExists } from '../services/userService'
-import type { User } from '../types/user'
+import { CurrentUserContext } from 'src/contexts/CurrentUserContext'
+import { getUserById, userExists } from 'src/services/userService'
+import type { User } from 'src/types/user'
 
 const CURRENT_USER_ID_STORAGE_KEY = 'currentUserId'
 

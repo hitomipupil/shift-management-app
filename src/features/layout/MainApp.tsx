@@ -1,5 +1,5 @@
-import { AppHeader } from '../../components/AppHeader'
-import { ScheduleView } from '../schedule/ScheduleView'
+import { AppHeader } from 'src/components/AppHeader'
+import { ScheduleView } from 'src/features/schedule/ScheduleView'
 
 export const MainApp = () => {
   return (

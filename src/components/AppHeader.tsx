@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material'
-import { useCurrentUser } from '../contexts/useCurrentUser'
+import { useCurrentUser } from 'src/contexts/useCurrentUser'
 
 export const AppHeader = () => {
   const { currentUser } = useCurrentUser()

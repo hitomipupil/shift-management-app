@@ -1,6 +1,6 @@
-import { mockSchedules } from '../mocks/mockSchedule'
-import { mockShifts } from '../mocks/mockShifts'
-import type { Shift } from '../types/shift'
+import { mockSchedules } from 'src/mocks/mockSchedule'
+import { mockShifts } from 'src/mocks/mockShifts'
+import type { Shift } from 'src/types/shift'
 
 export const getAllShifts = async (): Promise<Shift[]> => {
   return mockShifts

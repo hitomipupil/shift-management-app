@@ -1,4 +1,4 @@
-import { mockUsers } from '../mocks/mockUsers'
+import { mockUsers } from 'src/mocks/mockUsers'
 
 export const getUsers = async () => {
   return mockUsers

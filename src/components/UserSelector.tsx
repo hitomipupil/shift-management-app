@@ -7,9 +7,9 @@ import {
   Typography,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { useCurrentUser } from '../contexts/useCurrentUser'
-import type { User } from '../types/user'
-import { getUsers } from '../services/userService'
+import { useCurrentUser } from 'src/contexts/useCurrentUser'
+import type { User } from 'src/types/user'
+import { getUsers } from 'src/services/userService'
 
 export const UserSelector = () => {
   const [selectedUserId, setSelectedUserId] = useState('')
