@@ -147,3 +147,19 @@ Refactor later:
 - [x] Confirm pending requests are not shown in Request History
 - [x] Confirm history items have no approve / reject actions
 - [ ] Manually test ACs
+
+## US-08
+
+- [x] Add createShift to shiftService
+- [x] Add validation in createShift
+- [x] Ensure created shifts have coverageNeeded: false
+- [ ] Create CreateShiftDialog
+- [ ] Add employee, date, start time, and end time fields
+- [ ] Add Create button disabled logic
+- [ ] Add Create Shift button above WeekNavigator
+- [ ] Show Create Shift button only for managers
+- [ ] Add create shift dialog open/close state in ScheduleView
+- [ ] Connect dialog submit to createShift
+- [ ] Show validation error message when creation fails
+- [ ] Refresh shifts after creating a shift
+- [ ] Manually test ACs
