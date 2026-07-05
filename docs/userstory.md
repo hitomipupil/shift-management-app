@@ -430,15 +430,17 @@ Then the request is not deleted from the system.
 ## US-08: Manager creates weekly shifts
 
 As a manager,
-I want to create and assign weekly shifts,
-so that employees can see the official schedule.
+I want to create and assign shifts for any date,
+so that employees can see the official schedule when viewing the relevant week.
 
 ### UI
 
 - The manager can access the schedule in the main app.
 - The manager sees a **Create Shift** button.
+- The **Create Shift** button is shown above the week navigator.
 - When the manager clicks Create Shift, a dialog opens.
-- The manager selects an employee, day, start time, and end time.
+- The manager selects an employee, date, start time, and end time.
+- The date is not limited to the currently displayed week.
 - The manager confirms the action by clicking **Create**.
 - The created shift appears in the weekly schedule.
 
@@ -460,12 +462,12 @@ Then the create shift dialog is displayed.
 
 Given the manager opens the create shift dialog,
 When the dialog is displayed,
-Then it contains fields for employee, day, start time, and end time, as well as Create and Cancel actions.
+Then it contains fields for employee, date, start time, and end time, as well as Create and Cancel actions.
 
 #### AC-04: Required fields are validated
 
 Given the manager opens the create shift dialog,
-When the assigned employee, day, start time, or end time is missing,
+When the assigned employee, date, start time, or end time is missing,
 Then the Create action is disabled.
 
 #### AC-05: Overlapping shifts for the same employee are prevented
@@ -484,7 +486,7 @@ Then the dialog is closed and no new shift is created.
 
 Given the manager creates a valid shift,
 When the shift is saved,
-Then the new shift appears in the weekly schedule.
+Then the new shift appears in the weekly schedule for the week that contains the selected date.
 
 #### AC-08: Newly created shifts are not Coverage Needed by default
 

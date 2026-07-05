@@ -3,7 +3,7 @@ export type Shift = {
   scheduleId: string
   assignedUserId: string
   coverageNeeded: boolean
-  day: string
+  date: string
   startTime: string
   endTime: string
 }

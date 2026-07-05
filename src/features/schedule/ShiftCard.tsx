@@ -24,7 +24,7 @@ export const ShiftCard = ({
     <Card>
       <CardActionArea onClick={() => onShiftClick(shift)}>
         <CardContent sx={{ display: 'flex', gap: 2 }}>
-          <Typography>{shift.day}</Typography>
+          <Typography>{shift.date}</Typography>
           <Typography>{`${shift.startTime} - ${shift.endTime}`}</Typography>
           <Typography>{assignedUserName}</Typography>
           {isRequestPending ? (

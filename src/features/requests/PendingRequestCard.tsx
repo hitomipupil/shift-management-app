@@ -22,7 +22,7 @@ export const PendingRequestCard = ({
     <Card>
       <CardActionArea onClick={() => onRequestClick(pendingRequest)}>
         <CardContent sx={{ display: 'flex', gap: 2 }}>
-          <Typography>{targetShift.day}</Typography>
+          <Typography>{targetShift.date}</Typography>
           <Typography>{`${targetShift.startTime} - ${targetShift.endTime}`}</Typography>
           <Typography>{`${currentAssignedEmployee.name} => ${requestedEmployee.name}`}</Typography>
         </CardContent>

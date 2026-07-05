@@ -75,7 +75,7 @@ export const createCoverageRequest = async (
 
   const hasOverlappingPendingRequest = requesterPendingRequestShifts.some(
     (shift) => {
-      if (shift.day !== targetShift.day) {
+      if (shift.date !== targetShift.date) {
         return false
       }
 
@@ -98,7 +98,7 @@ export const createCoverageRequest = async (
   )
 
   const hasOverlappingShift = requesterShifts.some((shift) => {
-    if (shift.day !== targetShift.day) {
+    if (shift.date !== targetShift.date) {
       return false
     }
 
@@ -157,7 +157,7 @@ export const approveCoverageRequest = async (
     (shift) => shift.assignedUserId === targetRequest.requestedByUserId,
   )
   const hasOverlappingShift = requesterShifts.some((shift) => {
-    if (shift.day !== targetShift.day) {
+    if (shift.date !== targetShift.date) {
       return false
     }
 

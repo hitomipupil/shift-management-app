@@ -19,7 +19,7 @@ export const MyCoverageRequestCard = ({
   return (
     <Card>
       <CardContent sx={{ display: 'flex', gap: 2 }}>
-        <Typography>{targetShift.day}</Typography>
+        <Typography>{targetShift.date}</Typography>
         <Typography>{`${targetShift.startTime} - ${targetShift.endTime}`}</Typography>
         <Typography>{`originally assigned to: ${originalAssignedEmployee.name}`}</Typography>
         <Chip label={statusLabel} size="small" />

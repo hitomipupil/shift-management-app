@@ -49,7 +49,7 @@ export const RequestDetailsDialog = ({
       </IconButton>
       <List sx={{ pt: 0 }}>
         <ListItem sx={{ display: 'flex', flexDirection: 'column' }}>
-          <ListItemText primary={`shift day: ${targetShift.day}`} />
+          <ListItemText primary={`shift date: ${targetShift.date}`} />
           <ListItemText primary={`start time: ${targetShift.startTime}`} />
           <ListItemText primary={`end time: ${targetShift.endTime}`} />
           <ListItemText

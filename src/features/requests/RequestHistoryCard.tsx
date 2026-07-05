@@ -26,7 +26,7 @@ export const RequestHistoryCard = ({
       <CardContent>
         <Chip label={statusLabel} size="small" />
         <Typography>
-          {targetShift.day} {targetShift.startTime} - {targetShift.endTime}
+          {targetShift.date} {targetShift.startTime} - {targetShift.endTime}
         </Typography>
         <Typography>
           originally assigned to: {originallyAssignedEmployee.name}
