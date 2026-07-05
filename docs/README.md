@@ -109,12 +109,10 @@ When creating shifts:
 
 ## Out of Scope
 
-- Withdrawing a coverage request after it has been created
 - Direct employee-to-employee shift swap
 - Notifications (email / push)
 - Multiple stores
 - Employee management
-- Payroll integration
 - Vacation requests
 - Drag & drop scheduling
 - Recurring shifts
