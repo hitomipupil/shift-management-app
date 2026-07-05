@@ -111,10 +111,10 @@ Refactor later:
 
 ## US-06: Employee views their coverage request status
 
-- [ ] Add getRequestsByUser to coverageRequestService
-- [ ] Add myCoverageRequests state in ScheduleView
-- [ ] Fetch current employee's coverage requests in ScheduleView
-- [ ] Update myCoverageRequests after creating a coverage request
+- [x] Add getRequestsByUser to coverageRequestService
+- [x] Add myCoverageRequests state in ScheduleView
+- [x] Fetch current employee's coverage requests in ScheduleView
+- [x] Update myCoverageRequests after creating a coverage request
 - [ ] Create MyCoverageRequestsSection component
 - [ ] Show empty state when the employee has no coverage requests
 - [ ] Display each request's related shift information

@@ -18,6 +18,7 @@ import {
   approveCoverageRequest,
   createCoverageRequest,
   getPendingCoverageRequests,
+  getRequestsByUser,
   rejectCoverageRequest,
 } from 'src/services/coverageRequestService'
 import { ManagerRequestsSection } from 'src/features/requests/ManagerRequestsSection'
@@ -42,25 +43,38 @@ export const ScheduleView = () => {
   const [requestReviewErrorMessage, setRequestReviewErrorMessage] = useState<
     string | null
   >(null)
+  const [myCoverageRequests, setMyCoverageRequests] = useState<
+    CoverageRequest[]
+  >([])
   const { weekStartDate, weekRangeLabel, handlePreviousWeek, handleNextWeek } =
     useDisplayedWeek()
 
   useEffect(() => {
     const fetchScheduleData = async () => {
+      if (!currentUser) {
+        return
+      }
       try {
         setIsLoading(true)
-        const [shiftsData, usersData, pendingRequestsData, allShiftsData] =
-          await Promise.all([
-            getShiftsByWeek(weekStartDate),
-            getUsers(),
-            getPendingCoverageRequests(),
-            getAllShifts(),
-          ])
+        const [
+          shiftsData,
+          usersData,
+          pendingRequestsData,
+          allShiftsData,
+          myRequestsData,
+        ] = await Promise.all([
+          getShiftsByWeek(weekStartDate),
+          getUsers(),
+          getPendingCoverageRequests(),
+          getAllShifts(),
+          getRequestsByUser(currentUser.id),
+        ])
 
         setShiftsOfThisWeek(shiftsData)
         setUsers(usersData)
         setPendingCoverageRequests(pendingRequestsData)
         setAllShifts(allShiftsData)
+        setMyCoverageRequests(myRequestsData)
       } catch (e) {
         console.error(e)
       } finally {
@@ -68,7 +82,7 @@ export const ScheduleView = () => {
       }
     }
     fetchScheduleData()
-  }, [weekStartDate])
+  }, [weekStartDate, currentUser])
 
   if (!currentUser) {
     throw new Error('Current user is required to view schedule')
@@ -95,6 +109,8 @@ export const ScheduleView = () => {
       setCoverageRequestErrorMessage(null)
       const updatedCoverageRequests = await getPendingCoverageRequests()
       setPendingCoverageRequests(updatedCoverageRequests)
+      const updatedMyCoverageRequests = await getRequestsByUser(currentUser.id)
+      setMyCoverageRequests(updatedMyCoverageRequests)
       setSelectedShift(null)
     } catch (e) {
       if (e instanceof Error) {
