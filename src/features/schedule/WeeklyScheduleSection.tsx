@@ -21,7 +21,7 @@ export const WeeklyScheduleSection = ({
     <>
       <Typography>Weekly Schedule</Typography>
       {shifts.length === 0 ? (
-        <Typography color="text.secondary">No shifts this week.</Typography>
+        <Typography color="text.secondary">No shifts this week</Typography>
       ) : (
         shifts.map((shift) => {
           const assignedUser = users.find(

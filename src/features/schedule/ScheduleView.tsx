@@ -21,6 +21,7 @@ import {
   createCoverageRequest,
   getPendingCoverageRequests,
 } from '../../services/coverageRequestService'
+import { ManagerRequestsSection } from '../requests/ManagerRequestsSection'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
@@ -142,18 +143,24 @@ export const ScheduleView = () => {
             onPreviousWeek={handlePreviousWeek}
             onNextWeek={handleNextWeek}
           />
-          <MyShiftsSection
-            currentUser={currentUser}
-            myShifts={myShifts}
-            onShiftClick={handleOpenShiftDetails}
-            coverageRequests={coverageRequests}
-          />
+          {currentUser.role === 'employee' && (
+            <MyShiftsSection
+              currentUser={currentUser}
+              myShifts={myShifts}
+              onShiftClick={handleOpenShiftDetails}
+              coverageRequests={coverageRequests}
+            />
+          )}
           <WeeklyScheduleSection
             shifts={shifts}
             users={users}
             onShiftClick={handleOpenShiftDetails}
             coverageRequests={coverageRequests}
           />
+
+          {currentUser.role === 'manager' && (
+            <ManagerRequestsSection pendingRequests={coverageRequests} />
+          )}
           {selectedShift && selectedShiftAssignedUser && (
             <ShiftDetailsDialog
               open={selectedShift !== null}
