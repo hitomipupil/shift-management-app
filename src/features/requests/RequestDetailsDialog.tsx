@@ -61,6 +61,7 @@ export const RequestDetailsDialog = ({
           <DialogActions sx={{ display: 'flex', flexDirection: 'column' }}>
             <Button onClick={() => onApprove(targetRequest.id)}>Approve</Button>
             <Button onClick={() => onReject(targetRequest.id)}>Reject</Button>
+            <Button onClick={onClose}>Cancel</Button>
             {requestReviewErrorMessage && (
               <Typography color="error" variant="body2">
                 {requestReviewErrorMessage}

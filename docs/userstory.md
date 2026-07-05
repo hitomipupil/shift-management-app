@@ -476,19 +476,25 @@ Given an employee already has a shift during a specific time period,
 When the manager clicks Create for another shift assigned to the same employee with an overlapping time period,  
 Then the app prevents the shift from being created and shows a validation message.
 
-#### AC-06: Closing button closes the create shift dialog without creating a shift
+#### AC-06: Start time must be before end time
+
+Given the manager opens the create shift dialog,  
+When the manager enters a start time that is the same as or later than the end time,  
+Then the app prevents the shift from being created and shows a validation message.
+
+#### AC-07: Cancel button closes the create shift dialog without creating a shift
 
 Given the manager has opened the create shift dialog,
-When the manager clicks the closing button,
+When the manager clicks the cancel button,
 Then the dialog is closed and no new shift is created.
 
-#### AC-07: Newly created shifts appear in the weekly schedule
+#### AC-08: Newly created shifts appear in the weekly schedule
 
 Given the manager creates a valid shift,
 When the shift is saved,
 Then the new shift appears in the weekly schedule for the week that contains the selected date.
 
-#### AC-08: Newly created shifts are not Coverage Needed by default
+#### AC-09: Newly created shifts are not Coverage Needed by default
 
 Given the manager creates a new shift,
 When the shift is saved,

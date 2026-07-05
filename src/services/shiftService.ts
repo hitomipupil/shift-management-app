@@ -5,7 +5,7 @@ import type { User } from 'src/types/user'
 import { addDaysToDateString } from 'src/utils/dateUtils'
 
 export const getAllShifts = async (): Promise<Shift[]> => {
-  return mockShifts
+  return [...mockShifts]
 }
 
 export const getShiftsByWeek = async (
@@ -20,7 +20,7 @@ export const getShiftsByWeek = async (
 export const markShiftAsCoverageNeeded = async (
   shiftId: string,
   currentUserId: string,
-) => {
+): Promise<void> => {
   const targetShift = mockShifts.find((shift) => shift.id === shiftId)
   if (!targetShift) {
     throw new Error('Shift not found')
@@ -41,7 +41,7 @@ export const createShift = async (
   date: string,
   startTime: string,
   endTime: string,
-) => {
+): Promise<Shift> => {
   if (currentUser.role !== 'manager') {
     throw new Error('Only managers can create shifts')
   }

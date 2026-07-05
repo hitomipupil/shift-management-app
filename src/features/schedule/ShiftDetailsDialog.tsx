@@ -74,7 +74,6 @@ export const ShiftDetailsDialog = ({
                 <ListItemText secondary="A manager must approve the request before the shift is assigned to the employee" />
               </>
             )}
-
             {isRequestPending ? (
               <ListItemText
                 secondary={

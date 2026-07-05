@@ -20,7 +20,6 @@ import type { User } from 'src/types/user'
 type CreateShiftDialogProps = {
   open: boolean
   users: User[]
-  currentUser: User
   onCreateShift: (
     assignedUserId: string,
     date: string,
@@ -48,18 +47,37 @@ export const CreateShiftDialog = ({
   const isCreateDisabled =
     !selectedEmployeeId || !date || !startTime || !endTime
 
+  const resetForm = () => {
+    setSelectedEmployeeId('')
+    setDate('')
+    setStartTime('')
+    setEndTime('')
+  }
+
+  const handleClose = () => {
+    resetForm()
+    onClose()
+  }
+
   return (
-    <Dialog onClose={onClose} open={open}>
+    <Dialog onClose={handleClose} open={open}>
       <DialogTitle sx={{ pr: 6 }}>Create Shift</DialogTitle>
       <IconButton
         aria-label="close"
-        onClick={onClose}
+        onClick={handleClose}
         sx={{ position: 'absolute', right: 8, top: 8 }}
       >
         <CloseIcon />
       </IconButton>
       <List sx={{ pt: 0 }}>
-        <ListItem sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <ListItem
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            minWidth: 360,
+          }}
+        >
           <FormControl fullWidth>
             <InputLabel id="employee-select-label">Employee</InputLabel>
             <Select
@@ -83,18 +101,24 @@ export const CreateShiftDialog = ({
             label="Date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
+            fullWidth
+            slotProps={{ inputLabel: { shrink: true } }}
           />
           <TextField
             type="time"
             label="Start time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
+            fullWidth
+            slotProps={{ inputLabel: { shrink: true } }}
           />
           <TextField
             type="time"
             label="End time"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
+            fullWidth
+            slotProps={{ inputLabel: { shrink: true } }}
           />
 
           <DialogActions sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -104,8 +128,9 @@ export const CreateShiftDialog = ({
               }
               disabled={isCreateDisabled}
             >
-              Create Shift
+              Create
             </Button>
+            <Button onClick={handleClose}>Cancel</Button>
             {createShiftErrorMessage && (
               <Typography color="error" variant="body2">
                 {createShiftErrorMessage}

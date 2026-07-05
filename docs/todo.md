@@ -153,13 +153,13 @@ Refactor later:
 - [x] Add createShift to shiftService
 - [x] Add validation in createShift
 - [x] Ensure created shifts have coverageNeeded: false
-- [ ] Create CreateShiftDialog
-- [ ] Add employee, date, start time, and end time fields
-- [ ] Add Create button disabled logic
-- [ ] Add Create Shift button above WeekNavigator
-- [ ] Show Create Shift button only for managers
-- [ ] Add create shift dialog open/close state in ScheduleView
-- [ ] Connect dialog submit to createShift
-- [ ] Show validation error message when creation fails
-- [ ] Refresh shifts after creating a shift
-- [ ] Manually test ACs
+- [x] Create CreateShiftDialog
+- [x] Add employee, date, start time, and end time fields
+- [x] Add Create button disabled logic
+- [x] Add Create Shift button above WeekNavigator
+- [x] Show Create Shift button only for managers
+- [x] Add create shift dialog open/close state in ScheduleView
+- [x] Connect dialog submit to createShift
+- [x] Show validation error message when creation fails
+- [x] Refresh shifts after creating a shift
+- [x] Manually test ACs

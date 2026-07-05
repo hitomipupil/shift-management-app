@@ -2,7 +2,7 @@
 
 ## Overview
 
-This application replaces the current group-text workflow used by store staff to manage shift changes.
+This application replaces the current group-text workflow to manage shift changes.
 
 The MVP focuses on providing a simple approval workflow for shift changes while preventing scheduling conflicts and preserving an approval history.
 
@@ -10,14 +10,12 @@ The MVP focuses on providing a simple approval workflow for shift changes while 
 
 ## Assumptions
 
-To reduce ambiguity, the following assumptions were made:
-
 - The application is used by a single store.
 - Users already exist in the system.
 - There are two roles:
   - Manager
   - Employee
-- Managers create schedules and review coverage requests.
+- Managers create shifts and review coverage requests.
 - Managers do not work employee shifts in the MVP.
 - Only employees can offer shifts for coverage or request to cover shifts.
 - Only managers can approve or reject shift change requests.
@@ -29,6 +27,8 @@ To reduce ambiguity, the following assumptions were made:
 - One employee cannot have overlapping assigned shifts.
 - Employees cannot create a coverage request if it overlaps with one of their assigned shifts.
 - Employees cannot create a coverage request if it overlaps with another pending coverage request they have already submitted.
+- Pending coverage requests are tentative and are not treated as confirmed assigned shifts.
+- Shifts start and end on the same calendar date. Overnight shifts are out of scope for the MVP.
 
 ---
 
@@ -49,7 +49,7 @@ An employee can:
 A manager can:
 
 - View the weekly shift schedule
-- Create and assign weekly shifts
+- Create and assign shifts for any date
 - Review pending shift change requests
 - Approve or reject requests
 - View the history of approved and rejected requests
@@ -96,11 +96,18 @@ The application validates the following when creating or approving a coverage re
 - The shift is still assigned to the original employee.
 - Only managers can approve requests.
 
+When creating shifts:
+
+- Only managers can create shifts.
+- Managers can only assign shifts to employees.
+- Required fields must be provided: employee, date, start time, and end time.
+- Start time must be before end time.
+- Employees cannot have overlapping assigned shifts.
+- Pending coverage requests are not included in shift creation overlap validation.
+
 ---
 
 ## Out of Scope
-
-The following features are intentionally excluded from the MVP:
 
 - Withdrawing a coverage request after it has been created
 - Direct employee-to-employee shift swap
@@ -114,6 +121,7 @@ The following features are intentionally excluded from the MVP:
 - Calendar synchronization
 - Mobile application
 - Shift deletion
+- Overnight shifts
 
 ---
 
@@ -137,3 +145,8 @@ Possible future enhancements include:
 - TypeScript
 - Cloud Firestore
 - Material UI
+
+## Running Locally
+
+npm install
+npm run dev

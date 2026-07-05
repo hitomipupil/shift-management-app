@@ -1,10 +1,11 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import { WeekNavigator } from 'src/features/schedule/WeekNavigator'
 import { MyShiftsSection } from 'src/features/schedule/MyShiftsSection'
 import { WeeklyScheduleSection } from 'src/features/schedule/WeeklyScheduleSection'
 import { useCurrentUser } from 'src/contexts/useCurrentUser'
 import { useState } from 'react'
 import {
+  createShift,
   getAllShifts,
   getShiftsByWeek,
   markShiftAsCoverageNeeded,
@@ -25,6 +26,7 @@ import { RequestDetailsDialog } from 'src/features/requests/RequestDetailsDialog
 import { useDisplayedWeek } from 'src/features/schedule/useDisplayedWeek'
 import { MyCoverageRequestsSection } from '../requests/MyCoverageRequestsSection'
 import { useScheduleData } from './useScheduleData'
+import { CreateShiftDialog } from './CreateShiftDialog'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
@@ -34,6 +36,11 @@ export const ScheduleView = () => {
   const [coverageRequestErrorMessage, setCoverageRequestErrorMessage] =
     useState<string | null>(null)
   const [requestReviewErrorMessage, setRequestReviewErrorMessage] = useState<
+    string | null
+  >(null)
+  const [createShiftDialogOpen, setCreateShiftDialogOpen] =
+    useState<boolean>(false)
+  const [createShiftErrorMessage, setCreateShiftErrorMessage] = useState<
     string | null
   >(null)
   const { weekStartDate, weekRangeLabel, handlePreviousWeek, handleNextWeek } =
@@ -56,6 +63,9 @@ export const ScheduleView = () => {
   if (!currentUser) {
     throw new Error('Current user is required to view schedule')
   }
+
+  const isEmployee = currentUser.role === 'employee'
+  const isManager = currentUser.role === 'manager'
 
   const myShifts = shiftsOfThisWeek.filter(
     (shift) => shift.assignedUserId === currentUser.id,
@@ -121,6 +131,7 @@ export const ScheduleView = () => {
 
   const handleApproveRequest = async (requestId: string) => {
     try {
+      setRequestReviewErrorMessage(null)
       await approveCoverageRequest(requestId, currentUser)
       const [
         updatedShiftsOfThisWeek,
@@ -149,6 +160,7 @@ export const ScheduleView = () => {
 
   const handleRejectRequest = async (requestId: string) => {
     try {
+      setRequestReviewErrorMessage(null)
       await rejectCoverageRequest(requestId, currentUser)
       const [updatedCoverageRequests, updatedReviewedCoverageRequests] =
         await Promise.all([
@@ -186,6 +198,36 @@ export const ScheduleView = () => {
       : (users.find((user) => user.id === selectedRequest.requestedByUserId) ??
         null)
 
+  const handleCreateShift = async (
+    assignedUserId: string,
+    date: string,
+    startTime: string,
+    endTime: string,
+  ) => {
+    try {
+      setCreateShiftErrorMessage(null)
+      await createShift(currentUser, assignedUserId, date, startTime, endTime)
+      const [updatedShiftsOfThisWeek, updatedAllShifts] = await Promise.all([
+        getShiftsByWeek(weekStartDate),
+        getAllShifts(),
+      ])
+      setShiftsOfThisWeek(updatedShiftsOfThisWeek)
+      setAllShifts(updatedAllShifts)
+      setCreateShiftDialogOpen(false)
+    } catch (e) {
+      if (e instanceof Error) {
+        setCreateShiftErrorMessage(e.message)
+      } else {
+        setCreateShiftErrorMessage('Something went wrong')
+      }
+    }
+  }
+
+  const handleCreateShiftDialogClode = () => {
+    setCreateShiftErrorMessage(null)
+    setCreateShiftDialogOpen(false)
+  }
+
   return (
     <Box
       sx={{
@@ -199,25 +241,30 @@ export const ScheduleView = () => {
         <Typography>Loading schedule...</Typography>
       ) : (
         <>
+          {isManager && (
+            <Button onClick={() => setCreateShiftDialogOpen(true)}>
+              Create Shift
+            </Button>
+          )}
           <WeekNavigator
             weekRangeLabel={weekRangeLabel}
             onPreviousWeek={handlePreviousWeek}
             onNextWeek={handleNextWeek}
           />
-          {currentUser.role === 'employee' && (
-            <MyShiftsSection
-              currentUser={currentUser}
-              myShifts={myShifts}
-              onShiftClick={handleOpenShiftDetails}
-              coverageRequests={pendingCoverageRequests}
-            />
-          )}
-          {currentUser.role === 'employee' && (
-            <MyCoverageRequestsSection
-              myRequests={myCoverageRequests}
-              shifts={allShifts}
-              users={users}
-            />
+          {isEmployee && (
+            <>
+              <MyShiftsSection
+                currentUser={currentUser}
+                myShifts={myShifts}
+                onShiftClick={handleOpenShiftDetails}
+                coverageRequests={pendingCoverageRequests}
+              />
+              <MyCoverageRequestsSection
+                myRequests={myCoverageRequests}
+                shifts={allShifts}
+                users={users}
+              />
+            </>
           )}
           <WeeklyScheduleSection
             shifts={shiftsOfThisWeek}
@@ -225,7 +272,7 @@ export const ScheduleView = () => {
             onShiftClick={handleOpenShiftDetails}
             coverageRequests={pendingCoverageRequests}
           />
-          {currentUser.role === 'manager' && (
+          {isManager && (
             <ManagerRequestsSection
               pendingRequests={pendingCoverageRequests}
               allShifts={allShifts}
@@ -263,6 +310,15 @@ export const ScheduleView = () => {
                 requestReviewErrorMessage={requestReviewErrorMessage}
               />
             )}
+          {createShiftDialogOpen && (
+            <CreateShiftDialog
+              open={createShiftDialogOpen}
+              users={users}
+              onCreateShift={handleCreateShift}
+              onClose={handleCreateShiftDialogClode}
+              createShiftErrorMessage={createShiftErrorMessage}
+            />
+          )}
         </>
       )}
     </Box>
