@@ -146,6 +146,7 @@ Possible future enhancements include:
 - Shift templates
 - Delete shifts
 - Use Firestore transactions or Cloud Functions for stricter concurrency control when approving requests.
+- The app uses predefined demo accounts for the MVP. In a production app, users would log in with their own credentials and demo passwords would not be stored in the frontend.
 
 ---
 
