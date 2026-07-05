@@ -1,10 +1,18 @@
-import { collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
 import { db } from 'src/firebase'
-import { mockShifts } from 'src/mocks/mockShifts'
-import { mockUsers } from 'src/mocks/mockUsers'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
 import { addDaysToDateString } from 'src/utils/dateUtils'
+import { getUserById } from './userService'
 
 const sortShiftsByDateAndTime = (shifts: Shift[]): Shift[] => {
   return [...shifts].sort((a, b) => {
@@ -79,7 +87,7 @@ export const createShift = async (
   if (!assignedUserId || !date || !startTime || !endTime) {
     throw new Error('All fields are required')
   }
-  const assignedUser = mockUsers.find((user) => user.id === assignedUserId)
+  const assignedUser = await getUserById(assignedUserId)
   if (!assignedUser) {
     throw new Error('Assigned user was not found')
   }
@@ -89,27 +97,34 @@ export const createShift = async (
   if (startTime >= endTime) {
     throw new Error('Start time must be before end time')
   }
-  const hasOverlappingShift = mockShifts.some((shift) => {
-    return (
-      shift.assignedUserId === assignedUserId &&
-      shift.date === date &&
-      startTime < shift.endTime &&
-      endTime > shift.startTime
-    )
+
+  const shiftsQuery = query(
+    collection(db, 'shifts'),
+    where('assignedUserId', '==', assignedUserId),
+    where('date', '==', date),
+  )
+
+  const shiftsSnapshot = await getDocs(shiftsQuery)
+
+  const hasOverlappingShift = shiftsSnapshot.docs.some((shiftDoc) => {
+    const data = shiftDoc.data()
+    return startTime < data.endTime && endTime > data.startTime
   })
 
   if (hasOverlappingShift) {
     throw new Error('This employee already has an overlapping shift')
   }
 
-  const shift: Shift = {
-    id: `shift-${Date.now()}`,
+  const newShiftData = {
     assignedUserId,
     coverageNeeded: false,
     date,
     startTime,
     endTime,
   }
-  mockShifts.push(shift)
-  return shift
+  const shiftDocumentRef = await addDoc(collection(db, 'shifts'), newShiftData)
+  return {
+    id: shiftDocumentRef.id,
+    ...newShiftData,
+  }
 }
