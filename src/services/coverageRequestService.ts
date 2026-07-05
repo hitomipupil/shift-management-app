@@ -2,8 +2,17 @@ import type { User } from 'src/types/user'
 import { mockCoverageRequests } from 'src/mocks/mockCoverageRequests'
 import { mockShifts } from 'src/mocks/mockShifts'
 import type { CoverageRequest } from 'src/types/coverageRequests'
-import { collection, getDocs } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore'
 import { db } from 'src/firebase'
+import type { Shift } from 'src/types/shift'
 
 const getAllCoverageRequests = async (): Promise<CoverageRequest[]> => {
   const requestsSnapshot = await getDocs(collection(db, 'coverageRequests'))
@@ -61,6 +70,25 @@ const hasOverlappingTime = (
   return targetStartTime < existingEndTime && targetEndTime > existingStartTime
 }
 
+const getShiftById = async (shiftId: string): Promise<Shift | null> => {
+  const shiftSnapshot = await getDoc(doc(db, 'shifts', shiftId))
+
+  if (!shiftSnapshot.exists()) {
+    return null
+  }
+
+  const data = shiftSnapshot.data()
+
+  return {
+    id: shiftSnapshot.id,
+    assignedUserId: data.assignedUserId,
+    coverageNeeded: data.coverageNeeded,
+    date: data.date,
+    startTime: data.startTime,
+    endTime: data.endTime,
+  } as Shift
+}
+
 export const createCoverageRequest = async (
   shiftId: string,
   currentUser: User,
@@ -69,7 +97,7 @@ export const createCoverageRequest = async (
     throw new Error('Only employees can request coverage')
   }
   const requestedByUserId = currentUser.id
-  const targetShift = mockShifts.find((shift) => shift.id === shiftId)
+  const targetShift = await getShiftById(shiftId)
   if (!targetShift) {
     throw new Error('Shift not found')
   }
@@ -80,23 +108,55 @@ export const createCoverageRequest = async (
     throw new Error('You cannot request your own shift')
   }
 
-  const pendingRequests = await getPendingCoverageRequests()
-  const hasPendingRequest = pendingRequests.some(
-    (request) => request.shiftId === targetShift.id,
+  const existingPendingRequestQuery = query(
+    collection(db, 'coverageRequests'),
+    where('shiftId', '==', shiftId),
+    where('status', '==', 'pending'),
   )
-  if (hasPendingRequest) {
+
+  const existingPendingRequestSnapshot = await getDocs(
+    existingPendingRequestQuery,
+  )
+  if (!existingPendingRequestSnapshot.empty) {
     throw new Error('This shift has already a pending request')
   }
 
-  const requesterPendingRequests = pendingRequests.filter(
-    (request) => request.requestedByUserId === requestedByUserId,
+  const requesterPendingRequestsQuery = query(
+    collection(db, 'coverageRequests'),
+    where('requestedByUserId', '==', requestedByUserId),
+    where('status', '==', 'pending'),
   )
 
-  const requesterPendingRequestShifts = requesterPendingRequests
-    .map((request) => mockShifts.find((shift) => shift.id === request.shiftId))
-    .filter((shift) => shift !== undefined)
+  const requesterPendingRequestsSnapshot = await getDocs(
+    requesterPendingRequestsQuery,
+  )
 
-  const hasOverlappingPendingRequest = requesterPendingRequestShifts.some(
+  const requesterPendingRequests = requesterPendingRequestsSnapshot.docs.map(
+    (requestDocument) => {
+      const data = requestDocument.data()
+
+      return {
+        id: requestDocument.id,
+        shiftId: data.shiftId,
+        originalAssignedUserId: data.originalAssignedUserId,
+        requestedByUserId: data.requestedByUserId,
+        status: data.status,
+        reviewedByUserId: data.reviewedByUserId,
+        reviewedAt: data.reviewedAt,
+        createdAt: data.createdAt,
+      } as CoverageRequest
+    },
+  )
+
+  const requesterPendingRequestShifts = await Promise.all(
+    requesterPendingRequests.map((request) => getShiftById(request.shiftId)),
+  )
+
+  const existingPendingRequestShifts = requesterPendingRequestShifts.filter(
+    (shift): shift is Shift => shift !== null,
+  )
+
+  const hasOverlappingPendingRequest = existingPendingRequestShifts.some(
     (shift) => {
       if (shift.date !== targetShift.date) {
         return false
@@ -116,15 +176,27 @@ export const createCoverageRequest = async (
     )
   }
 
-  const requesterShifts = mockShifts.filter(
-    (shift) => shift.assignedUserId === requestedByUserId,
+  const requesterShiftsQuery = query(
+    collection(db, 'shifts'),
+    where('assignedUserId', '==', requestedByUserId),
+    where('date', '==', targetShift.date),
   )
 
-  const hasOverlappingShift = requesterShifts.some((shift) => {
-    if (shift.date !== targetShift.date) {
-      return false
-    }
+  const requesterShiftsSnapshot = await getDocs(requesterShiftsQuery)
 
+  const requesterShifts = requesterShiftsSnapshot.docs.map((shiftDoc) => {
+    const data = shiftDoc.data()
+    return {
+      id: shiftDoc.id,
+      assignedUserId: data.assignedUserId,
+      coverageNeeded: data.coverageNeeded,
+      date: data.date,
+      startTime: data.startTime,
+      endTime: data.endTime,
+    } as Shift
+  })
+
+  const hasOverlappingShift = requesterShifts.some((shift) => {
     return hasOverlappingTime(
       targetShift.startTime,
       targetShift.endTime,
@@ -137,19 +209,25 @@ export const createCoverageRequest = async (
     throw new Error('You already have an overlapping shift')
   }
 
-  const request: CoverageRequest = {
-    id: `request-${Date.now()}`,
+  const newRequestData = {
     shiftId,
     originalAssignedUserId: targetShift.assignedUserId,
     requestedByUserId,
-    status: 'pending',
+    status: 'pending' as const,
     reviewedByUserId: null,
     reviewedAt: null,
     createdAt: new Date().toISOString(),
   }
 
-  mockCoverageRequests.push(request)
-  return request
+  const requestDocumentRef = await addDoc(
+    collection(db, 'coverageRequests'),
+    newRequestData,
+  )
+
+  return {
+    id: requestDocumentRef.id,
+    ...newRequestData,
+  }
 }
 
 export const approveCoverageRequest = async (
