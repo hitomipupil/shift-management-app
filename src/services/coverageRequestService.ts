@@ -2,23 +2,46 @@ import type { User } from 'src/types/user'
 import { mockCoverageRequests } from 'src/mocks/mockCoverageRequests'
 import { mockShifts } from 'src/mocks/mockShifts'
 import type { CoverageRequest } from 'src/types/coverageRequests'
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from 'src/firebase'
+
+const getAllCoverageRequests = async (): Promise<CoverageRequest[]> => {
+  const requestsSnapshot = await getDocs(collection(db, 'coverageRequests'))
+
+  return requestsSnapshot.docs.map((requestDocument) => {
+    const data = requestDocument.data()
+
+    return {
+      id: requestDocument.id,
+      shiftId: data.shiftId,
+      originalAssignedUserId: data.originalAssignedUserId,
+      requestedByUserId: data.requestedByUserId,
+      status: data.status,
+      reviewedByUserId: data.reviewedByUserId,
+      reviewedAt: data.reviewedAt,
+      createdAt: data.createdAt,
+    } as CoverageRequest
+  })
+}
 
 export const getPendingCoverageRequests = async (): Promise<
   CoverageRequest[]
 > => {
-  return mockCoverageRequests.filter((req) => req.status === 'pending')
+  const requests = await getAllCoverageRequests()
+  return requests.filter((req) => req.status === 'pending')
 }
-
 export const getRequestsByUser = async (
   userId: string,
 ): Promise<CoverageRequest[]> => {
-  return mockCoverageRequests.filter((req) => req.requestedByUserId === userId)
+  const requests = await getAllCoverageRequests()
+  return requests.filter((req) => req.requestedByUserId === userId)
 }
 
 export const getReviewedCoverageRequests = async (): Promise<
   CoverageRequest[]
 > => {
-  const reviewedRequests = mockCoverageRequests.filter(
+  const requests = await getAllCoverageRequests()
+  const reviewedRequests = requests.filter(
     (req) => req.status === 'approved' || req.status === 'rejected',
   )
   return reviewedRequests.sort((a, b) => {
