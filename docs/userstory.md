@@ -167,7 +167,7 @@ so that I can take over the shift if a manager approves my request.
 
 - The employee can click a shift marked as Coverage Needed.
 - A shift details dialog opens.
-- If the employee is allowed to request the shift, the dialog shows a **Request to Cover** button and a cancel button.
+- If the employee is allowed to request the shift, the dialog shows a **Request to Cover** button.
 - The dialog explains that a manager must approve the request before the shift is assigned to the employee.
 - A Coverage Needed shift with no pending request is visually distinct from a normal shift and shows a **Coverage Needed** label.
 - A Coverage Needed shift with a pending request is visually distinct and shows a **Request Pending** label.
@@ -476,10 +476,10 @@ Given an employee already has a shift during a specific time period,
 When the manager clicks Create for another shift assigned to the same employee with an overlapping time period,  
 Then the app prevents the shift from being created and shows a validation message.
 
-#### AC-06: Cancel closes the create shift dialog without creating a shift
+#### AC-06: Closing button closes the create shift dialog without creating a shift
 
 Given the manager has opened the create shift dialog,
-When the manager clicks Cancel,
+When the manager clicks the closing button,
 Then the dialog is closed and no new shift is created.
 
 #### AC-07: Newly created shifts appear in the weekly schedule

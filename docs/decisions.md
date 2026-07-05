@@ -129,3 +129,19 @@ In a production version, Firebase Authentication would be added first to support
 React, TypeScript, Cloud Firestore, and Material UI were chosen to deliver a structured MVP within the challenge timeframe using technologies I am confident with.
 
 Next.js and a custom Node.js backend were not introduced because they would add scope and complexity without being necessary for the MVP.
+
+---
+
+## Shift as the source of truth
+
+The MVP does not use a separate `Schedule` entity. Weekly schedules are derived from `Shift.date`.
+
+This keeps the data model simple. A separate `Schedule` entity can be added later if weekly schedules need draft, publish, or template workflows.
+
+---
+
+## Pending requests are tentative
+
+Pending coverage requests are not treated as assigned shifts.
+
+When creating a shift, the app checks overlaps only against confirmed assigned shifts. If a pending request later conflicts with a new shift, approval validation prevents it from being approved.
