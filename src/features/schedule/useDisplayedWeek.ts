@@ -1,12 +1,9 @@
 import { useState } from 'react'
-import {
-  addDaysToDateString,
-  getCurrentWeekStartDate,
-} from 'src/utils/dateUtils'
+import { addDaysToDateString, getWeekStartDate } from 'src/utils/dateUtils'
 
 export const useDisplayedWeek = () => {
   const [weekStartDate, setWeekStartDate] = useState<string>(
-    getCurrentWeekStartDate(),
+    getWeekStartDate(new Date()),
   )
 
   const handlePreviousWeek = () => {

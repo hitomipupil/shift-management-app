@@ -6,15 +6,13 @@ const formatDateToDateString = (date: Date): string => {
   return `${year}-${month}-${day}`
 }
 
-export const getCurrentWeekStartDate = (): string => {
-  const today = new Date()
-
-  const dayOfWeek = today.getDay()
+export const getWeekStartDate = (date: Date): string => {
+  const dayOfWeek = date.getDay()
 
   const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1
 
-  const monday = new Date(today)
-  monday.setDate(today.getDate() - daysFromMonday)
+  const monday = new Date(date)
+  monday.setDate(date.getDate() - daysFromMonday)
 
   return formatDateToDateString(monday)
 }
