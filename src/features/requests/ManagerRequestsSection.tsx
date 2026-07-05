@@ -3,28 +3,28 @@ import type { CoverageRequest } from 'src/types/coverageRequests'
 import { PendingRequestCard } from 'src/features/requests/PendingRequestCard'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
-import { useState } from 'react'
-import { useCurrentUser } from 'src/contexts/useCurrentUser'
+import { useState, type SyntheticEvent } from 'react'
+import { RequestHistoryCard } from './RequestHistoryCard'
 
 type ManagerRequestsSectionProps = {
   pendingRequests: CoverageRequest[]
-  shifts: Shift[]
+  allShifts: Shift[]
   users: User[]
   onRequestClick: (request: CoverageRequest) => void
+  reviewedCoverageRequests: CoverageRequest[]
 }
 
 export const ManagerRequestsSection = ({
   pendingRequests,
-  shifts,
+  allShifts,
   users,
   onRequestClick,
+  reviewedCoverageRequests,
 }: ManagerRequestsSectionProps) => {
   const [selectedTab, setSelectedTab] = useState<number>(0)
-  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue)
   }
-  const { currentUser } = useCurrentUser()
-  if (!currentUser) return
   return (
     <>
       <Typography>Requests</Typography>
@@ -36,7 +36,7 @@ export const ManagerRequestsSection = ({
             aria-label="request tabs"
           >
             <Tab label="Pending Requests" />
-            <Tab label="Requests history" />
+            <Tab label="Request History" />
           </Tabs>
         </Box>
       </Box>
@@ -47,7 +47,7 @@ export const ManagerRequestsSection = ({
             <Typography color="text.secondary">No requests</Typography>
           ) : (
             pendingRequests.map((req) => {
-              const targetShift = shifts.find(
+              const targetShift = allShifts.find(
                 (shift) => shift.id === req.shiftId,
               )
               if (!targetShift) {
@@ -77,9 +77,38 @@ export const ManagerRequestsSection = ({
         </>
       )}
       {selectedTab === 1 && (
-        <Typography color="text.secondary">
-          Request history will be implemented in US-08.
-        </Typography>
+        <>
+          {reviewedCoverageRequests.length === 0 ? (
+            <Typography color="text.secondary">No request history</Typography>
+          ) : (
+            reviewedCoverageRequests.map((req) => {
+              const targetShift = allShifts.find(
+                (shift) => shift.id === req.shiftId,
+              )
+              if (!targetShift) {
+                return null
+              }
+              const requestedEmployee = users.find(
+                (user) => user.id === req.requestedByUserId,
+              )
+              const reviewedManager = users.find(
+                (user) => user.id === req.reviewedByUserId,
+              )
+              if (!requestedEmployee || !reviewedManager) {
+                return null
+              }
+              return (
+                <RequestHistoryCard
+                  key={req.id}
+                  request={req}
+                  targetShift={targetShift}
+                  requestedEmployee={requestedEmployee}
+                  reviewedManager={reviewedManager}
+                />
+              )
+            })
+          )}
+        </>
       )}
     </>
   )
