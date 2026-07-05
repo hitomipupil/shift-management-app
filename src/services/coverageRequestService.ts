@@ -15,6 +15,20 @@ export const getRequestsByUser = async (
   return mockCoverageRequests.filter((req) => req.requestedByUserId === userId)
 }
 
+export const getReviewedCoverageRequests = async (): Promise<
+  CoverageRequest[]
+> => {
+  const reviewedRequests = mockCoverageRequests.filter(
+    (req) => req.status === 'approved' || req.status === 'rejected',
+  )
+  return reviewedRequests.sort((a, b) => {
+    if (!a.reviewedAt || !b.reviewedAt) {
+      return 0
+    }
+    return Date.parse(b.reviewedAt) - Date.parse(a.reviewedAt)
+  })
+}
+
 const hasOverlappingTime = (
   targetStartTime: string,
   targetEndTime: string,

@@ -19,6 +19,7 @@ import {
   createCoverageRequest,
   getPendingCoverageRequests,
   getRequestsByUser,
+  getReviewedCoverageRequests,
   rejectCoverageRequest,
 } from 'src/services/coverageRequestService'
 import { ManagerRequestsSection } from 'src/features/requests/ManagerRequestsSection'
@@ -47,6 +48,9 @@ export const ScheduleView = () => {
   const [myCoverageRequests, setMyCoverageRequests] = useState<
     CoverageRequest[]
   >([])
+  const [reviewedCoverageRequests, setReviewedCoverageRequests] = useState<
+    CoverageRequest[]
+  >([])
   const { weekStartDate, weekRangeLabel, handlePreviousWeek, handleNextWeek } =
     useDisplayedWeek()
 
@@ -63,12 +67,14 @@ export const ScheduleView = () => {
           pendingRequestsData,
           allShiftsData,
           myRequestsData,
+          reviewedCoverageRequestsData,
         ] = await Promise.all([
           getShiftsByWeek(weekStartDate),
           getUsers(),
           getPendingCoverageRequests(),
           getAllShifts(),
           getRequestsByUser(currentUser.id),
+          getReviewedCoverageRequests(),
         ])
 
         setShiftsOfThisWeek(shiftsData)
@@ -76,6 +82,7 @@ export const ScheduleView = () => {
         setPendingCoverageRequests(pendingRequestsData)
         setAllShifts(allShiftsData)
         setMyCoverageRequests(myRequestsData)
+        setReviewedCoverageRequests(reviewedCoverageRequestsData)
       } catch (e) {
         console.error(e)
       } finally {
@@ -157,15 +164,18 @@ export const ScheduleView = () => {
       const [
         updatedShiftsOfThisWeek,
         updatedAllShifts,
-        updatedCoverageRequests,
+        updatedPendingCoverageRequests,
+        updatedReviewedCoverageRequests,
       ] = await Promise.all([
         getShiftsByWeek(weekStartDate),
         getAllShifts(),
         getPendingCoverageRequests(),
+        getReviewedCoverageRequests(),
       ])
       setShiftsOfThisWeek(updatedShiftsOfThisWeek)
       setAllShifts(updatedAllShifts)
-      setPendingCoverageRequests(updatedCoverageRequests)
+      setPendingCoverageRequests(updatedPendingCoverageRequests)
+      setReviewedCoverageRequests(updatedReviewedCoverageRequests)
       setSelectedRequest(null)
     } catch (e) {
       if (e instanceof Error) {
@@ -179,8 +189,13 @@ export const ScheduleView = () => {
   const handleRejectRequest = async (requestId: string) => {
     try {
       await rejectCoverageRequest(requestId, currentUser)
-      const updatedCoverageRequests = await getPendingCoverageRequests()
+      const [updatedCoverageRequests, updatedReviewedCoverageRequests] =
+        await Promise.all([
+          getPendingCoverageRequests(),
+          getReviewedCoverageRequests(),
+        ])
       setPendingCoverageRequests(updatedCoverageRequests)
+      setReviewedCoverageRequests(updatedReviewedCoverageRequests)
       setSelectedRequest(null)
     } catch (e) {
       if (e instanceof Error) {
@@ -252,9 +267,10 @@ export const ScheduleView = () => {
           {currentUser.role === 'manager' && (
             <ManagerRequestsSection
               pendingRequests={pendingCoverageRequests}
-              shifts={allShifts}
+              allShifts={allShifts}
               users={users}
               onRequestClick={handleOpenRequestDetails}
+              reviewedCoverageRequests={reviewedCoverageRequests}
             />
           )}
           {selectedShift && selectedShiftAssignedUser && (
