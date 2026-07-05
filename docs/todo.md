@@ -108,5 +108,5 @@ Refactor later:
 - [x] Add handleApproveRequest to ScheduleView
 - [x] Add handleRejectRequest to ScheduleView
 - [x] Reload shifts and pending requests after approve/reject
-- [ ] Display validation error
+- [x] Display validation error
 - [ ] Manually test ACs

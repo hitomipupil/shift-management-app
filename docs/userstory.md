@@ -231,7 +231,7 @@ so that shift changes only become final after approval.
 - The Requests area is shown below the weekly schedule for managers.
 - The Requests area contains **Pending Requests** and **Request History** tabs.
 - The manager can click a pending request to open a request details dialog.
-- The request details dialog shows the shift details, current assigned employee, requesting employee, and request status.
+- The request details dialog shows the shift details, current assigned employee and requesting employee.
 - The manager can approve or reject the request from the dialog.
 - The manager can close the dialog without approving or rejecting.
 
@@ -259,7 +259,7 @@ Then the request details dialog is displayed.
 
 Given the manager opens a pending request,
 When the request details are displayed,
-Then the manager can see the shift details, current assigned employee, requesting employee, and request status.
+Then the manager can see the shift details, current assigned employee and requesting employee.
 
 #### AC-05: Request must still be pending before approval
 
