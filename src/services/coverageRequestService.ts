@@ -20,8 +20,12 @@ const hasOverlappingTime = (
 
 export const createCoverageRequest = async (
   shiftId: string,
-  requestedByUserId: string,
+  currentUser: User,
 ): Promise<CoverageRequest> => {
+  if (currentUser.role !== 'employee') {
+    throw new Error('Only employees can request coverage')
+  }
+  const requestedByUserId = currentUser.id
   const targetShift = mockShifts.find((shift) => shift.id === shiftId)
   if (!targetShift) {
     throw new Error('Shift not found')
@@ -29,7 +33,7 @@ export const createCoverageRequest = async (
   if (targetShift.coverageNeeded === false) {
     throw new Error('This shift does not need coverage')
   }
-  if (targetShift.assignedUserId === requestedByUserId) {
+  if (targetShift.assignedUserId === currentUser.id) {
     throw new Error('You cannot request your own shift')
   }
 

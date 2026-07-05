@@ -36,13 +36,11 @@ export const ShiftDetailsDialog = ({
   isRequestPending,
   requestErrorMessage,
 }: ShiftDetailsDialogProps) => {
+  const isEmployee = currentUser.role === 'employee'
   const isOwnShift = targetShift.assignedUserId === currentUser.id
   const canMarkCoverageNeeded = isOwnShift && !targetShift.coverageNeeded
   const canRequestToCover =
-    currentUser.role === 'employee' &&
-    !isOwnShift &&
-    targetShift.coverageNeeded &&
-    !isRequestPending
+    isEmployee && !isOwnShift && targetShift.coverageNeeded && !isRequestPending
 
   return (
     <Dialog onClose={onClose} open={open}>
