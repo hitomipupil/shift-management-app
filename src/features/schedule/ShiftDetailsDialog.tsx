@@ -22,7 +22,7 @@ type ShiftDetailsDialogProps = {
   onClose: () => void
   onRequestToCover: (shiftId: string) => Promise<void>
   isRequestPending: boolean
-  requestErrorMessage: string
+  requestErrorMessage: string | null
 }
 
 export const ShiftDetailsDialog = ({
@@ -39,7 +39,10 @@ export const ShiftDetailsDialog = ({
   const isOwnShift = targetShift.assignedUserId === currentUser.id
   const canMarkCoverageNeeded = isOwnShift && !targetShift.coverageNeeded
   const canRequestToCover =
-    !isOwnShift && targetShift.coverageNeeded && !isRequestPending
+    currentUser.role === 'employee' &&
+    !isOwnShift &&
+    targetShift.coverageNeeded &&
+    !isRequestPending
 
   return (
     <Dialog onClose={onClose} open={open}>

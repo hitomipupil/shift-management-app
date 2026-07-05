@@ -18,10 +18,13 @@ import {
 import { ShiftDetailsDialog } from './ShiftDetailsDialog'
 import { type CoverageRequest } from '../../types/coverageRequests'
 import {
+  approveCoverageRequest,
   createCoverageRequest,
   getPendingCoverageRequests,
+  rejectCoverageRequest,
 } from '../../services/coverageRequestService'
 import { ManagerRequestsSection } from '../requests/ManagerRequestsSection'
+import { RequestDetailsDialog } from '../requests/RequestDetailsDialog'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
@@ -34,6 +37,8 @@ export const ScheduleView = () => {
   const [coverageRequests, setCoverageRequests] = useState<CoverageRequest[]>(
     [],
   )
+  const [selectedRequest, setSelectedRequest] =
+    useState<CoverageRequest | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [requestErrorMessage, setRequestErrorMessage] = useState<string | null>(
     null,
@@ -122,6 +127,45 @@ export const ScheduleView = () => {
     setRequestErrorMessage(null)
   }
 
+  const handleOpenRequestDetails = (request: CoverageRequest) => {
+    setSelectedRequest(request)
+  }
+
+  const handleCloseRequestDetails = () => {
+    setSelectedRequest(null)
+  }
+
+  const handleApproveRequest = async (requestId: string) => {
+    try {
+      await approveCoverageRequest(requestId, currentUser)
+      const [updatedShifts, updatedCoverageRequests] = await Promise.all([
+        getShiftsByWeek(weekStartDate),
+        getPendingCoverageRequests(),
+      ])
+      setShifts(updatedShifts)
+      setCoverageRequests(updatedCoverageRequests)
+      setSelectedRequest(null)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const handleRejectRequest = async (requestId: string) => {
+    try {
+      await rejectCoverageRequest(requestId, currentUser)
+      const updatedCoverageRequests = await getPendingCoverageRequests()
+      setCoverageRequests(updatedCoverageRequests)
+      setSelectedRequest(null)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const selectedRequestTargetShift =
+    selectedRequest === null
+      ? null
+      : shifts.find((shift) => shift.id === selectedRequest.shiftId)
+
   const weekEndDate = addDaysToDateString(weekStartDate, 6)
   const weekRangeLabel = `${weekStartDate} - ${weekEndDate}`
 
@@ -159,7 +203,12 @@ export const ScheduleView = () => {
           />
 
           {currentUser.role === 'manager' && (
-            <ManagerRequestsSection pendingRequests={coverageRequests} />
+            <ManagerRequestsSection
+              pendingRequests={coverageRequests}
+              shifts={shifts}
+              users={users}
+              onRequestClick={handleOpenRequestDetails}
+            />
           )}
           {selectedShift && selectedShiftAssignedUser && (
             <ShiftDetailsDialog
@@ -172,6 +221,16 @@ export const ScheduleView = () => {
               onRequestToCover={handleRequestToCover}
               isRequestPending={isSelectedShiftRequestPending}
               requestErrorMessage={requestErrorMessage}
+            />
+          )}
+          {selectedRequest && selectedRequestTargetShift && (
+            <RequestDetailsDialog
+              open={selectedRequest !== null}
+              onClose={handleCloseRequestDetails}
+              targetRequest={selectedRequest}
+              targetShift={selectedRequestTargetShift}
+              onApprove={handleApproveRequest}
+              onReject={handleRejectRequest}
             />
           )}
         </>
