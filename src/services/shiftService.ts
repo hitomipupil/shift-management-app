@@ -1,6 +1,8 @@
 import { mockSchedules } from 'src/mocks/mockSchedule'
 import { mockShifts } from 'src/mocks/mockShifts'
 import type { Shift } from 'src/types/shift'
+import type { User } from 'src/types/user'
+import { addDaysToDateString } from 'src/utils/dateUtils'
 
 export const getAllShifts = async (): Promise<Shift[]> => {
   return mockShifts
@@ -9,15 +11,10 @@ export const getAllShifts = async (): Promise<Shift[]> => {
 export const getShiftsByWeek = async (
   weekStartDate: string,
 ): Promise<Shift[]> => {
-  const schedule = mockSchedules.find(
-    (schedule) => schedule.weekStartDate === weekStartDate,
+  const weekEndDate = addDaysToDateString(weekStartDate, 6)
+  return mockShifts.filter(
+    (shift) => shift.date >= weekStartDate && shift.date <= weekEndDate,
   )
-  if (!schedule) {
-    return []
-  }
-  const shifts = mockShifts.filter((shift) => shift.scheduleId === schedule.id)
-
-  return shifts
 }
 
 export const markShiftAsCoverageNeeded = async (
