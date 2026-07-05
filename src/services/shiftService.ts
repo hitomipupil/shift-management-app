@@ -2,6 +2,10 @@ import { mockSchedules } from '../mocks/mockSchedule'
 import { mockShifts } from '../mocks/mockShifts'
 import type { Shift } from '../types/shift'
 
+export const getAllShifts = async (): Promise<Shift[]> => {
+  return mockShifts
+}
+
 export const getShiftsByWeek = async (
   weekStartDate: string,
 ): Promise<Shift[]> => {

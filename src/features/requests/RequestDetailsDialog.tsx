@@ -8,17 +8,22 @@ import {
   List,
   ListItem,
   ListItemText,
+  Typography,
 } from '@mui/material'
 import type { CoverageRequest } from 'src/types/coverageRequests'
 import type { Shift } from 'src/types/shift'
+import type { User } from 'src/types/user'
 
 type RequestDetailsDialogProps = {
   open: boolean
   onClose: () => void
   targetRequest: CoverageRequest
   targetShift: Shift
+  currentAssignedEmployee: User
+  requestedEmployee: User
   onApprove: (requestId: string) => Promise<void>
   onReject: (requestId: string) => Promise<void>
+  requestReviewErrorMessage: string | null
 }
 
 export const RequestDetailsDialog = ({
@@ -26,8 +31,11 @@ export const RequestDetailsDialog = ({
   onClose,
   targetRequest,
   targetShift,
+  currentAssignedEmployee,
+  requestedEmployee,
   onApprove,
   onReject,
+  requestReviewErrorMessage,
 }: RequestDetailsDialogProps) => {
   return (
     <Dialog onClose={onClose} open={open}>
@@ -45,14 +53,19 @@ export const RequestDetailsDialog = ({
           <ListItemText primary={`start time: ${targetShift.startTime}`} />
           <ListItemText primary={`end time: ${targetShift.endTime}`} />
           <ListItemText
-            primary={`currently assigned to: ${targetRequest.originalAssignedUserId}`}
+            primary={`currently assigned to: ${currentAssignedEmployee.name}`}
           />
           <ListItemText
-            primary={`coverage requested by: ${targetRequest.requestedByUserId}`}
+            primary={`coverage requested by: ${requestedEmployee.name}`}
           />
           <DialogActions sx={{ display: 'flex', flexDirection: 'column' }}>
             <Button onClick={() => onApprove(targetRequest.id)}>Approve</Button>
             <Button onClick={() => onReject(targetRequest.id)}>Reject</Button>
+            {requestReviewErrorMessage && (
+              <Typography color="error" variant="body2">
+                {requestReviewErrorMessage}
+              </Typography>
+            )}
           </DialogActions>
         </ListItem>
       </List>
