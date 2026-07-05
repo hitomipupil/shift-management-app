@@ -9,6 +9,12 @@ export const getPendingCoverageRequests = async (): Promise<
   return mockCoverageRequests.filter((req) => req.status === 'pending')
 }
 
+export const getRequestsByUser = async (
+  userId: string,
+): Promise<CoverageRequest[]> => {
+  return mockCoverageRequests.filter((req) => req.requestedByUserId === userId)
+}
+
 const hasOverlappingTime = (
   targetStartTime: string,
   targetEndTime: string,
