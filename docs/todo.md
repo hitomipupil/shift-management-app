@@ -42,14 +42,12 @@
 - [x] Add ShiftCard component
 - [x] Use ScheduleView in MainApp
 - [x] Add shiftService
-- [ ] Add useDisplayedWeek hook
 - [x] Add date utility functions
-- [ ] Add useShifts hook
 - [x] Test ACs
 
 Refactor later:
 
-- [ ] Add useDisplayedWeek hook
+- [x] Add useDisplayedWeek hook
 - [ ] Add useShifts hook
 
 ## US-03
@@ -109,4 +107,25 @@ Refactor later:
 - [x] Add handleRejectRequest to ScheduleView
 - [x] Reload shifts and pending requests after approve/reject
 - [x] Display validation error
-- [ ] Manually test ACs
+- [x] Manually test ACs
+
+## US-06: Employee views their coverage request status
+
+- [ ] Add getRequestsByUser to coverageRequestService
+- [ ] Add myCoverageRequests state in ScheduleView
+- [ ] Fetch current employee's coverage requests in ScheduleView
+- [ ] Update myCoverageRequests after creating a coverage request
+- [ ] Create MyCoverageRequestsSection component
+- [ ] Show empty state when the employee has no coverage requests
+- [ ] Display each request's related shift information
+- [ ] Display the original assigned employee for each request
+- [ ] Display request status as Pending, Approved, or Rejected
+- [ ] Add status label or chip to each request
+- [ ] Render MyCoverageRequestsSection only for employees
+- [ ] Place MyCoverageRequestsSection below My Shifts
+- [ ] Add mock data for pending, approved, and rejected requests if needed
+- [ ] Manually test pending request status
+- [ ] Manually test approved request status
+- [ ] Manually test rejected request status
+- [ ] Manually test that approved requests are reflected in the schedule
+- [ ] Manually test that rejected requests do not change the shift assignment

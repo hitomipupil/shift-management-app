@@ -323,7 +323,111 @@ Then the request remains Pending.
 
 ---
 
-## US-06: Manager creates weekly shifts
+## US-06: Employee views their coverage request status
+
+As an employee,
+I want to see the status of my coverage requests on the schedule page,
+so that I know whether my requests are pending, approved, or rejected.
+
+### UI
+
+- The schedule page for employee includes a **My Coverage Requests** section.
+- This section shows only requests submitted by the current employee.
+- Each request shows the related shift, assigned employee before approval, and request status.
+- Status is shown with text labels.
+- Approved and Rejected are shown as request statuses.
+- If a request is approved, the shift appears as a normal assigned shift for the new employee.
+- If a request is rejected, the original shift assignment remains unchanged.
+
+### Acceptance Criteria
+
+#### AC-01: Employee can see their submitted coverage requests
+
+Given the employee has submitted coverage requests,
+When the employee views the schedule page,
+Then the requests are shown in the My Coverage Requests section.
+
+#### AC-02: Pending request status is visible
+
+Given the employee has a pending coverage request,
+When the request is displayed,
+Then the request status is shown as Pending.
+
+#### AC-03: Approved request status is visible
+
+Given the employee has an approved coverage request,
+When the request is displayed,
+Then the request status is shown as Approved.
+
+#### AC-04: Rejected request status is visible
+
+Given the employee has a rejected coverage request,
+When the request is displayed,
+Then the request status is shown as Rejected.
+
+#### AC-05: Approved request is reflected in the schedule
+
+Given the employee's coverage request has been approved,
+When the weekly schedule is displayed,
+Then the shift is shown as assigned to the employee.
+
+#### AC-06: Rejected request does not change the shift assignment
+
+Given the employee's coverage request has been rejected,
+When the weekly schedule is displayed,
+Then the shift assignment remains unchanged.
+
+---
+
+## US-07: Manager views request history
+
+As a manager,
+I want to view approved and rejected coverage requests,
+so that there is a clear record of who approved what.
+
+### UI
+
+- The manager can view a **Request History** tab in the Requests area.
+- The history shows approved and rejected requests.
+- Pending requests are not shown in the history section.
+- Each history item is read-only.
+- The manager can see who requested the change and who reviewed it.
+
+### Acceptance Criteria
+
+#### AC-01: Manager can view approved and rejected requests
+
+Given approved or rejected requests exist,
+When the manager views Request History,
+Then past approved and rejected requests are displayed.
+
+#### AC-02: Pending requests are not shown in history
+
+Given pending requests exist,
+When the manager views Request History,
+Then pending requests are not displayed in the history section.
+
+#### AC-03: History item details are displayed
+
+Given request history is displayed,
+When the manager views a history item,
+Then it shows the shift details, requesting employee, final status, reviewing manager, and review timestamp.
+
+#### AC-04: Request history is read-only
+
+Given a request is shown in request history,
+When the manager views the request,
+Then the request is read-only.
+
+#### AC-05: Reviewed requests are not deleted
+
+Given a request has been approved or rejected,
+When the app stores request history,
+Then the request is not deleted from the system.
+
+---
+
+## US-08: Manager creates weekly shifts
 
 As a manager,
 I want to create and assign weekly shifts,
@@ -387,107 +491,3 @@ Then the new shift appears in the weekly schedule.
 Given the manager creates a new shift,
 When the shift is saved,
 Then the shift is not shown as Coverage Needed by default.
-
----
-
-## US-07: Employee views their coverage request status
-
-As an employee,
-I want to see the status of my coverage requests on the schedule page,
-so that I know whether my requests are pending, approved, or rejected.
-
-### UI
-
-- The schedule page for employee includes a **My Coverage Requests** section.
-- This section shows only requests submitted by the current employee.
-- Each request shows the related shift, assigned employee before approval, and request status.
-- Status is shown with text labels.
-- Approved and Rejected are shown as request statuses.
-- If a request is approved, the shift appears as a normal assigned shift for the new employee.
-- If a request is rejected, the original shift assignment remains unchanged.
-
-### Acceptance Criteria
-
-#### AC-01: Employee can see their submitted coverage requests
-
-Given the employee has submitted coverage requests,
-When the employee views the schedule page,
-Then the requests are shown in the My Coverage Requests section.
-
-#### AC-02: Pending request status is visible
-
-Given the employee has a pending coverage request,
-When the request is displayed,
-Then the request status is shown as Pending.
-
-#### AC-03: Approved request status is visible
-
-Given the employee has an approved coverage request,
-When the request is displayed,
-Then the request status is shown as Approved.
-
-#### AC-04: Rejected request status is visible
-
-Given the employee has a rejected coverage request,
-When the request is displayed,
-Then the request status is shown as Rejected.
-
-#### AC-05: Approved request is reflected in the schedule
-
-Given the employee's coverage request has been approved,
-When the weekly schedule is displayed,
-Then the shift is shown as assigned to the employee.
-
-#### AC-06: Rejected request does not change the shift assignment
-
-Given the employee's coverage request has been rejected,
-When the weekly schedule is displayed,
-Then the shift assignment remains unchanged.
-
----
-
-## US-08: Manager views request history
-
-As a manager,
-I want to view approved and rejected coverage requests,
-so that there is a clear record of who approved what.
-
-### UI
-
-- The manager can view a **Request History** tab in the Requests area.
-- The history shows approved and rejected requests.
-- Pending requests are not shown in the history section.
-- Each history item is read-only.
-- The manager can see who requested the change and who reviewed it.
-
-### Acceptance Criteria
-
-#### AC-01: Manager can view approved and rejected requests
-
-Given approved or rejected requests exist,
-When the manager views Request History,
-Then past approved and rejected requests are displayed.
-
-#### AC-02: Pending requests are not shown in history
-
-Given pending requests exist,
-When the manager views Request History,
-Then pending requests are not displayed in the history section.
-
-#### AC-03: History item details are displayed
-
-Given request history is displayed,
-When the manager views a history item,
-Then it shows the shift details, requesting employee, final status, reviewing manager, and review timestamp.
-
-#### AC-04: Request history is read-only
-
-Given a request is shown in request history,
-When the manager views the request,
-Then the request is read-only.
-
-#### AC-05: Reviewed requests are not deleted
-
-Given a request has been approved or rejected,
-When the app stores request history,
-Then the request is not deleted from the system.
