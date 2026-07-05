@@ -32,6 +32,17 @@ The MVP focuses on providing a simple approval workflow for shift changes while 
 
 ---
 
+## Architecture
+
+- Single-page React application without React Router
+- Role-based UI rendering for Manager and Employee users
+- Demo user selector is used instead of Firebase Auth for the MVP
+- UI components access data through service functions
+- Firestore document IDs are used as application IDs
+- Firestore documents do not store duplicate `id` fields
+
+---
+
 ## MVP Scope
 
 ### Employee
@@ -134,6 +145,7 @@ Possible future enhancements include:
 - Employee availability
 - Shift templates
 - Delete shifts
+- Use Firestore transactions or Cloud Functions for stricter concurrency control when approving requests.
 
 ---
 
@@ -141,10 +153,42 @@ Possible future enhancements include:
 
 - React
 - TypeScript
-- Cloud Firestore
+- Vite
 - Material UI
+- Cloud Firestore
+- Firebase Hosting
+- Firebase Emulator Suite
+
+---
 
 ## Running Locally
 
+Install dependencies:
+
+```bash
 npm install
+```
+
+Start Firebase emulators:
+
+```bash
+firebase emulators:start
+```
+
+In another terminal, start the Vite dev server:
+
+```bash
 npm run dev
+```
+
+Open:
+
+```text
+http://localhost:5173
+```
+
+Firebase Emulator UI:
+
+```text
+http://127.0.0.1:4000/firestore
+```
