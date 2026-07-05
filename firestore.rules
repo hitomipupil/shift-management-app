@@ -2,8 +2,45 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function currentUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isManager() {
+      return isSignedIn() && currentUserRole() == "manager";
+    }
+
+    function isEmployee() {
+      return isSignedIn() && currentUserRole() == "employee";
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /shifts/{shiftId} {
+      allow read: if isSignedIn();
+      allow create: if isManager();
+      allow update: if isManager()
+        || (
+          isEmployee()
+          && resource.data.assignedUserId == request.auth.uid
+        );
+
+      allow delete: if false;
+    }
+
+    match /coverageRequests/{requestId} {
+      allow read: if isSignedIn();
+      allow create: if isEmployee()
+        && request.resource.data.requestedByUserId == request.auth.uid;
+      allow update: if isManager();
+      allow delete: if false;
     }
   }
 }
