@@ -1,4 +1,4 @@
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore'
 import { db } from 'src/firebase'
 import { mockShifts } from 'src/mocks/mockShifts'
 import { mockUsers } from 'src/mocks/mockUsers'
@@ -49,18 +49,21 @@ export const markShiftAsCoverageNeeded = async (
   shiftId: string,
   currentUserId: string,
 ): Promise<void> => {
-  const targetShift = mockShifts.find((shift) => shift.id === shiftId)
-  if (!targetShift) {
+  const shiftRef = doc(db, 'shifts', shiftId)
+  const shiftSnapshot = await getDoc(shiftRef)
+  if (!shiftSnapshot.exists()) {
     throw new Error('Shift not found')
   }
-  if (targetShift.assignedUserId !== currentUserId) {
+  const data = shiftSnapshot.data()
+  if (data.assignedUserId !== currentUserId) {
     throw new Error('Access denied')
   }
-  if (targetShift.coverageNeeded === true) {
+  if (data.coverageNeeded === true) {
     throw new Error('Shift already offered')
   }
-  targetShift.coverageNeeded = true
-  return
+  await updateDoc(shiftRef, {
+    coverageNeeded: true,
+  })
 }
 
 export const createShift = async (
