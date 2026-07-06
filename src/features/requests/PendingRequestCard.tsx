@@ -7,12 +7,14 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Chip,
   Tooltip,
   Typography,
 } from '@mui/material'
 import type { CoverageRequest } from 'src/types/coverageRequests'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
+import { REQUEST_STATUS_CHIP } from './requestStatusChip'
 
 type PendingRequestCardProps = {
   pendingRequest: CoverageRequest
@@ -29,6 +31,7 @@ export const PendingRequestCard = ({
   targetShift,
   onRequestClick,
 }: PendingRequestCardProps) => {
+  const { label, color } = REQUEST_STATUS_CHIP[pendingRequest.status]
   return (
     <Card variant="outlined">
       <CardActionArea onClick={() => onRequestClick(pendingRequest)}>
@@ -49,6 +52,8 @@ export const PendingRequestCard = ({
                 {`${targetShift.startTime} - ${targetShift.endTime}`}
               </Typography>
             </Box>
+
+            <Chip label={label} size="small" color={color} />
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>

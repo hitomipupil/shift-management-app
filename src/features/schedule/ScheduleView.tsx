@@ -252,6 +252,9 @@ export const ScheduleView = () => {
     <Box
       sx={{
         p: 3,
+        width: '100%',
+        maxWidth: 900,
+        mx: 'auto',
         display: 'flex',
         flexDirection: 'column',
         gap: 5,
