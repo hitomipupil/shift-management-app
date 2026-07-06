@@ -158,7 +158,6 @@ Possible future enhancements include:
 - Material UI
 - Cloud Firestore
 - Firebase Hosting
-- Firebase Emulator Suite
 
 ---
 
@@ -186,10 +185,4 @@ Open:
 
 ```text
 http://localhost:5173
-```
-
-Firebase Emulator UI:
-
-```text
-http://127.0.0.1:4000/firestore
 ```
