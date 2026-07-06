@@ -3,7 +3,7 @@ import { WeekNavigator } from 'src/features/schedule/WeekNavigator'
 import { MyShiftsSection } from 'src/features/schedule/MyShiftsSection'
 import { WeeklyScheduleSection } from 'src/features/schedule/WeeklyScheduleSection'
 import { useCurrentUser } from 'src/contexts/useCurrentUser'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   createShift,
   getAllShifts,
@@ -70,9 +70,11 @@ export const ScheduleView = () => {
   const isEmployee = currentUser.role === 'employee'
   const isManager = currentUser.role === 'manager'
 
-  const myShifts = shiftsOfThisWeek.filter(
-    (shift) => shift.assignedUserId === currentUser.id,
-  )
+  const myShifts = useMemo(() => {
+    return shiftsOfThisWeek.filter(
+      (shift) => shift.assignedUserId === currentUser.id,
+    )
+  }, [shiftsOfThisWeek, currentUser.id])
 
   const handleMarkCoverageNeeded = async (shiftId: string) => {
     try {
@@ -263,19 +265,12 @@ export const ScheduleView = () => {
             onNextWeek={handleNextWeek}
           />
           {isEmployee && (
-            <>
-              <MyShiftsSection
-                currentUser={currentUser}
-                myShifts={myShifts}
-                onShiftClick={handleOpenShiftDetails}
-                coverageRequests={pendingCoverageRequests}
-              />
-              <MyCoverageRequestsSection
-                myRequests={myCoverageRequests}
-                shifts={allShifts}
-                users={users}
-              />
-            </>
+            <MyShiftsSection
+              currentUser={currentUser}
+              myShifts={myShifts}
+              onShiftClick={handleOpenShiftDetails}
+              coverageRequests={pendingCoverageRequests}
+            />
           )}
           <WeeklyScheduleSection
             shifts={shiftsOfThisWeek}
@@ -283,6 +278,13 @@ export const ScheduleView = () => {
             onShiftClick={handleOpenShiftDetails}
             coverageRequests={pendingCoverageRequests}
           />
+          {isEmployee && (
+            <MyCoverageRequestsSection
+              myRequests={myCoverageRequests}
+              shifts={allShifts}
+              users={users}
+            />
+          )}
           {isManager && (
             <ManagerRequestsSection
               pendingRequests={pendingCoverageRequests}

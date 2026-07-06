@@ -3,7 +3,7 @@ import type { CoverageRequest } from 'src/types/coverageRequests'
 import { PendingRequestCard } from 'src/features/requests/PendingRequestCard'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
-import { useCallback, useState, type SyntheticEvent } from 'react'
+import { useMemo, useState, type SyntheticEvent } from 'react'
 import { RequestHistoryCard } from './RequestHistoryCard'
 
 type ManagerRequestsSectionProps = {
@@ -14,17 +14,19 @@ type ManagerRequestsSectionProps = {
   reviewedCoverageRequests: CoverageRequest[]
 }
 
-type PendingRequestData = {
+type PendingRequestItem = {
   targetShift: Shift
   currentAssignedEmployee: User
   requestedEmployee: User
+  request: CoverageRequest
 }
 
-type ReviewedRequestData = {
+type ReviewedRequestItem = {
   targetShift: Shift
   requestedEmployee: User
   reviewedManager: User
   originallyAssignedEmployee: User
+  request: CoverageRequest
 }
 
 export const ManagerRequestsSection = ({
@@ -38,56 +40,66 @@ export const ManagerRequestsSection = ({
   const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue)
   }
-  const getPendingRequestData = useCallback(
-    (req: CoverageRequest): PendingRequestData | null => {
-      const targetShift = allShifts.find((shift) => shift.id === req.shiftId)
-      if (!targetShift) {
-        return null
-      }
-      const currentAssignedEmployee = users.find(
-        (user) => user.id === targetShift.assignedUserId,
-      )
-      const requestedEmployee = users.find(
-        (user) => user.id === req.requestedByUserId,
-      )
-      if (!currentAssignedEmployee || !requestedEmployee) {
-        return null
-      }
-      return { targetShift, currentAssignedEmployee, requestedEmployee }
-    },
-    [allShifts, users],
-  )
-  const getReviewedRequestData = useCallback(
-    (req: CoverageRequest): ReviewedRequestData | null => {
-      const targetShift = allShifts.find((shift) => shift.id === req.shiftId)
-      if (!targetShift) {
-        return null
-      }
-      const requestedEmployee = users.find(
-        (user) => user.id === req.requestedByUserId,
-      )
-      const reviewedManager = users.find(
-        (user) => user.id === req.reviewedByUserId,
-      )
-      const originallyAssignedEmployee = users.find(
-        (user) => user.id === req.originalAssignedUserId,
-      )
-      if (
-        !requestedEmployee ||
-        !reviewedManager ||
-        !originallyAssignedEmployee
-      ) {
-        return null
-      }
-      return {
-        targetShift,
-        requestedEmployee,
-        reviewedManager,
-        originallyAssignedEmployee,
-      }
-    },
-    [allShifts, users],
-  )
+  const pendingRequestItems = useMemo<PendingRequestItem[]>(() => {
+    return pendingRequests
+      .map((req) => {
+        const targetShift = allShifts.find((shift) => shift.id === req.shiftId)
+        if (!targetShift) {
+          return null
+        }
+        const currentAssignedEmployee = users.find(
+          (user) => user.id === targetShift.assignedUserId,
+        )
+        const requestedEmployee = users.find(
+          (user) => user.id === req.requestedByUserId,
+        )
+        if (!currentAssignedEmployee || !requestedEmployee) {
+          return null
+        }
+        return {
+          request: req,
+          targetShift,
+          currentAssignedEmployee,
+          requestedEmployee,
+        }
+      })
+      .filter((item): item is PendingRequestItem => item !== null)
+  }, [pendingRequests, allShifts, users])
+
+  const reviewedRequestItems = useMemo<ReviewedRequestItem[]>(() => {
+    return reviewedCoverageRequests
+      .map((req) => {
+        const targetShift = allShifts.find((shift) => shift.id === req.shiftId)
+        if (!targetShift) {
+          return null
+        }
+        const requestedEmployee = users.find(
+          (user) => user.id === req.requestedByUserId,
+        )
+        const reviewedManager = users.find(
+          (user) => user.id === req.reviewedByUserId,
+        )
+        const originallyAssignedEmployee = users.find(
+          (user) => user.id === req.originalAssignedUserId,
+        )
+        if (
+          !requestedEmployee ||
+          !reviewedManager ||
+          !originallyAssignedEmployee
+        ) {
+          return null
+        }
+        return {
+          request: req,
+          targetShift,
+          requestedEmployee,
+          reviewedManager,
+          originallyAssignedEmployee,
+        }
+      })
+      .filter((item): item is ReviewedRequestItem => item !== null)
+  }, [reviewedCoverageRequests, allShifts, users])
+
   return (
     <>
       <Typography>Requests</Typography>
@@ -106,49 +118,37 @@ export const ManagerRequestsSection = ({
 
       {selectedTab === 0 && (
         <>
-          {pendingRequests.length === 0 ? (
+          {pendingRequestItems.length === 0 ? (
             <Typography color="text.secondary">No requests</Typography>
           ) : (
-            pendingRequests.map((req) => {
-              const data = getPendingRequestData(req)
-              if (!data) {
-                return null
-              }
-              return (
-                <PendingRequestCard
-                  key={req.id}
-                  pendingRequest={req}
-                  currentAssignedEmployee={data.currentAssignedEmployee}
-                  requestedEmployee={data.requestedEmployee}
-                  targetShift={data.targetShift}
-                  onRequestClick={onRequestClick}
-                />
-              )
-            })
+            pendingRequestItems.map((item) => (
+              <PendingRequestCard
+                key={item.request.id}
+                pendingRequest={item.request}
+                currentAssignedEmployee={item.currentAssignedEmployee}
+                requestedEmployee={item.requestedEmployee}
+                targetShift={item.targetShift}
+                onRequestClick={onRequestClick}
+              />
+            ))
           )}
         </>
       )}
       {selectedTab === 1 && (
         <>
-          {reviewedCoverageRequests.length === 0 ? (
+          {reviewedRequestItems.length === 0 ? (
             <Typography color="text.secondary">No request history</Typography>
           ) : (
-            reviewedCoverageRequests.map((req) => {
-              const data = getReviewedRequestData(req)
-              if (!data) {
-                return null
-              }
-              return (
-                <RequestHistoryCard
-                  key={req.id}
-                  request={req}
-                  targetShift={data.targetShift}
-                  requestedEmployee={data.requestedEmployee}
-                  reviewedManager={data.reviewedManager}
-                  originallyAssignedEmployee={data.originallyAssignedEmployee}
-                />
-              )
-            })
+            reviewedRequestItems.map((item) => (
+              <RequestHistoryCard
+                key={item.request.id}
+                request={item.request}
+                targetShift={item.targetShift}
+                requestedEmployee={item.requestedEmployee}
+                reviewedManager={item.reviewedManager}
+                originallyAssignedEmployee={item.originallyAssignedEmployee}
+              />
+            ))
           )}
         </>
       )}

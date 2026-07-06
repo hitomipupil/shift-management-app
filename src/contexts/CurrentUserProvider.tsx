@@ -1,4 +1,10 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
 import { CurrentUserContext } from 'src/contexts/CurrentUserContext'
 import { logout, subscribeToAuthUser } from 'src/services/authService'
 import { getUserById } from 'src/services/userService'
@@ -45,19 +51,22 @@ export const CurrentUserProvider = ({ children }: CurrentUserProviderProps) => {
     return unsubscribe
   }, [])
 
-  const logoutCurrentUser = async () => {
+  const logoutCurrentUser = useCallback(async () => {
     await logout()
-  }
+  }, [])
+
+  const value = useMemo(
+    () => ({
+      currentUser,
+      isLoadingCurrentUser,
+      currentUserError,
+      logoutCurrentUser,
+    }),
+    [currentUser, isLoadingCurrentUser, currentUserError, logoutCurrentUser],
+  )
 
   return (
-    <CurrentUserContext.Provider
-      value={{
-        currentUser,
-        isLoadingCurrentUser,
-        currentUserError,
-        logoutCurrentUser,
-      }}
-    >
+    <CurrentUserContext.Provider value={value}>
       {children}
     </CurrentUserContext.Provider>
   )
