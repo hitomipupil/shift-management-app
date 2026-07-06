@@ -3,7 +3,7 @@ import type { CoverageRequest } from 'src/types/coverageRequests'
 import { PendingRequestCard } from 'src/features/requests/PendingRequestCard'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
-import { useState, type SyntheticEvent } from 'react'
+import { useCallback, useState, type SyntheticEvent } from 'react'
 import { RequestHistoryCard } from './RequestHistoryCard'
 
 type ManagerRequestsSectionProps = {
@@ -12,6 +12,19 @@ type ManagerRequestsSectionProps = {
   users: User[]
   onRequestClick: (request: CoverageRequest) => void
   reviewedCoverageRequests: CoverageRequest[]
+}
+
+type PendingRequestData = {
+  targetShift: Shift
+  currentAssignedEmployee: User
+  requestedEmployee: User
+}
+
+type ReviewedRequestData = {
+  targetShift: Shift
+  requestedEmployee: User
+  reviewedManager: User
+  originallyAssignedEmployee: User
 }
 
 export const ManagerRequestsSection = ({
@@ -25,6 +38,56 @@ export const ManagerRequestsSection = ({
   const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue)
   }
+  const getPendingRequestData = useCallback(
+    (req: CoverageRequest): PendingRequestData | null => {
+      const targetShift = allShifts.find((shift) => shift.id === req.shiftId)
+      if (!targetShift) {
+        return null
+      }
+      const currentAssignedEmployee = users.find(
+        (user) => user.id === targetShift.assignedUserId,
+      )
+      const requestedEmployee = users.find(
+        (user) => user.id === req.requestedByUserId,
+      )
+      if (!currentAssignedEmployee || !requestedEmployee) {
+        return null
+      }
+      return { targetShift, currentAssignedEmployee, requestedEmployee }
+    },
+    [allShifts, users],
+  )
+  const getReviewedRequestData = useCallback(
+    (req: CoverageRequest): ReviewedRequestData | null => {
+      const targetShift = allShifts.find((shift) => shift.id === req.shiftId)
+      if (!targetShift) {
+        return null
+      }
+      const requestedEmployee = users.find(
+        (user) => user.id === req.requestedByUserId,
+      )
+      const reviewedManager = users.find(
+        (user) => user.id === req.reviewedByUserId,
+      )
+      const originallyAssignedEmployee = users.find(
+        (user) => user.id === req.originalAssignedUserId,
+      )
+      if (
+        !requestedEmployee ||
+        !reviewedManager ||
+        !originallyAssignedEmployee
+      ) {
+        return null
+      }
+      return {
+        targetShift,
+        requestedEmployee,
+        reviewedManager,
+        originallyAssignedEmployee,
+      }
+    },
+    [allShifts, users],
+  )
   return (
     <>
       <Typography>Requests</Typography>
@@ -47,28 +110,17 @@ export const ManagerRequestsSection = ({
             <Typography color="text.secondary">No requests</Typography>
           ) : (
             pendingRequests.map((req) => {
-              const targetShift = allShifts.find(
-                (shift) => shift.id === req.shiftId,
-              )
-              if (!targetShift) {
-                return null
-              }
-              const currentAssignedEmployee = users.find(
-                (user) => user.id === targetShift.assignedUserId,
-              )
-              const requestedEmployee = users.find(
-                (user) => user.id === req.requestedByUserId,
-              )
-              if (!currentAssignedEmployee || !requestedEmployee) {
+              const data = getPendingRequestData(req)
+              if (!data) {
                 return null
               }
               return (
                 <PendingRequestCard
                   key={req.id}
                   pendingRequest={req}
-                  currentAssignedEmployee={currentAssignedEmployee}
-                  requestedEmployee={requestedEmployee}
-                  targetShift={targetShift}
+                  currentAssignedEmployee={data.currentAssignedEmployee}
+                  requestedEmployee={data.requestedEmployee}
+                  targetShift={data.targetShift}
                   onRequestClick={onRequestClick}
                 />
               )
@@ -82,36 +134,18 @@ export const ManagerRequestsSection = ({
             <Typography color="text.secondary">No request history</Typography>
           ) : (
             reviewedCoverageRequests.map((req) => {
-              const targetShift = allShifts.find(
-                (shift) => shift.id === req.shiftId,
-              )
-              if (!targetShift) {
-                return null
-              }
-              const requestedEmployee = users.find(
-                (user) => user.id === req.requestedByUserId,
-              )
-              const reviewedManager = users.find(
-                (user) => user.id === req.reviewedByUserId,
-              )
-              const originallyAssignedEmployee = users.find(
-                (user) => user.id === req.originalAssignedUserId,
-              )
-              if (
-                !requestedEmployee ||
-                !reviewedManager ||
-                !originallyAssignedEmployee
-              ) {
+              const data = getReviewedRequestData(req)
+              if (!data) {
                 return null
               }
               return (
                 <RequestHistoryCard
                   key={req.id}
                   request={req}
-                  targetShift={targetShift}
-                  requestedEmployee={requestedEmployee}
-                  reviewedManager={reviewedManager}
-                  originallyAssignedEmployee={originallyAssignedEmployee}
+                  targetShift={data.targetShift}
+                  requestedEmployee={data.requestedEmployee}
+                  reviewedManager={data.reviewedManager}
+                  originallyAssignedEmployee={data.originallyAssignedEmployee}
                 />
               )
             })
