@@ -92,7 +92,11 @@ export const RequestDetailsDialog = ({
             <Button disabled={isReviewing} onClick={handleReject}>
               {isRejecting ? 'Rejecting...' : 'Reject'}
             </Button>
-            <Button disabled={isReviewing} onClick={onClose}>
+            <Button
+              disabled={isReviewing}
+              onClick={onClose}
+              sx={{ color: 'grey.500' }}
+            >
               Cancel
             </Button>
             {requestReviewErrorMessage && (

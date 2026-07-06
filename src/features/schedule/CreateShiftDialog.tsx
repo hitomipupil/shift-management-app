@@ -153,7 +153,11 @@ export const CreateShiftDialog = ({
             <Button onClick={handleSubmit} disabled={isCreateDisabled}>
               {isSubmitting ? 'Creating...' : 'Create'}
             </Button>
-            <Button onClick={handleClose} disabled={isSubmitting}>
+            <Button
+              onClick={handleClose}
+              disabled={isSubmitting}
+              sx={{ color: 'grey.500' }}
+            >
               Cancel
             </Button>
             {createShiftErrorMessage && (
