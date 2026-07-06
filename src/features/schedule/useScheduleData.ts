@@ -21,6 +21,7 @@ export const useScheduleData = (
     CoverageRequest[]
   >([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isWeekLoading, setIsWeekLoading] = useState(false)
   const [myCoverageRequests, setMyCoverageRequests] = useState<
     CoverageRequest[]
   >([])
@@ -29,7 +30,7 @@ export const useScheduleData = (
   >([])
 
   useEffect(() => {
-    const fetchScheduleData = async () => {
+    const fetchSharedData = async () => {
       if (!currentUser) {
         setIsLoading(false)
         return
@@ -37,14 +38,12 @@ export const useScheduleData = (
       try {
         setIsLoading(true)
         const [
-          shiftsData,
           usersData,
           pendingRequestsData,
           allShiftsData,
           myRequestsData,
           reviewedCoverageRequestsData,
         ] = await Promise.all([
-          getShiftsByWeek(weekStartDate),
           getUsers(),
           getPendingCoverageRequests(),
           getAllShifts(),
@@ -52,7 +51,6 @@ export const useScheduleData = (
           getReviewedCoverageRequests(),
         ])
 
-        setShiftsOfThisWeek(shiftsData)
         setUsers(usersData)
         setPendingCoverageRequests(pendingRequestsData)
         setAllShifts(allShiftsData)
@@ -64,7 +62,25 @@ export const useScheduleData = (
         setIsLoading(false)
       }
     }
-    fetchScheduleData()
+    fetchSharedData()
+  }, [currentUser])
+
+  useEffect(() => {
+    const fetchWeekShifts = async () => {
+      if (!currentUser) {
+        return
+      }
+      try {
+        setIsWeekLoading(true)
+        const shiftsData = await getShiftsByWeek(weekStartDate)
+        setShiftsOfThisWeek(shiftsData)
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setIsWeekLoading(false)
+      }
+    }
+    fetchWeekShifts()
   }, [weekStartDate, currentUser])
 
   return {
@@ -76,6 +92,7 @@ export const useScheduleData = (
     pendingCoverageRequests,
     setPendingCoverageRequests,
     isLoading,
+    isWeekLoading,
     myCoverageRequests,
     setMyCoverageRequests,
     reviewedCoverageRequests,

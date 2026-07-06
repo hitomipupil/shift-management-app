@@ -64,6 +64,7 @@ export const ScheduleView = () => {
     pendingCoverageRequests,
     setPendingCoverageRequests,
     isLoading,
+    isWeekLoading,
     myCoverageRequests,
     setMyCoverageRequests,
     reviewedCoverageRequests,
@@ -287,20 +288,28 @@ export const ScheduleView = () => {
               </Button>
             )}
           </Box>
-          {isEmployee && (
-            <MyShiftsSection
-              currentUser={currentUser}
-              myShifts={myShifts}
-              onShiftClick={handleOpenShiftDetails}
-              coverageRequests={pendingCoverageRequests}
-            />
+          {isWeekLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress color="primary" />
+            </Box>
+          ) : (
+            <>
+              {isEmployee && (
+                <MyShiftsSection
+                  currentUser={currentUser}
+                  myShifts={myShifts}
+                  onShiftClick={handleOpenShiftDetails}
+                  coverageRequests={pendingCoverageRequests}
+                />
+              )}
+              <WeeklyScheduleSection
+                shifts={shiftsOfThisWeek}
+                users={users}
+                onShiftClick={handleOpenShiftDetails}
+                coverageRequests={pendingCoverageRequests}
+              />
+            </>
           )}
-          <WeeklyScheduleSection
-            shifts={shiftsOfThisWeek}
-            users={users}
-            onShiftClick={handleOpenShiftDetails}
-            coverageRequests={pendingCoverageRequests}
-          />
           {isEmployee && (
             <MyCoverageRequestsSection
               myRequests={myCoverageRequests}
