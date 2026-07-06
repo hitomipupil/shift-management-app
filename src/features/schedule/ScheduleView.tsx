@@ -254,7 +254,7 @@ export const ScheduleView = () => {
         p: 3,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
+        gap: 5,
       }}
     >
       {isLoading ? (
@@ -263,24 +263,27 @@ export const ScheduleView = () => {
         </Box>
       ) : (
         <>
-          {isManager && (
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<AddIcon />}
-              onClick={() => setCreateShiftDialogOpen(true)}
-              sx={{ alignSelf: 'flex-end' }}
-            >
-              Create Shift
-            </Button>
-          )}
-          <WeekNavigator
-            weekRangeLabel={weekRangeLabel}
-            isCurrentWeek={isCurrentWeek}
-            onPreviousWeek={handlePreviousWeek}
-            onNextWeek={handleNextWeek}
-            onToday={handleToday}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ flex: 1 }}>
+              <WeekNavigator
+                weekRangeLabel={weekRangeLabel}
+                isCurrentWeek={isCurrentWeek}
+                onPreviousWeek={handlePreviousWeek}
+                onNextWeek={handleNextWeek}
+                onToday={handleToday}
+              />
+            </Box>
+            {isManager && (
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<AddIcon />}
+                onClick={() => setCreateShiftDialogOpen(true)}
+              >
+                Create Shift
+              </Button>
+            )}
+          </Box>
           {isEmployee && (
             <MyShiftsSection
               currentUser={currentUser}

@@ -1,4 +1,5 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material'
+import { EmptyState } from 'src/components/EmptyState'
 import { MyCoverageRequestCard } from './MyCoverageRequestCard'
 import type { CoverageRequest } from 'src/types/coverageRequests'
 import type { Shift } from 'src/types/shift'
@@ -52,7 +53,13 @@ export const MyCoverageRequestsSection = ({
   }, [myRequestItems])
 
   return (
-    <>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1.5,
+      }}
+    >
       <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
         My Coverage Requests
       </Typography>
@@ -72,7 +79,7 @@ export const MyCoverageRequestsSection = ({
       {selectedTab === 0 && (
         <>
           {pendingRequestItems.length === 0 ? (
-            <Typography color="text.secondary">No requests</Typography>
+            <EmptyState message="No requests" />
           ) : (
             pendingRequestItems.map((item) => (
               <MyCoverageRequestCard
@@ -88,7 +95,7 @@ export const MyCoverageRequestsSection = ({
       {selectedTab === 1 && (
         <>
           {reviewedRequestItems.length === 0 ? (
-            <Typography color="text.secondary">No request history</Typography>
+            <EmptyState message="No request history" />
           ) : (
             reviewedRequestItems.map((item) => (
               <MyCoverageRequestCard
@@ -101,6 +108,6 @@ export const MyCoverageRequestsSection = ({
           )}
         </>
       )}
-    </>
+    </Box>
   )
 }

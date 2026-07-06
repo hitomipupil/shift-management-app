@@ -31,7 +31,7 @@ export const AppHeader = () => {
             component="div"
             sx={{ fontWeight: 500, color: 'primary.main' }}
           >
-            Shift Management
+            Shift Manager
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>

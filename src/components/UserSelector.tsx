@@ -68,7 +68,7 @@ export const UserSelector = () => {
       >
         <Box sx={{ textAlign: 'center' }}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Shift Management
+            Shift Manager
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Select a user to log in

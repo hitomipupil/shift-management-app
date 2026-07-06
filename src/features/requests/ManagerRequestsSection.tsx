@@ -1,4 +1,5 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material'
+import { EmptyState } from 'src/components/EmptyState'
 import type { CoverageRequest } from 'src/types/coverageRequests'
 import { PendingRequestCard } from 'src/features/requests/PendingRequestCard'
 import type { Shift } from 'src/types/shift'
@@ -101,7 +102,13 @@ export const ManagerRequestsSection = ({
   }, [reviewedCoverageRequests, allShifts, users])
 
   return (
-    <>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1.5,
+      }}
+    >
       <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
         Requests
       </Typography>
@@ -121,7 +128,7 @@ export const ManagerRequestsSection = ({
       {selectedTab === 0 && (
         <>
           {pendingRequestItems.length === 0 ? (
-            <Typography color="text.secondary">No requests</Typography>
+            <EmptyState message="No requests" />
           ) : (
             pendingRequestItems.map((item) => (
               <PendingRequestCard
@@ -139,7 +146,7 @@ export const ManagerRequestsSection = ({
       {selectedTab === 1 && (
         <>
           {reviewedRequestItems.length === 0 ? (
-            <Typography color="text.secondary">No request history</Typography>
+            <EmptyState message="No request history" />
           ) : (
             reviewedRequestItems.map((item) => (
               <RequestHistoryCard
@@ -154,6 +161,6 @@ export const ManagerRequestsSection = ({
           )}
         </>
       )}
-    </>
+    </Box>
   )
 }
