@@ -47,8 +47,14 @@ export const ScheduleView = () => {
   const [createShiftErrorMessage, setCreateShiftErrorMessage] = useState<
     string | null
   >(null)
-  const { weekStartDate, weekRangeLabel, handlePreviousWeek, handleNextWeek } =
-    useDisplayedWeek()
+  const {
+    weekStartDate,
+    weekRangeLabel,
+    isCurrentWeek,
+    handlePreviousWeek,
+    handleNextWeek,
+    handleToday,
+  } = useDisplayedWeek()
   const {
     shiftsOfThisWeek,
     setShiftsOfThisWeek,
@@ -268,8 +274,10 @@ export const ScheduleView = () => {
           )}
           <WeekNavigator
             weekRangeLabel={weekRangeLabel}
+            isCurrentWeek={isCurrentWeek}
             onPreviousWeek={handlePreviousWeek}
             onNextWeek={handleNextWeek}
+            onToday={handleToday}
           />
           {isEmployee && (
             <MyShiftsSection

@@ -14,13 +14,20 @@ export const useDisplayedWeek = () => {
     setWeekStartDate((current) => addDaysToDateString(current, 7))
   }
 
+  const handleToday = () => {
+    setWeekStartDate(getWeekStartDate(new Date()))
+  }
+
   const weekEndDate = addDaysToDateString(weekStartDate, 6)
   const weekRangeLabel = `${weekStartDate} - ${weekEndDate}`
+  const isCurrentWeek = weekStartDate === getWeekStartDate(new Date())
 
   return {
     weekStartDate,
     weekRangeLabel,
+    isCurrentWeek,
     handlePreviousWeek,
     handleNextWeek,
+    handleToday,
   }
 }
