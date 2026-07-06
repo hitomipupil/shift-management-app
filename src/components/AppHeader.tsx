@@ -1,7 +1,12 @@
-import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Chip, IconButton, Toolbar, Typography } from '@mui/material'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useCurrentUser } from 'src/contexts/useCurrentUser'
 import { AppLogo } from 'src/components/AppLogo'
+
+const roleLabels = {
+  manager: 'Manager',
+  employee: 'Employee',
+} as const
 
 export const AppHeader = () => {
   const { currentUser, logoutCurrentUser } = useCurrentUser()
@@ -39,7 +44,13 @@ export const AppHeader = () => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Typography>{currentUser.name}</Typography>
+          <Typography sx={{ fontWeight: 500 }}>{currentUser.name}</Typography>
+          <Chip
+            label={roleLabels[currentUser.role]}
+            size="small"
+            color={currentUser.role === 'manager' ? 'primary' : 'default'}
+            variant={currentUser.role === 'manager' ? 'filled' : 'outlined'}
+          />
           <IconButton onClick={handleLogout} aria-label="Logout">
             <LogoutIcon />
           </IconButton>
