@@ -10,6 +10,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
+import { useState } from 'react'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
 
@@ -22,7 +23,8 @@ type ShiftDetailsDialogProps = {
   onClose: () => void
   onRequestToCover: (shiftId: string) => Promise<void>
   isRequestPending: boolean
-  requestErrorMessage: string | null
+  markCoverageNeededErrorMessage: string | null
+  requestToCoverErrorMessage: string | null
 }
 
 export const ShiftDetailsDialog = ({
@@ -34,21 +36,43 @@ export const ShiftDetailsDialog = ({
   onClose,
   onRequestToCover,
   isRequestPending,
-  requestErrorMessage,
+  markCoverageNeededErrorMessage,
+  requestToCoverErrorMessage,
 }: ShiftDetailsDialogProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const isEmployee = currentUser.role === 'employee'
   const isOwnShift = targetShift.assignedUserId === currentUser.id
-  const canMarkCoverageNeeded = isOwnShift && !targetShift.coverageNeeded
+  const canMarkCoverageNeeded =
+    isEmployee && isOwnShift && !targetShift.coverageNeeded
   const canRequestToCover =
     isEmployee && !isOwnShift && targetShift.coverageNeeded && !isRequestPending
 
+  const handleCoverageNeeded = async () => {
+    try {
+      setIsSubmitting(true)
+      await onMarkCoverageNeeded(targetShift.id)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleRequestToCover = async () => {
+    try {
+      setIsSubmitting(true)
+      await onRequestToCover(targetShift.id)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
-    <Dialog onClose={onClose} open={open}>
+    <Dialog onClose={isSubmitting ? undefined : onClose} open={open}>
       <DialogTitle sx={{ pr: 6 }}>Shift Detail</DialogTitle>
       <IconButton
         aria-label="close"
         onClick={onClose}
         sx={{ position: 'absolute', right: 8, top: 8 }}
+        disabled={isSubmitting}
       >
         <CloseIcon />
       </IconButton>
@@ -60,16 +84,18 @@ export const ShiftDetailsDialog = ({
           <DialogActions sx={{ display: 'flex', flexDirection: 'column' }}>
             {canMarkCoverageNeeded && (
               <>
-                <Button onClick={() => onMarkCoverageNeeded(targetShift.id)}>
-                  Need Coverage
+                <Button onClick={handleCoverageNeeded} disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : 'Need Coverage'}
                 </Button>
                 <ListItemText secondary="Shift remains assigned to you until a manager approves another employee's request" />
               </>
             )}
             {canRequestToCover && (
               <>
-                <Button onClick={() => onRequestToCover(targetShift.id)}>
-                  Request to cover this shift
+                <Button onClick={handleRequestToCover} disabled={isSubmitting}>
+                  {isSubmitting
+                    ? 'Requesting...'
+                    : 'Request to cover this shift'}
                 </Button>
                 <ListItemText secondary="A manager must approve the request before the shift is assigned to the employee" />
               </>
@@ -83,9 +109,14 @@ export const ShiftDetailsDialog = ({
             ) : targetShift.coverageNeeded ? (
               <ListItemText secondary="This shift is marked as Coverage Needed" />
             ) : null}
-            {requestErrorMessage && (
+            {markCoverageNeededErrorMessage && (
               <Typography color="error" variant="body2">
-                {requestErrorMessage}
+                {markCoverageNeededErrorMessage}
+              </Typography>
+            )}
+            {requestToCoverErrorMessage && (
+              <Typography color="error" variant="body2">
+                {requestToCoverErrorMessage}
               </Typography>
             )}
           </DialogActions>

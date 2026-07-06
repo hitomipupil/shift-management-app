@@ -41,11 +41,30 @@ export const CreateShiftDialog = ({
   const [date, setDate] = useState('')
   const [startTime, setStartTime] = useState('')
   const [endTime, setEndTime] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const employees = users.filter((user) => user.role === 'employee')
-
+  const hasInvalidTimeRange =
+    startTime !== '' && endTime !== '' && startTime >= endTime
   const isCreateDisabled =
-    !selectedEmployeeId || !date || !startTime || !endTime
+    !selectedEmployeeId ||
+    !date ||
+    !startTime ||
+    !endTime ||
+    isSubmitting ||
+    hasInvalidTimeRange
+
+  const handleSubmit = async () => {
+    if (isCreateDisabled) {
+      return
+    }
+    try {
+      setIsSubmitting(true)
+      await onCreateShift(selectedEmployeeId, date, startTime, endTime)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   const resetForm = () => {
     setSelectedEmployeeId('')
@@ -60,12 +79,13 @@ export const CreateShiftDialog = ({
   }
 
   return (
-    <Dialog onClose={handleClose} open={open}>
+    <Dialog onClose={isSubmitting ? undefined : handleClose} open={open}>
       <DialogTitle sx={{ pr: 6 }}>Create Shift</DialogTitle>
       <IconButton
         aria-label="close"
         onClick={handleClose}
         sx={{ position: 'absolute', right: 8, top: 8 }}
+        disabled={isSubmitting}
       >
         <CloseIcon />
       </IconButton>
@@ -86,6 +106,7 @@ export const CreateShiftDialog = ({
               value={selectedEmployeeId}
               label="Employee"
               onChange={(e) => setSelectedEmployeeId(e.target.value)}
+              disabled={isSubmitting}
             >
               {employees.map((employee) => {
                 return (
@@ -103,6 +124,7 @@ export const CreateShiftDialog = ({
             onChange={(e) => setDate(e.target.value)}
             fullWidth
             slotProps={{ inputLabel: { shrink: true } }}
+            disabled={isSubmitting}
           />
           <TextField
             type="time"
@@ -111,6 +133,7 @@ export const CreateShiftDialog = ({
             onChange={(e) => setStartTime(e.target.value)}
             fullWidth
             slotProps={{ inputLabel: { shrink: true } }}
+            disabled={isSubmitting}
           />
           <TextField
             type="time"
@@ -119,18 +142,20 @@ export const CreateShiftDialog = ({
             onChange={(e) => setEndTime(e.target.value)}
             fullWidth
             slotProps={{ inputLabel: { shrink: true } }}
+            disabled={isSubmitting}
+            error={hasInvalidTimeRange}
+            helperText={
+              hasInvalidTimeRange ? 'End time must be after start time' : ''
+            }
           />
 
           <DialogActions sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Button
-              onClick={() =>
-                onCreateShift(selectedEmployeeId, date, startTime, endTime)
-              }
-              disabled={isCreateDisabled}
-            >
-              Create
+            <Button onClick={handleSubmit} disabled={isCreateDisabled}>
+              {isSubmitting ? 'Creating...' : 'Create'}
             </Button>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClose} disabled={isSubmitting}>
+              Cancel
+            </Button>
             {createShiftErrorMessage && (
               <Typography color="error" variant="body2">
                 {createShiftErrorMessage}

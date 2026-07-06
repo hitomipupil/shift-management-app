@@ -10,6 +10,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
+import { useState } from 'react'
 import type { CoverageRequest } from 'src/types/coverageRequests'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
@@ -37,13 +38,39 @@ export const RequestDetailsDialog = ({
   onReject,
   requestReviewErrorMessage,
 }: RequestDetailsDialogProps) => {
+  const [pendingAction, setPendingAction] = useState<
+    'approve' | 'reject' | null
+  >(null)
+  const isReviewing = pendingAction !== null
+  const isApproving = pendingAction === 'approve'
+  const isRejecting = pendingAction === 'reject'
+
+  const handleApprove = async () => {
+    try {
+      setPendingAction('approve')
+      await onApprove(targetRequest.id)
+    } finally {
+      setPendingAction(null)
+    }
+  }
+
+  const handleReject = async () => {
+    try {
+      setPendingAction('reject')
+      await onReject(targetRequest.id)
+    } finally {
+      setPendingAction(null)
+    }
+  }
+
   return (
-    <Dialog onClose={onClose} open={open}>
+    <Dialog onClose={isReviewing ? undefined : onClose} open={open}>
       <DialogTitle sx={{ pr: 6 }}>Request Detail</DialogTitle>
       <IconButton
         aria-label="close"
         onClick={onClose}
         sx={{ position: 'absolute', right: 8, top: 8 }}
+        disabled={isReviewing}
       >
         <CloseIcon />
       </IconButton>
@@ -59,9 +86,15 @@ export const RequestDetailsDialog = ({
             primary={`coverage requested by: ${requestedEmployee.name}`}
           />
           <DialogActions sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Button onClick={() => onApprove(targetRequest.id)}>Approve</Button>
-            <Button onClick={() => onReject(targetRequest.id)}>Reject</Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button disabled={isReviewing} onClick={handleApprove}>
+              {isApproving ? 'Approving...' : 'Approve'}
+            </Button>
+            <Button disabled={isReviewing} onClick={handleReject}>
+              {isRejecting ? 'Rejecting...' : 'Reject'}
+            </Button>
+            <Button disabled={isReviewing} onClick={onClose}>
+              Cancel
+            </Button>
             {requestReviewErrorMessage && (
               <Typography color="error" variant="body2">
                 {requestReviewErrorMessage}

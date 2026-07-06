@@ -33,8 +33,11 @@ export const ScheduleView = () => {
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null)
   const [selectedRequest, setSelectedRequest] =
     useState<CoverageRequest | null>(null)
-  const [coverageRequestErrorMessage, setCoverageRequestErrorMessage] =
+  const [markCoverageNeededErrorMessage, setMarkCoverageNeededErrorMessage] =
     useState<string | null>(null)
+  const [requestToCoverErrorMessage, setRequestToCoverErrorMessage] = useState<
+    string | null
+  >(null)
   const [requestReviewErrorMessage, setRequestReviewErrorMessage] = useState<
     string | null
   >(null)
@@ -73,29 +76,34 @@ export const ScheduleView = () => {
 
   const handleMarkCoverageNeeded = async (shiftId: string) => {
     try {
+      setMarkCoverageNeededErrorMessage(null)
       await markShiftAsCoverageNeeded(shiftId, currentUser.id)
+      setSelectedShift(null)
       const updatedShifts = await getShiftsByWeek(weekStartDate)
       setShiftsOfThisWeek(updatedShifts)
-      setSelectedShift(null)
     } catch (e) {
-      console.error(e)
+      if (e instanceof Error) {
+        setMarkCoverageNeededErrorMessage(e.message)
+      } else {
+        setMarkCoverageNeededErrorMessage('Something went wrong')
+      }
     }
   }
 
   const handleRequestToCover = async (shiftId: string) => {
     try {
+      setRequestToCoverErrorMessage(null)
       await createCoverageRequest(shiftId, currentUser)
-      setCoverageRequestErrorMessage(null)
+      setSelectedShift(null)
       const updatedCoverageRequests = await getPendingCoverageRequests()
       setPendingCoverageRequests(updatedCoverageRequests)
       const updatedMyCoverageRequests = await getRequestsByUser(currentUser.id)
       setMyCoverageRequests(updatedMyCoverageRequests)
-      setSelectedShift(null)
     } catch (e) {
       if (e instanceof Error) {
-        setCoverageRequestErrorMessage(e.message)
+        setRequestToCoverErrorMessage(e.message)
       } else {
-        setCoverageRequestErrorMessage('Something went wrong')
+        setRequestToCoverErrorMessage('Something went wrong')
       }
     }
   }
@@ -112,12 +120,15 @@ export const ScheduleView = () => {
     )
 
   const handleOpenShiftDetails = (shift: Shift) => {
+    setMarkCoverageNeededErrorMessage(null)
+    setRequestToCoverErrorMessage(null)
     setSelectedShift(shift)
   }
 
   const handleCloseShiftDetails = () => {
     setSelectedShift(null)
-    setCoverageRequestErrorMessage(null)
+    setMarkCoverageNeededErrorMessage(null)
+    setRequestToCoverErrorMessage(null)
   }
 
   const handleOpenRequestDetails = (request: CoverageRequest) => {
@@ -133,6 +144,7 @@ export const ScheduleView = () => {
     try {
       setRequestReviewErrorMessage(null)
       await approveCoverageRequest(requestId, currentUser)
+      setSelectedRequest(null)
       const [
         updatedShiftsOfThisWeek,
         updatedAllShifts,
@@ -148,7 +160,6 @@ export const ScheduleView = () => {
       setAllShifts(updatedAllShifts)
       setPendingCoverageRequests(updatedPendingCoverageRequests)
       setReviewedCoverageRequests(updatedReviewedCoverageRequests)
-      setSelectedRequest(null)
     } catch (e) {
       if (e instanceof Error) {
         setRequestReviewErrorMessage(e.message)
@@ -162,6 +173,7 @@ export const ScheduleView = () => {
     try {
       setRequestReviewErrorMessage(null)
       await rejectCoverageRequest(requestId, currentUser)
+      setSelectedRequest(null)
       const [updatedCoverageRequests, updatedReviewedCoverageRequests] =
         await Promise.all([
           getPendingCoverageRequests(),
@@ -169,7 +181,6 @@ export const ScheduleView = () => {
         ])
       setPendingCoverageRequests(updatedCoverageRequests)
       setReviewedCoverageRequests(updatedReviewedCoverageRequests)
-      setSelectedRequest(null)
     } catch (e) {
       if (e instanceof Error) {
         setRequestReviewErrorMessage(e.message)
@@ -207,13 +218,13 @@ export const ScheduleView = () => {
     try {
       setCreateShiftErrorMessage(null)
       await createShift(currentUser, assignedUserId, date, startTime, endTime)
+      setCreateShiftDialogOpen(false)
       const [updatedShiftsOfThisWeek, updatedAllShifts] = await Promise.all([
         getShiftsByWeek(weekStartDate),
         getAllShifts(),
       ])
       setShiftsOfThisWeek(updatedShiftsOfThisWeek)
       setAllShifts(updatedAllShifts)
-      setCreateShiftDialogOpen(false)
     } catch (e) {
       if (e instanceof Error) {
         setCreateShiftErrorMessage(e.message)
@@ -223,7 +234,7 @@ export const ScheduleView = () => {
     }
   }
 
-  const handleCreateShiftDialogClode = () => {
+  const handleCreateShiftDialogClose = () => {
     setCreateShiftErrorMessage(null)
     setCreateShiftDialogOpen(false)
   }
@@ -291,7 +302,8 @@ export const ScheduleView = () => {
               onClose={handleCloseShiftDetails}
               onRequestToCover={handleRequestToCover}
               isRequestPending={isSelectedShiftRequestPending}
-              requestErrorMessage={coverageRequestErrorMessage}
+              markCoverageNeededErrorMessage={markCoverageNeededErrorMessage}
+              requestToCoverErrorMessage={requestToCoverErrorMessage}
             />
           )}
           {selectedRequest &&
@@ -315,7 +327,7 @@ export const ScheduleView = () => {
               open={createShiftDialogOpen}
               users={users}
               onCreateShift={handleCreateShift}
-              onClose={handleCreateShiftDialogClode}
+              onClose={handleCreateShiftDialogClose}
               createShiftErrorMessage={createShiftErrorMessage}
             />
           )}
