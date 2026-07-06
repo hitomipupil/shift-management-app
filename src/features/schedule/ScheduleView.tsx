@@ -1,4 +1,5 @@
 import { Box, Button, Typography } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
 import { WeekNavigator } from 'src/features/schedule/WeekNavigator'
 import { MyShiftsSection } from 'src/features/schedule/MyShiftsSection'
 import { WeeklyScheduleSection } from 'src/features/schedule/WeeklyScheduleSection'
@@ -255,7 +256,13 @@ export const ScheduleView = () => {
       ) : (
         <>
           {isManager && (
-            <Button onClick={() => setCreateShiftDialogOpen(true)}>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<AddIcon />}
+              onClick={() => setCreateShiftDialogOpen(true)}
+              sx={{ alignSelf: 'flex-end' }}
+            >
               Create Shift
             </Button>
           )}

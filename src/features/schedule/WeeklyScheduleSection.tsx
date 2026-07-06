@@ -19,7 +19,9 @@ export const WeeklyScheduleSection = ({
 }: WeeklyScheduleSectionProps) => {
   return (
     <>
-      <Typography>Weekly Schedule</Typography>
+      <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+        Weekly Schedule
+      </Typography>
       {shifts.length === 0 ? (
         <Typography color="text.secondary">No shifts this week</Typography>
       ) : (

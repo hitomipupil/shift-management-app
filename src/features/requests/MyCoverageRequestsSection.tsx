@@ -53,7 +53,9 @@ export const MyCoverageRequestsSection = ({
 
   return (
     <>
-      <Typography>My Coverage Requests</Typography>
+      <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+        My Coverage Requests
+      </Typography>
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs

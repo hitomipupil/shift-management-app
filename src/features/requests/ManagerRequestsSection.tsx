@@ -102,7 +102,9 @@ export const ManagerRequestsSection = ({
 
   return (
     <>
-      <Typography>Requests</Typography>
+      <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+        Requests
+      </Typography>
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs

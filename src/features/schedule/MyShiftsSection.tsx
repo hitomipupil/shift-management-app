@@ -19,7 +19,9 @@ export const MyShiftsSection = ({
 }: MyShiftsSectionProps) => {
   return (
     <>
-      <Typography>My Shifts</Typography>
+      <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+        My Shifts
+      </Typography>
       {myShifts.length === 0 ? (
         <Typography color="text.secondary">
           You have no shifts this week.
