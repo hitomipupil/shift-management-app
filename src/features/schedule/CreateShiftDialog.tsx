@@ -1,18 +1,18 @@
 import CloseIcon from '@mui/icons-material/Close'
 import {
+  Alert,
+  Box,
   Button,
   Dialog,
   DialogActions,
+  DialogContent,
   DialogTitle,
   FormControl,
   IconButton,
   InputLabel,
-  List,
-  ListItem,
   MenuItem,
   Select,
   TextField,
-  Typography,
 } from '@mui/material'
 import { useState } from 'react'
 import type { User } from 'src/types/user'
@@ -79,8 +79,13 @@ export const CreateShiftDialog = ({
   }
 
   return (
-    <Dialog onClose={isSubmitting ? undefined : handleClose} open={open}>
-      <DialogTitle sx={{ pr: 6 }}>Create Shift</DialogTitle>
+    <Dialog
+      onClose={isSubmitting ? undefined : handleClose}
+      open={open}
+      fullWidth
+      maxWidth="xs"
+    >
+      <DialogTitle sx={{ pr: 6, fontWeight: 'bold' }}>Create Shift</DialogTitle>
       <IconButton
         aria-label="close"
         onClick={handleClose}
@@ -89,49 +94,44 @@ export const CreateShiftDialog = ({
       >
         <CloseIcon />
       </IconButton>
-      <List sx={{ pt: 0 }}>
-        <ListItem
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            minWidth: 360,
-          }}
-        >
-          <FormControl fullWidth>
-            <InputLabel id="employee-select-label">Employee</InputLabel>
-            <Select
-              labelId="employee-select-label"
-              id="employee-select"
-              value={selectedEmployeeId}
-              label="Employee"
-              onChange={(e) => setSelectedEmployeeId(e.target.value)}
-              disabled={isSubmitting}
-            >
-              {employees.map((employee) => {
-                return (
-                  <MenuItem key={employee.id} value={employee.id}>
-                    {employee.name}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-          </FormControl>
-          <TextField
-            type="date"
-            label="Date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            fullWidth
-            slotProps={{ inputLabel: { shrink: true } }}
+      <DialogContent dividers>
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="employee-select-label">Employee</InputLabel>
+          <Select
+            labelId="employee-select-label"
+            id="employee-select"
+            value={selectedEmployeeId}
+            label="Employee"
+            onChange={(e) => setSelectedEmployeeId(e.target.value)}
             disabled={isSubmitting}
-          />
+          >
+            {employees.map((employee) => {
+              return (
+                <MenuItem key={employee.id} value={employee.id}>
+                  {employee.name}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </FormControl>
+        <TextField
+          type="date"
+          label="Date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          fullWidth
+          margin="normal"
+          slotProps={{ inputLabel: { shrink: true } }}
+          disabled={isSubmitting}
+        />
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
           <TextField
             type="time"
             label="Start time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             fullWidth
+            margin="normal"
             slotProps={{ inputLabel: { shrink: true } }}
             disabled={isSubmitting}
           />
@@ -141,6 +141,7 @@ export const CreateShiftDialog = ({
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
             fullWidth
+            margin="normal"
             slotProps={{ inputLabel: { shrink: true } }}
             disabled={isSubmitting}
             error={hasInvalidTimeRange}
@@ -148,26 +149,25 @@ export const CreateShiftDialog = ({
               hasInvalidTimeRange ? 'End time must be after start time' : ''
             }
           />
-
-          <DialogActions sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Button onClick={handleSubmit} disabled={isCreateDisabled}>
-              {isSubmitting ? 'Creating...' : 'Create'}
-            </Button>
-            <Button
-              onClick={handleClose}
-              disabled={isSubmitting}
-              sx={{ color: 'grey.500' }}
-            >
-              Cancel
-            </Button>
-            {createShiftErrorMessage && (
-              <Typography color="error" variant="body2">
-                {createShiftErrorMessage}
-              </Typography>
-            )}
-          </DialogActions>
-        </ListItem>
-      </List>
+        </Box>
+        {createShiftErrorMessage && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {createShiftErrorMessage}
+          </Alert>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} disabled={isSubmitting}>
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          disabled={isCreateDisabled}
+        >
+          {isSubmitting ? 'Creating...' : 'Create'}
+        </Button>
+      </DialogActions>
     </Dialog>
   )
 }
