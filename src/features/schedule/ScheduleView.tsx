@@ -143,7 +143,7 @@ export const ScheduleView = () => {
   const handleApproveRequest = async (requestId: string) => {
     try {
       setRequestReviewErrorMessage(null)
-      await approveCoverageRequest(requestId, currentUser)
+      await approveCoverageRequest(requestId)
       setSelectedRequest(null)
       const [
         updatedShiftsOfThisWeek,

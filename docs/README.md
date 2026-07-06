@@ -36,10 +36,12 @@ The MVP focuses on providing a simple approval workflow for shift changes while 
 
 - Single-page React application without React Router
 - Role-based UI rendering for Manager and Employee users
-- Demo user selector is used instead of Firebase Auth for the MVP
+- Firebase Auth is used for demo login accounts
+- The Firebase Auth UID is used as the Firestore user document ID
 - UI components access data through service functions
 - Firestore document IDs are used as application IDs
 - Firestore documents do not store duplicate `id` fields
+- Firestore Security Rules provide basic authentication and role-based access control
 
 ---
 
@@ -118,15 +120,14 @@ When creating shifts:
 
 ---
 
-## Note on Cloud Function Layering
+## Note on Cloud Function Implementation
 
-I separated the Cloud Function code into API, Service, and Repository layers.
+A Cloud Function version of the approve request flow was implemented as a Node.js backend improvement.
 
-The API layer handles authentication and input validation.  
-The Service layer handles the main business flow, such as checking the manager role.  
-The Repository layer handles Firestore access and the approval transaction.
+It was separated into API, Service, and Repository layers.  
+Some approval validation is kept inside the Firestore transaction to keep the read-and-update operation atomic.
 
-Some validation is kept inside the transaction because it must use the latest Firestore data before updating both the request and the shift.
+A Cloud Function version of the approve request flow was implemented in the `cloud-functions-approve` branch as a Node.js backend improvement. It was not deployed because Firebase Cloud Functions requires a billing plan.
 
 ---
 
@@ -157,7 +158,8 @@ Possible future enhancements include:
 - Employee availability
 - Shift templates
 - Delete shifts
-- Use Firestore transactions or Cloud Functions for stricter concurrency control when approving requests.
+- Deploy the Cloud Function version of the approve request flow after upgrading the Firebase project to a billing plan.
+- Move more business-critical write operations, such as rejecting requests or creating coverage requests, to Cloud Functions.
 - The app uses predefined demo accounts for the MVP. In a production app, users would log in with their own credentials and demo passwords would not be stored in the frontend.
 
 ---
@@ -168,8 +170,12 @@ Possible future enhancements include:
 - TypeScript
 - Vite
 - Material UI
+- Firebase Auth
 - Cloud Firestore
+- Firestore Security Rules
 - Firebase Hosting
+- Firebase Emulator Suite
+- Firebase Cloud Functions was explored as a backend improvement but not deployed because it requires a billing plan
 
 ---
 
