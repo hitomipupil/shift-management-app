@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button, CircularProgress } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { WeekNavigator } from 'src/features/schedule/WeekNavigator'
 import { MyShiftsSection } from 'src/features/schedule/MyShiftsSection'
@@ -258,7 +258,9 @@ export const ScheduleView = () => {
       }}
     >
       {isLoading ? (
-        <Typography>Loading schedule...</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress color="primary" />
+        </Box>
       ) : (
         <>
           {isManager && (

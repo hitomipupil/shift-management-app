@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material'
+import { Box, CircularProgress, Typography } from '@mui/material'
 import { UserSelector } from 'src/components/UserSelector'
 import { CurrentUserProvider } from 'src/contexts/CurrentUserProvider'
 import { useCurrentUser } from 'src/contexts/useCurrentUser'
@@ -9,7 +9,18 @@ const AppContent = () => {
     useCurrentUser()
 
   if (isLoadingCurrentUser) {
-    return <Typography>Loading...</Typography>
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Box>
+    )
   }
 
   if (currentUserError) {
