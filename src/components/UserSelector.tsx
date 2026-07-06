@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   FormControl,
   InputLabel,
@@ -43,7 +44,16 @@ export const UserSelector = () => {
   }
 
   return (
-    <>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 2,
+        width: 240,
+        mx: 'auto',
+      }}
+    >
       <Typography>Select User</Typography>
       <FormControl fullWidth>
         <InputLabel id="user-select-label">User</InputLabel>
@@ -69,6 +79,6 @@ export const UserSelector = () => {
       <Button disabled={!selectedEmail || isLoggingIn} onClick={handleClick}>
         {isLoggingIn ? 'Logging in...' : 'Go to App'}
       </Button>
-    </>
+    </Box>
   )
 }
