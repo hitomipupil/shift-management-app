@@ -118,6 +118,18 @@ When creating shifts:
 
 ---
 
+## Note on Cloud Function Layering
+
+I separated the Cloud Function code into API, Service, and Repository layers.
+
+The API layer handles authentication and input validation.  
+The Service layer handles the main business flow, such as checking the manager role.  
+The Repository layer handles Firestore access and the approval transaction.
+
+Some validation is kept inside the transaction because it must use the latest Firestore data before updating both the request and the shift.
+
+---
+
 ## Out of Scope
 
 - Direct employee-to-employee shift swap
