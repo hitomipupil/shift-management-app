@@ -7,9 +7,9 @@ import {
   getDoc,
   getDocs,
   query,
+  runTransaction,
   updateDoc,
   where,
-  writeBatch,
 } from 'firebase/firestore'
 import { db } from 'src/firebase'
 import type { Shift } from 'src/types/shift'
@@ -237,96 +237,111 @@ export const approveCoverageRequest = async (
   if (currentUser.role !== 'manager') {
     throw new Error('Only managers can approve requests')
   }
-  const requestRef = doc(db, 'coverageRequests', requestId)
-  const requestSnapshot = await getDoc(requestRef)
-
-  if (!requestSnapshot.exists()) {
-    throw new Error('Request not found')
-  }
-
-  const data = requestSnapshot.data()
-  const targetRequest: CoverageRequest = {
-    id: requestSnapshot.id,
-    shiftId: data.shiftId,
-    originalAssignedUserId: data.originalAssignedUserId,
-    requestedByUserId: data.requestedByUserId,
-    status: data.status,
-    reviewedByUserId: data.reviewedByUserId,
-    reviewedAt: data.reviewedAt,
-    createdAt: data.createdAt,
-  }
-
-  if (targetRequest.status !== 'pending') {
-    throw new Error('Request is no longer pending')
-  }
-
-  const targetShift = await getShiftById(targetRequest.shiftId)
-
-  if (!targetShift) {
-    throw new Error('Shift not found')
-  }
-  if (targetShift.assignedUserId !== targetRequest.originalAssignedUserId) {
-    throw new Error('Shift is no longer assigned to the original employee')
-  }
-
-  const requesterShiftsQuery = query(
-    collection(db, 'shifts'),
-    where('assignedUserId', '==', targetRequest.requestedByUserId),
-    where('date', '==', targetShift.date),
-  )
-
-  const requesterShiftsSnapshot = await getDocs(requesterShiftsQuery)
-
-  const requesterShifts = requesterShiftsSnapshot.docs.map((shiftDocument) => {
-    const data = shiftDocument.data()
-
-    return {
-      id: shiftDocument.id,
-      assignedUserId: data.assignedUserId,
-      coverageNeeded: data.coverageNeeded,
-      date: data.date,
-      startTime: data.startTime,
-      endTime: data.endTime,
-    } as Shift
-  })
-  const hasOverlappingShift = requesterShifts.some((shift) => {
-    return hasOverlappingTime(
-      targetShift.startTime,
-      targetShift.endTime,
-      shift.startTime,
-      shift.endTime,
-    )
-  })
-
-  if (hasOverlappingShift) {
-    throw new Error('Requested user already has an overlapping shift')
-  }
 
   const reviewedAt = new Date().toISOString()
 
-  const shiftRef = doc(db, 'shifts', targetRequest.shiftId)
+  const approvedRequest = await runTransaction(
+    db,
+    async (transaction): Promise<CoverageRequest> => {
+      const requestRef = doc(db, 'coverageRequests', requestId)
+      const requestSnapshot = await transaction.get(requestRef)
 
-  const batch = writeBatch(db)
+      if (!requestSnapshot.exists()) {
+        throw new Error('Request not found')
+      }
 
-  batch.update(requestRef, {
-    status: 'approved',
-    reviewedByUserId: currentUser.id,
-    reviewedAt,
-  })
+      const data = requestSnapshot.data()
+      const targetRequest: CoverageRequest = {
+        id: requestSnapshot.id,
+        shiftId: data.shiftId,
+        originalAssignedUserId: data.originalAssignedUserId,
+        requestedByUserId: data.requestedByUserId,
+        status: data.status,
+        reviewedByUserId: data.reviewedByUserId,
+        reviewedAt: data.reviewedAt,
+        createdAt: data.createdAt,
+      }
+      if (targetRequest.status !== 'pending') {
+        throw new Error('Request is no longer pending')
+      }
 
-  batch.update(shiftRef, {
-    assignedUserId: targetRequest.requestedByUserId,
-    coverageNeeded: false,
-  })
+      const shiftRef = doc(db, 'shifts', targetRequest.shiftId)
+      const shiftSnapshot = await transaction.get(shiftRef)
 
-  await batch.commit()
+      if (!shiftSnapshot.exists()) {
+        throw new Error('Shift not found')
+      }
 
-  return {
-    ...targetRequest,
-    status: 'approved',
-    reviewedByUserId: currentUser.id,
-    reviewedAt,
-  }
+      const shiftData = shiftSnapshot.data()
+
+      const targetShift: Shift = {
+        id: shiftSnapshot.id,
+        assignedUserId: shiftData.assignedUserId,
+        coverageNeeded: shiftData.coverageNeeded,
+        date: shiftData.date,
+        startTime: shiftData.startTime,
+        endTime: shiftData.endTime,
+      }
+
+      if (targetShift.assignedUserId !== targetRequest.originalAssignedUserId) {
+        throw new Error('Shift is no longer assigned to the original employee')
+      }
+
+      const requesterShiftsQuery = query(
+        collection(db, 'shifts'),
+        where('assignedUserId', '==', targetRequest.requestedByUserId),
+        where('date', '==', targetShift.date),
+      )
+
+      const requesterShiftsSnapshot = await getDocs(requesterShiftsQuery)
+      const requesterShifts = requesterShiftsSnapshot.docs.map(
+        (shiftDocument) => {
+          const data = shiftDocument.data()
+
+          return {
+            id: shiftDocument.id,
+            assignedUserId: data.assignedUserId,
+            coverageNeeded: data.coverageNeeded,
+            date: data.date,
+            startTime: data.startTime,
+            endTime: data.endTime,
+          } as Shift
+        },
+      )
+
+      const hasOverlappingShift = requesterShifts.some((shift) => {
+        return hasOverlappingTime(
+          targetShift.startTime,
+          targetShift.endTime,
+          shift.startTime,
+          shift.endTime,
+        )
+      })
+      if (hasOverlappingShift) {
+        throw new Error('Requested user already has an overlapping shift')
+      }
+
+      transaction.update(requestRef, {
+        status: 'approved',
+        reviewedByUserId: currentUser.id,
+        reviewedAt,
+      })
+
+      transaction.update(shiftRef, {
+        assignedUserId: targetRequest.requestedByUserId,
+        coverageNeeded: false,
+      })
+
+      return {
+        ...targetRequest,
+        status: 'approved',
+        reviewedByUserId: currentUser.id,
+        reviewedAt,
+      }
+    },
+  )
+
+  return approvedRequest
 }
 
 export const rejectCoverageRequest = async (
