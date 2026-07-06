@@ -8,6 +8,19 @@ The MVP focuses on providing a simple approval workflow for shift changes while 
 
 ---
 
+## Demo
+
+Deployed app: https://shift-management-demo.web.app
+
+Demo accounts:
+
+- Manager: `manager1@mail.com` / `manager1`
+- Employee 1: `employee1@mail.com` / `employee1`
+- Employee 2: `employee2@mail.com` / `employee2`
+- Employee 3: `employee3@mail.com` / `employee3`
+
+---
+
 ## Assumptions
 
 - The application is used by a single store.
@@ -36,10 +49,12 @@ The MVP focuses on providing a simple approval workflow for shift changes while 
 
 - Single-page React application without React Router
 - Role-based UI rendering for Manager and Employee users
-- Demo user selector is used instead of Firebase Auth for the MVP
+- Firebase Auth is used for demo login accounts
+- The Firebase Auth UID is used as the Firestore user document ID
 - UI components access data through service functions
 - Firestore document IDs are used as application IDs
 - Firestore documents do not store duplicate `id` fields
+- Firestore Security Rules provide basic authentication and role-based access control
 
 ---
 
@@ -118,35 +133,36 @@ When creating shifts:
 
 ---
 
+## Note on Cloud Functions
+
+The deployed `main` version does not use Cloud Functions.  
+It uses Firebase Auth, Firestore Security Rules, and frontend service functions to update Firestore.
+
+A Node.js Cloud Function version of the approve request flow was implemented in the `cloud-functions-approve` branch.  
+It was not deployed because Firebase Cloud Functions requires a billing plan.
+
+---
+
 ## Out of Scope
 
-- Direct employee-to-employee shift swap
-- Notifications (email / push)
+- Direct shift swaps
+- Notifications
 - Multiple stores
 - Employee management
 - Vacation requests
-- Drag & drop scheduling
 - Recurring shifts
-- Calendar synchronization
-- Mobile application
-- Shift deletion
 - Overnight shifts
 
 ---
 
 ## Future Improvements
 
-Possible future enhancements include:
-
-- Allow employees to withdraw a coverage request before it is claimed.
-- Direct shift swap requests
-- Notifications
-- Multi-store support
-- Employee availability
-- Shift templates
-- Delete shifts
-- Use Firestore transactions or Cloud Functions for stricter concurrency control when approving requests.
-- The app uses predefined demo accounts for the MVP. In a production app, users would log in with their own credentials and demo passwords would not be stored in the frontend.
+- Deploy the Cloud Function approve flow after upgrading Firebase to a billing plan.
+- Move more business-critical write operations to Cloud Functions.
+- Allow employees to withdraw pending coverage requests.
+- Add notifications.
+- Add multi-store support.
+- Replace demo accounts with production user management.
 
 ---
 
@@ -156,8 +172,12 @@ Possible future enhancements include:
 - TypeScript
 - Vite
 - Material UI
+- Firebase Auth
 - Cloud Firestore
+- Firestore Security Rules
 - Firebase Hosting
+- Firebase Emulator Suite
+- Firebase Cloud Functions was explored as a backend improvement but not deployed because it requires a billing plan
 
 ---
 
@@ -169,13 +189,7 @@ Install dependencies:
 npm install
 ```
 
-Start Firebase emulators:
-
-```bash
-firebase emulators:start
-```
-
-In another terminal, start the Vite dev server:
+Start the Vite dev server:
 
 ```bash
 npm run dev
@@ -185,4 +199,12 @@ Open:
 
 ```text
 http://localhost:5173
+```
+
+By default, local development connects to the configured Firebase project.
+
+Firebase Emulator Suite can also be used for local development by setting:
+
+```env
+VITE_USE_FIREBASE_EMULATOR=true
 ```
