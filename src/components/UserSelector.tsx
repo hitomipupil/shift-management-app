@@ -4,6 +4,7 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   Typography,
 } from '@mui/material'
@@ -47,38 +48,62 @@ export const UserSelector = () => {
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'column',
+        justifyContent: 'center',
         alignItems: 'center',
-        gap: 2,
-        width: 240,
-        mx: 'auto',
+        minHeight: '100vh',
+        p: 2,
       }}
     >
-      <Typography>Select User</Typography>
-      <FormControl fullWidth>
-        <InputLabel id="user-select-label">User</InputLabel>
-        <Select
-          labelId="user-select-label"
-          id="user-select"
-          value={selectedEmail}
-          label="User"
-          onChange={(e) => setSelectedEmail(e.target.value)}
+      <Paper
+        elevation={3}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 2,
+          p: 4,
+          width: '100%',
+          maxWidth: 320,
+        }}
+      >
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+            Shift Management
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Select a user to log in
+          </Typography>
+        </Box>
+        <FormControl fullWidth>
+          <InputLabel id="user-select-label">User</InputLabel>
+          <Select
+            labelId="user-select-label"
+            id="user-select"
+            value={selectedEmail}
+            label="User"
+            onChange={(e) => setSelectedEmail(e.target.value)}
+          >
+            {demoLoginUsers.map((user) => {
+              return (
+                <MenuItem key={user.email} value={user.email}>
+                  {user.label}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </FormControl>
+
+        {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+
+        <Button
+          variant="contained"
+          fullWidth
+          disabled={!selectedEmail || isLoggingIn}
+          onClick={handleClick}
         >
-          {demoLoginUsers.map((user) => {
-            return (
-              <MenuItem key={user.email} value={user.email}>
-                {user.label}
-              </MenuItem>
-            )
-          })}
-        </Select>
-      </FormControl>
-
-      {errorMessage && <Typography color="error">{errorMessage}</Typography>}
-
-      <Button disabled={!selectedEmail || isLoggingIn} onClick={handleClick}>
-        {isLoggingIn ? 'Logging in...' : 'Go to App'}
-      </Button>
+          {isLoggingIn ? 'Logging in...' : 'Go to App'}
+        </Button>
+      </Paper>
     </Box>
   )
 }
