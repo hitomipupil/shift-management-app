@@ -1,4 +1,5 @@
-import { Box, Button, Typography } from '@mui/material'
+import { Box, IconButton, Typography } from '@mui/material'
+import LogoutIcon from '@mui/icons-material/Logout'
 import { useCurrentUser } from 'src/contexts/useCurrentUser'
 
 export const AppHeader = () => {
@@ -25,7 +26,9 @@ export const AppHeader = () => {
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography>{`${currentUser.name} - ${currentUser.role}`}</Typography>
-        <Button onClick={handleLogout}>Logout</Button>
+        <IconButton onClick={handleLogout} aria-label="Logout">
+          <LogoutIcon />
+        </IconButton>
       </Box>
     </Box>
   )
