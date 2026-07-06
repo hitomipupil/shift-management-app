@@ -24,7 +24,17 @@ export const RequestHistoryCard = ({
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
-        <Chip label={statusLabel} size="small" />
+        <Chip
+          label={statusLabel}
+          size="small"
+          color={
+            request.status === 'approved'
+              ? 'primary'
+              : request.status === 'rejected'
+                ? 'secondary'
+                : 'default'
+          }
+        />
         <Typography>
           {targetShift.date} {targetShift.startTime} - {targetShift.endTime}
         </Typography>

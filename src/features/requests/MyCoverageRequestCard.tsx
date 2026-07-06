@@ -22,7 +22,17 @@ export const MyCoverageRequestCard = ({
         <Typography>{targetShift.date}</Typography>
         <Typography>{`${targetShift.startTime} - ${targetShift.endTime}`}</Typography>
         <Typography>{`originally assigned to: ${originalAssignedEmployee.name}`}</Typography>
-        <Chip label={statusLabel} size="small" />
+        <Chip
+          label={statusLabel}
+          size="small"
+          color={
+            request.status === 'approved'
+              ? 'primary'
+              : request.status === 'rejected'
+                ? 'secondary'
+                : 'default'
+          }
+        />
       </CardContent>
     </Card>
   )

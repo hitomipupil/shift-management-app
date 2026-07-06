@@ -30,7 +30,7 @@ export const ShiftCard = ({
           {isRequestPending ? (
             <Chip label="Request Pending" size="small" />
           ) : shift.coverageNeeded ? (
-            <Chip label="Coverage Needed" size="small" />
+            <Chip label="Coverage Needed" size="small" color="warning" />
           ) : null}
         </CardContent>
       </CardActionArea>
