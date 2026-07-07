@@ -11,6 +11,7 @@ type MyShiftsSectionProps = {
   myShifts: Shift[]
   onShiftClick: (shift: Shift) => void
   coverageRequests: CoverageRequest[]
+  hideTitle?: boolean
 }
 
 export const MyShiftsSection = ({
@@ -18,6 +19,7 @@ export const MyShiftsSection = ({
   myShifts,
   onShiftClick,
   coverageRequests,
+  hideTitle = false,
 }: MyShiftsSectionProps) => {
   return (
     <Box
@@ -27,9 +29,11 @@ export const MyShiftsSection = ({
         gap: 1.5,
       }}
     >
-      <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-        My Shifts
-      </Typography>
+      {!hideTitle && (
+        <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+          My Shifts
+        </Typography>
+      )}
       {myShifts.length === 0 ? (
         <EmptyState
           message="You have no shifts this week."

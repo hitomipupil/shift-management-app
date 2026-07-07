@@ -63,7 +63,7 @@ export const ManagerRequestsSection = ({
       {selectedTab === 0 && (
         <>
           {pendingRequestItems.length === 0 ? (
-            <EmptyState message="No requests" />
+            <EmptyState message="No pending requests" />
           ) : (
             pendingRequestItems.map((item) => (
               <ManagerCoverageRequestCard

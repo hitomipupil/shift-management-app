@@ -1,7 +1,7 @@
 import { Box, Button, CircularProgress } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { WeekNavigator } from 'src/features/schedule/components/WeekNavigator'
-import { MyShiftsSection } from 'src/features/schedule/components/MyShiftsSection'
+import { EmployeeScheduleSection } from 'src/features/schedule/components/EmployeeScheduleSection'
 import { WeeklyScheduleSection } from 'src/features/schedule/components/WeeklyScheduleSection'
 import { useCurrentUser } from 'src/contexts/useCurrentUser'
 import { useMemo, useState } from 'react'
@@ -269,26 +269,38 @@ export const ScheduleView = () => {
               </Button>
             )}
           </Box>
+          {isManager && (
+            <ManagerRequestsSection
+              pendingCoverageRequests={pendingCoverageRequests}
+              allShifts={allShifts}
+              users={users}
+              onRequestClick={handleOpenRequestDetails}
+              reviewedCoverageRequests={reviewedCoverageRequests}
+            />
+          )}
           {isWeekLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
               <CircularProgress color="primary" />
             </Box>
           ) : (
             <>
-              {isEmployee && (
-                <MyShiftsSection
+              {isEmployee ? (
+                <EmployeeScheduleSection
                   currentUser={currentUser}
                   myShifts={myShifts}
+                  shifts={shiftsOfThisWeek}
+                  users={users}
+                  onShiftClick={handleOpenShiftDetails}
+                  coverageRequests={pendingCoverageRequests}
+                />
+              ) : (
+                <WeeklyScheduleSection
+                  shifts={shiftsOfThisWeek}
+                  users={users}
                   onShiftClick={handleOpenShiftDetails}
                   coverageRequests={pendingCoverageRequests}
                 />
               )}
-              <WeeklyScheduleSection
-                shifts={shiftsOfThisWeek}
-                users={users}
-                onShiftClick={handleOpenShiftDetails}
-                coverageRequests={pendingCoverageRequests}
-              />
             </>
           )}
           {isEmployee && (
@@ -297,15 +309,6 @@ export const ScheduleView = () => {
               reviewedRequests={myReviewedCoverageRequests}
               shifts={allShifts}
               users={users}
-            />
-          )}
-          {isManager && (
-            <ManagerRequestsSection
-              pendingCoverageRequests={pendingCoverageRequests}
-              allShifts={allShifts}
-              users={users}
-              onRequestClick={handleOpenRequestDetails}
-              reviewedCoverageRequests={reviewedCoverageRequests}
             />
           )}
           {selectedShift && selectedShiftAssignedUser && (

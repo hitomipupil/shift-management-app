@@ -11,6 +11,7 @@ type WeeklyScheduleSectionProps = {
   users: User[]
   onShiftClick: (shift: Shift) => void
   coverageRequests: CoverageRequest[]
+  hideTitle?: boolean
 }
 
 export const WeeklyScheduleSection = ({
@@ -18,6 +19,7 @@ export const WeeklyScheduleSection = ({
   users,
   onShiftClick,
   coverageRequests,
+  hideTitle = false,
 }: WeeklyScheduleSectionProps) => {
   return (
     <Box
@@ -27,12 +29,14 @@ export const WeeklyScheduleSection = ({
         gap: 1.5,
       }}
     >
-      <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-        Weekly Schedule
-      </Typography>
+      {!hideTitle && (
+        <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+          Weekly Schedule
+        </Typography>
+      )}
       {shifts.length === 0 ? (
         <EmptyState
-          message="No shifts this week"
+          message="You have no shifts scheduled this week"
           icon={<EventBusyOutlinedIcon fontSize="large" />}
         />
       ) : (
