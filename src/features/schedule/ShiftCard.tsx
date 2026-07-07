@@ -9,6 +9,10 @@ import {
   Chip,
   Typography,
 } from '@mui/material'
+import {
+  SHIFT_STATUS_CHIP,
+  type StatusChipConfig,
+} from 'src/features/requests/requestStatusChip'
 import type { Shift } from 'src/types/shift'
 
 type ShiftCardProps = {
@@ -24,16 +28,11 @@ export const ShiftCard = ({
   onShiftClick,
   isRequestPending,
 }: ShiftCardProps) => {
-  const statusChip = isRequestPending ? (
-    <Chip label="Request Pending" size="small" color="info" />
-  ) : shift.coverageNeeded ? (
-    <Chip
-      label="Coverage Needed"
-      size="small"
-      color="warning"
-      sx={{ color: 'common.white' }}
-    />
-  ) : null
+  const statusChipConfig: StatusChipConfig | null = isRequestPending
+    ? SHIFT_STATUS_CHIP.requestPending
+    : shift.coverageNeeded
+      ? SHIFT_STATUS_CHIP.coverageNeeded
+      : null
 
   return (
     <Card variant="outlined">
@@ -68,14 +67,19 @@ export const ShiftCard = ({
             </Typography>
           </Box>
 
-          {statusChip && (
+          {statusChipConfig && (
             <Box
               sx={{
                 order: { xs: -1, sm: 4 },
                 width: { xs: '100%', sm: 'auto' },
               }}
             >
-              {statusChip}
+              <Chip
+                label={statusChipConfig.label}
+                size="small"
+                color={statusChipConfig.color}
+                sx={statusChipConfig.sx}
+              />
             </Box>
           )}
 

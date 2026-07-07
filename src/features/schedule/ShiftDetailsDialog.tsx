@@ -11,6 +11,10 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import { DetailRow } from 'src/components/DetailRow'
+import {
+  SHIFT_STATUS_CHIP,
+  type StatusChipConfig,
+} from 'src/features/requests/requestStatusChip'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
 
@@ -65,6 +69,12 @@ export const ShiftDetailsDialog = ({
     }
   }
 
+  const statusChipConfig: StatusChipConfig | null = isRequestPending
+    ? SHIFT_STATUS_CHIP.requestPending
+    : targetShift.coverageNeeded
+      ? SHIFT_STATUS_CHIP.coverageNeeded
+      : null
+
   return (
     <Dialog
       onClose={isSubmitting ? undefined : onClose}
@@ -82,16 +92,14 @@ export const ShiftDetailsDialog = ({
         }}
       >
         Shift Detail
-        {isRequestPending ? (
-          <Chip label="Request Pending" size="small" color="info" />
-        ) : targetShift.coverageNeeded ? (
+        {statusChipConfig && (
           <Chip
-            label="Coverage Needed"
+            label={statusChipConfig.label}
             size="small"
-            color="warning"
-            sx={{ color: 'common.white' }}
+            color={statusChipConfig.color}
+            sx={statusChipConfig.sx}
           />
-        ) : null}
+        )}
       </DialogTitle>
       <IconButton
         aria-label="close"
