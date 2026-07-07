@@ -11,6 +11,11 @@ export const demoLoginUsers: DemoLoginUser[] = [
     password: 'manager1',
   },
   {
+    label: 'Manager2',
+    email: 'manager2@mail.com',
+    password: 'manager2',
+  },
+  {
     label: 'Employee1',
     email: 'employee1@mail.com',
     password: 'employee1',

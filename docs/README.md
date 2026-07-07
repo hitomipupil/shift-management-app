@@ -15,6 +15,7 @@ Deployed app: https://shift-management-demo.web.app
 Demo accounts:
 
 - Manager: `manager1@mail.com` / `manager1`
+- Manager: `manager2@mail.com` / `manager2`
 - Employee 1: `employee1@mail.com` / `employee1`
 - Employee 2: `employee2@mail.com` / `employee2`
 - Employee 3: `employee3@mail.com` / `employee3`
