@@ -158,9 +158,6 @@ export const CreateShiftDialog = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={isSubmitting}>
-          Cancel
-        </Button>
         <Button
           variant="contained"
           onClick={handleSubmit}

@@ -136,9 +136,6 @@ export const RequestDetailsDialog = ({
           },
         }}
       >
-        <Button disabled={isReviewing} onClick={onClose}>
-          Cancel
-        </Button>
         <Button
           variant="outlined"
           color="error"
@@ -154,6 +151,7 @@ export const RequestDetailsDialog = ({
         </Button>
         <Button
           variant="contained"
+          color="success"
           disabled={isReviewing}
           onClick={handleApprove}
           startIcon={

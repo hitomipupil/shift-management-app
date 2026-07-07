@@ -13,7 +13,7 @@ export const REQUEST_STATUS_CHIP: Record<
   StatusChipConfig
 > = {
   pending: { label: 'Pending', color: 'default' },
-  approved: { label: 'Approved', color: 'primary' },
+  approved: { label: 'Approved', color: 'success' },
   rejected: { label: 'Rejected', color: 'secondary' },
 }
 

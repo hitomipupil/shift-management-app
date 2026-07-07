@@ -118,16 +118,21 @@ export const ScheduleView = () => {
     }
   }
 
-  const selectedShiftAssignedUser =
-    selectedShift === null
-      ? null
-      : (users.find((user) => user.id === selectedShift.assignedUserId) ?? null)
-
-  const isSelectedShiftRequestPending =
-    selectedShift !== null &&
-    pendingCoverageRequests.some(
-      (request) => request.shiftId === selectedShift.id,
+  const selectedShiftAssignedUser = useMemo(() => {
+    if (selectedShift === null) return null
+    return (
+      users.find((user) => user.id === selectedShift.assignedUserId) ?? null
     )
+  }, [selectedShift, users])
+
+  const isSelectedShiftRequestPending = useMemo(() => {
+    return (
+      selectedShift !== null &&
+      pendingCoverageRequests.some(
+        (request) => request.shiftId === selectedShift.id,
+      )
+    )
+  }, [selectedShift, pendingCoverageRequests])
 
   const handleOpenShiftDetails = (shift: Shift) => {
     setMarkCoverageNeededErrorMessage(null)
@@ -200,24 +205,29 @@ export const ScheduleView = () => {
     }
   }
 
-  const selectedRequestTargetShift =
-    selectedRequest === null
-      ? null
-      : (allShifts.find((shift) => shift.id === selectedRequest.shiftId) ??
-        null)
+  const selectedRequestTargetShift = useMemo(() => {
+    if (selectedRequest === null) return null
+    return (
+      allShifts.find((shift) => shift.id === selectedRequest.shiftId) ?? null
+    )
+  }, [selectedRequest, allShifts])
 
-  const currentAssignedEmployee =
-    selectedRequest === null
-      ? null
-      : (users.find(
-          (user) => user.id === selectedRequest.originalAssignedUserId,
-        ) ?? null)
+  const currentAssignedEmployee = useMemo(() => {
+    if (selectedRequest === null) return null
+    return (
+      users.find(
+        (user) => user.id === selectedRequest.originalAssignedUserId,
+      ) ?? null
+    )
+  }, [selectedRequest, users])
 
-  const requestedEmployee =
-    selectedRequest === null
-      ? null
-      : (users.find((user) => user.id === selectedRequest.requestedByUserId) ??
-        null)
+  const requestedEmployee = useMemo(() => {
+    if (selectedRequest === null) return null
+    return (
+      users.find((user) => user.id === selectedRequest.requestedByUserId) ??
+      null
+    )
+  }, [selectedRequest, users])
 
   const handleCreateShift = async (
     assignedUserId: string,
