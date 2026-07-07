@@ -202,6 +202,7 @@ Given more time, I would improve the app by adding:
 - Production user management
 - Pagination, filtering, and search for large shift schedules and request histories
 - A more scalable schedule layout, such as a calendar grid or employee-by-time timeline
+- Client-side overlap checks in Available to Cover and the Request to Cover dialog, aligned with existing service-layer validation
 
 ---
 
