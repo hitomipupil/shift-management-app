@@ -18,6 +18,12 @@ service cloud.firestore {
       return isSignedIn() && currentUserRole() == "employee";
     }
 
+    function onlyCoverageNeededChanged() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+        "coverageNeeded"
+      ]);
+    }
+
     match /users/{userId} {
       allow read: if isSignedIn();
       allow write: if false;
@@ -25,11 +31,15 @@ service cloud.firestore {
 
     match /shifts/{shiftId} {
       allow read: if isSignedIn();
+
       allow create: if isManager();
+
       allow update: if isManager()
         || (
           isEmployee()
           && resource.data.assignedUserId == request.auth.uid
+          && onlyCoverageNeededChanged()
+          && request.resource.data.coverageNeeded == true
         );
 
       allow delete: if false;
@@ -37,9 +47,15 @@ service cloud.firestore {
 
     match /coverageRequests/{requestId} {
       allow read: if isSignedIn();
+
       allow create: if isEmployee()
-        && request.resource.data.requestedByUserId == request.auth.uid;
+        && request.resource.data.requestedByUserId == request.auth.uid
+        && request.resource.data.status == "pending"
+        && request.resource.data.reviewedByUserId == null
+        && request.resource.data.reviewedAt == null;
+
       allow update: if isManager();
+
       allow delete: if false;
     }
   }
