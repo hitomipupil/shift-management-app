@@ -27,6 +27,7 @@ import { RequestDetailsDialog } from 'src/features/requests/RequestDetailsDialog
 import { useDisplayedWeek } from 'src/features/schedule/useDisplayedWeek'
 import { MyCoverageRequestsSection } from '../requests/MyCoverageRequestsSection'
 import { useScheduleData } from './useScheduleData'
+import { useWeekShifts } from './useWeekShifts'
 import { CreateShiftDialog } from './CreateShiftDialog'
 
 export const ScheduleView = () => {
@@ -55,21 +56,20 @@ export const ScheduleView = () => {
     handleNextWeek,
     handleToday,
   } = useDisplayedWeek()
+  const { shiftsOfThisWeek, setShiftsOfThisWeek, isWeekLoading } =
+    useWeekShifts(currentUser, weekStartDate)
   const {
-    shiftsOfThisWeek,
-    setShiftsOfThisWeek,
     allShifts,
     setAllShifts,
     users,
     pendingCoverageRequests,
     setPendingCoverageRequests,
     isLoading,
-    isWeekLoading,
     myCoverageRequests,
     setMyCoverageRequests,
     reviewedCoverageRequests,
     setReviewedCoverageRequests,
-  } = useScheduleData(currentUser, weekStartDate)
+  } = useScheduleData(currentUser)
 
   if (!currentUser) {
     throw new Error('Current user is required to view schedule')
