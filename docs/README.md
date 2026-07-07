@@ -199,6 +199,8 @@ Given more time, I would improve the app by adding:
 - Production user management
 - Better mobile responsive design
 - Pagination or filtering for long request histories
+- Improve the schedule view into a compact table or employee-by-time timeline for larger stores with many overlapping shifts.
+- Add pagination, filtering, and search for large shift schedules and request histories.
 
 ---
 
