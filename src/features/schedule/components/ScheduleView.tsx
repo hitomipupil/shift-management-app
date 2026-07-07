@@ -1,8 +1,8 @@
 import { Box, Button, CircularProgress } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import { WeekNavigator } from 'src/features/schedule/WeekNavigator'
-import { MyShiftsSection } from 'src/features/schedule/MyShiftsSection'
-import { WeeklyScheduleSection } from 'src/features/schedule/WeeklyScheduleSection'
+import { WeekNavigator } from 'src/features/schedule/components/WeekNavigator'
+import { MyShiftsSection } from 'src/features/schedule/components/MyShiftsSection'
+import { WeeklyScheduleSection } from 'src/features/schedule/components/WeeklyScheduleSection'
 import { useCurrentUser } from 'src/contexts/useCurrentUser'
 import { useMemo, useState } from 'react'
 import {
@@ -11,9 +11,7 @@ import {
   getShiftsByWeek,
   markShiftAsCoverageNeeded,
 } from 'src/services/shiftService'
-import { type Shift } from 'src/types/shift'
-import { ShiftDetailsDialog } from 'src/features/schedule/ShiftDetailsDialog'
-import { type CoverageRequest } from 'src/types/coverageRequests'
+import { ShiftDetailsDialog } from 'src/features/schedule/components/ShiftDetailsDialog'
 import {
   approveCoverageRequest,
   createCoverageRequest,
@@ -22,27 +20,18 @@ import {
   getReviewedCoverageRequests,
   rejectCoverageRequest,
 } from 'src/services/coverageRequestService'
-import { ManagerRequestsSection } from 'src/features/requests/ManagerRequestsSection'
-import { RequestDetailsDialog } from 'src/features/requests/RequestDetailsDialog'
-import { useDisplayedWeek } from 'src/features/schedule/useDisplayedWeek'
-import { MyCoverageRequestsSection } from '../requests/MyCoverageRequestsSection'
-import { useScheduleData } from './useScheduleData'
-import { useWeekShifts } from './useWeekShifts'
+import { useDisplayedWeek } from 'src/features/schedule/hooks/useDisplayedWeek'
+import { useScheduleData } from '../hooks/useScheduleData'
+import { useWeekShifts } from '../hooks/useWeekShifts'
 import { CreateShiftDialog } from './CreateShiftDialog'
+import { useSelectedShiftDialog } from '../hooks/useSelectedShiftDialog'
+import { useSelectedRequestDialog } from '../hooks/useSelectedRequestDialog'
+import { ManagerRequestsSection } from '../../requests/components/ManagerRequestsSection'
+import { MyCoverageRequestsSection } from '../../requests/components/MyCoverageRequestsSection'
+import { RequestDetailsDialog } from '../../requests/components/RequestDetailsDialog'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
-  const [selectedShift, setSelectedShift] = useState<Shift | null>(null)
-  const [selectedRequest, setSelectedRequest] =
-    useState<CoverageRequest | null>(null)
-  const [markCoverageNeededErrorMessage, setMarkCoverageNeededErrorMessage] =
-    useState<string | null>(null)
-  const [requestToCoverErrorMessage, setRequestToCoverErrorMessage] = useState<
-    string | null
-  >(null)
-  const [requestReviewErrorMessage, setRequestReviewErrorMessage] = useState<
-    string | null
-  >(null)
   const [createShiftDialogOpen, setCreateShiftDialogOpen] =
     useState<boolean>(false)
   const [createShiftErrorMessage, setCreateShiftErrorMessage] = useState<
@@ -74,6 +63,37 @@ export const ScheduleView = () => {
   if (!currentUser) {
     throw new Error('Current user is required to view schedule')
   }
+
+  const {
+    selectedShift,
+    setSelectedShift,
+    selectedShiftAssignedUser,
+    isSelectedShiftRequestPending,
+    markCoverageNeededErrorMessage,
+    setMarkCoverageNeededErrorMessage,
+    requestToCoverErrorMessage,
+    setRequestToCoverErrorMessage,
+    handleOpenShiftDetails,
+    handleCloseShiftDetails,
+  } = useSelectedShiftDialog({
+    users,
+    pendingCoverageRequests,
+  })
+
+  const {
+    selectedRequest,
+    setSelectedRequest,
+    selectedRequestTargetShift,
+    currentAssignedEmployee,
+    requestedEmployee,
+    requestReviewErrorMessage,
+    setRequestReviewErrorMessage,
+    handleOpenRequestDetails,
+    handleCloseRequestDetails,
+  } = useSelectedRequestDialog({
+    users,
+    allShifts,
+  })
 
   const isEmployee = currentUser.role === 'employee'
   const isManager = currentUser.role === 'manager'
@@ -116,43 +136,6 @@ export const ScheduleView = () => {
         setRequestToCoverErrorMessage('Something went wrong')
       }
     }
-  }
-
-  const selectedShiftAssignedUser = useMemo(() => {
-    if (selectedShift === null) return null
-    return (
-      users.find((user) => user.id === selectedShift.assignedUserId) ?? null
-    )
-  }, [selectedShift, users])
-
-  const isSelectedShiftRequestPending = useMemo(() => {
-    return (
-      selectedShift !== null &&
-      pendingCoverageRequests.some(
-        (request) => request.shiftId === selectedShift.id,
-      )
-    )
-  }, [selectedShift, pendingCoverageRequests])
-
-  const handleOpenShiftDetails = (shift: Shift) => {
-    setMarkCoverageNeededErrorMessage(null)
-    setRequestToCoverErrorMessage(null)
-    setSelectedShift(shift)
-  }
-
-  const handleCloseShiftDetails = () => {
-    setSelectedShift(null)
-    setMarkCoverageNeededErrorMessage(null)
-    setRequestToCoverErrorMessage(null)
-  }
-
-  const handleOpenRequestDetails = (request: CoverageRequest) => {
-    setSelectedRequest(request)
-  }
-
-  const handleCloseRequestDetails = () => {
-    setSelectedRequest(null)
-    setRequestReviewErrorMessage(null)
   }
 
   const handleApproveRequest = async (requestId: string) => {
@@ -204,30 +187,6 @@ export const ScheduleView = () => {
       }
     }
   }
-
-  const selectedRequestTargetShift = useMemo(() => {
-    if (selectedRequest === null) return null
-    return (
-      allShifts.find((shift) => shift.id === selectedRequest.shiftId) ?? null
-    )
-  }, [selectedRequest, allShifts])
-
-  const currentAssignedEmployee = useMemo(() => {
-    if (selectedRequest === null) return null
-    return (
-      users.find(
-        (user) => user.id === selectedRequest.originalAssignedUserId,
-      ) ?? null
-    )
-  }, [selectedRequest, users])
-
-  const requestedEmployee = useMemo(() => {
-    if (selectedRequest === null) return null
-    return (
-      users.find((user) => user.id === selectedRequest.requestedByUserId) ??
-      null
-    )
-  }, [selectedRequest, users])
 
   const handleCreateShift = async (
     assignedUserId: string,

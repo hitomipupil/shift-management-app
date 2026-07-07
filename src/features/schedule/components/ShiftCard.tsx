@@ -12,7 +12,7 @@ import {
 import {
   SHIFT_STATUS_CHIP,
   type StatusChipConfig,
-} from 'src/features/requests/requestStatusChip'
+} from 'src/features/requests/utils/requestStatusChip'
 import type { Shift } from 'src/types/shift'
 import { isPastShift } from 'src/utils/isPastShift'
 
@@ -39,11 +39,7 @@ export const ShiftCard = ({
   return (
     <Card
       variant="outlined"
-      sx={
-        isPast
-          ? { opacity: 0.55, bgcolor: 'action.hover' }
-          : undefined
-      }
+      sx={isPast ? { opacity: 0.55, bgcolor: 'action.hover' } : undefined}
     >
       <CardActionArea onClick={() => onShiftClick(shift)}>
         <CardContent

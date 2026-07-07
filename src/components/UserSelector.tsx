@@ -50,14 +50,13 @@ export const UserSelector = () => {
       sx={{
         display: 'flex',
         justifyContent: 'center',
-        alignItems: { xs: 'center', sm: 'flex-start' },
+        alignItems: 'center',
         minHeight: '100vh',
-        pt: { xs: 0, sm: '15vh' },
         p: { xs: 1.5, sm: 2 },
       }}
     >
       <Paper
-        elevation={3}
+        elevation={0}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -66,7 +65,7 @@ export const UserSelector = () => {
           p: { xs: 2, sm: 4 },
           width: '100%',
           maxWidth: 320,
-          boxShadow: { xs: 'none', sm: undefined },
+          boxShadow: { xs: 'none', sm: 1 },
         }}
       >
         <Typography

@@ -13,7 +13,7 @@ import {
 import type { CoverageRequest } from 'src/types/coverageRequests'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
-import { REQUEST_STATUS_CHIP } from './requestStatusChip'
+import { REQUEST_STATUS_CHIP } from '../utils/requestStatusChip'
 
 type EmployeeCoverageRequestCardProps = {
   request: CoverageRequest

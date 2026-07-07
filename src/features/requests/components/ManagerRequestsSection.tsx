@@ -1,10 +1,11 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { EmptyState } from 'src/components/EmptyState'
 import type { CoverageRequest } from 'src/types/coverageRequests'
-import { ManagerCoverageRequestCard } from 'src/features/requests/ManagerCoverageRequestCard'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
-import { useMemo, useState, type SyntheticEvent } from 'react'
+import { useState, type SyntheticEvent } from 'react'
+import { ManagerCoverageRequestCard } from './ManagerCoverageRequestCard'
+import { useManagerRequestItems } from '../hooks/useManagerRequestItems'
 
 type ManagerRequestsSectionProps = {
   pendingRequests: CoverageRequest[]
@@ -12,17 +13,6 @@ type ManagerRequestsSectionProps = {
   users: User[]
   onRequestClick: (request: CoverageRequest) => void
   reviewedCoverageRequests: CoverageRequest[]
-}
-
-type ManagerRequestItem = {
-  request: CoverageRequest
-  targetShift: Shift
-  assignedEmployee: User
-  requestedEmployee: User
-}
-
-type ReviewedManagerRequestItem = ManagerRequestItem & {
-  reviewedManager: User
 }
 
 export const ManagerRequestsSection = ({
@@ -36,61 +26,12 @@ export const ManagerRequestsSection = ({
   const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue)
   }
-  const pendingRequestItems = useMemo<ManagerRequestItem[]>(() => {
-    return pendingRequests
-      .map((req) => {
-        const targetShift = allShifts.find((shift) => shift.id === req.shiftId)
-        if (!targetShift) {
-          return null
-        }
-        const assignedEmployee = users.find(
-          (user) => user.id === targetShift.assignedUserId,
-        )
-        const requestedEmployee = users.find(
-          (user) => user.id === req.requestedByUserId,
-        )
-        if (!assignedEmployee || !requestedEmployee) {
-          return null
-        }
-        return {
-          request: req,
-          targetShift,
-          assignedEmployee,
-          requestedEmployee,
-        }
-      })
-      .filter((item): item is ManagerRequestItem => item !== null)
-  }, [pendingRequests, allShifts, users])
-
-  const reviewedRequestItems = useMemo<ReviewedManagerRequestItem[]>(() => {
-    return reviewedCoverageRequests
-      .map((req) => {
-        const targetShift = allShifts.find((shift) => shift.id === req.shiftId)
-        if (!targetShift) {
-          return null
-        }
-        const requestedEmployee = users.find(
-          (user) => user.id === req.requestedByUserId,
-        )
-        const reviewedManager = users.find(
-          (user) => user.id === req.reviewedByUserId,
-        )
-        const assignedEmployee = users.find(
-          (user) => user.id === req.originalAssignedUserId,
-        )
-        if (!requestedEmployee || !reviewedManager || !assignedEmployee) {
-          return null
-        }
-        return {
-          request: req,
-          targetShift,
-          assignedEmployee,
-          requestedEmployee,
-          reviewedManager,
-        }
-      })
-      .filter((item): item is ReviewedManagerRequestItem => item !== null)
-  }, [reviewedCoverageRequests, allShifts, users])
+  const { pendingRequestItems, reviewedRequestItems } = useManagerRequestItems({
+    pendingRequests,
+    reviewedCoverageRequests,
+    allShifts,
+    users,
+  })
 
   return (
     <Box

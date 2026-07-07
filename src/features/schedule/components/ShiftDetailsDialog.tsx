@@ -15,7 +15,7 @@ import { DetailRow } from 'src/components/DetailRow'
 import {
   SHIFT_STATUS_CHIP,
   type StatusChipConfig,
-} from 'src/features/requests/requestStatusChip'
+} from 'src/features/requests/utils/requestStatusChip'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
 import { isPastShift } from 'src/utils/isPastShift'
