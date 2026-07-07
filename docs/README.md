@@ -212,7 +212,7 @@ In a production version, business-critical write operations such as approving re
 Given more time, I would improve the app by adding:
 
 - Cloud Function based approval and rejection workflows
-- A dedicated Node.js API layer to centralize business logic, validation, authorization checks, and backend testing
+- A more centralized backend API layer, using Cloud Functions or a dedicated Node.js API server, to centralize business logic, validation, authorization checks, and backend testing
 - Firestore `Timestamp` / `serverTimestamp`
 - Automated tests for service functions and Firestore Security Rules
 - Employee request withdrawal
