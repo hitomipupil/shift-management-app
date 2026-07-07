@@ -252,13 +252,13 @@ export const ScheduleView = () => {
   return (
     <Box
       sx={{
-        p: 3,
+        p: { xs: 1.5, sm: 2, md: 3 },
         width: '100%',
         maxWidth: 900,
         mx: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        gap: 5,
+        gap: { xs: 3, md: 5 },
       }}
     >
       {isLoading ? (
@@ -267,7 +267,14 @@ export const ScheduleView = () => {
         </Box>
       ) : (
         <>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { sm: 'center' },
+              gap: { xs: 2, sm: 1 },
+            }}
+          >
             <Box sx={{ flex: 1 }}>
               <WeekNavigator
                 weekRangeLabel={weekRangeLabel}
@@ -283,6 +290,7 @@ export const ScheduleView = () => {
                 size="small"
                 startIcon={<AddIcon />}
                 onClick={() => setCreateShiftDialogOpen(true)}
+                sx={{ alignSelf: { xs: 'flex-end', sm: 'auto' } }}
               >
                 Create Shift
               </Button>

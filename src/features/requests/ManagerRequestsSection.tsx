@@ -1,11 +1,10 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { EmptyState } from 'src/components/EmptyState'
 import type { CoverageRequest } from 'src/types/coverageRequests'
-import { PendingRequestCard } from 'src/features/requests/PendingRequestCard'
+import { ManagerCoverageRequestCard } from 'src/features/requests/ManagerCoverageRequestCard'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
 import { useMemo, useState, type SyntheticEvent } from 'react'
-import { RequestHistoryCard } from './RequestHistoryCard'
 
 type ManagerRequestsSectionProps = {
   pendingRequests: CoverageRequest[]
@@ -15,19 +14,15 @@ type ManagerRequestsSectionProps = {
   reviewedCoverageRequests: CoverageRequest[]
 }
 
-type PendingRequestItem = {
-  targetShift: Shift
-  currentAssignedEmployee: User
-  requestedEmployee: User
+type ManagerRequestItem = {
   request: CoverageRequest
+  targetShift: Shift
+  assignedEmployee: User
+  requestedEmployee: User
 }
 
-type ReviewedRequestItem = {
-  targetShift: Shift
-  requestedEmployee: User
+type ReviewedManagerRequestItem = ManagerRequestItem & {
   reviewedManager: User
-  originallyAssignedEmployee: User
-  request: CoverageRequest
 }
 
 export const ManagerRequestsSection = ({
@@ -41,33 +36,33 @@ export const ManagerRequestsSection = ({
   const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue)
   }
-  const pendingRequestItems = useMemo<PendingRequestItem[]>(() => {
+  const pendingRequestItems = useMemo<ManagerRequestItem[]>(() => {
     return pendingRequests
       .map((req) => {
         const targetShift = allShifts.find((shift) => shift.id === req.shiftId)
         if (!targetShift) {
           return null
         }
-        const currentAssignedEmployee = users.find(
+        const assignedEmployee = users.find(
           (user) => user.id === targetShift.assignedUserId,
         )
         const requestedEmployee = users.find(
           (user) => user.id === req.requestedByUserId,
         )
-        if (!currentAssignedEmployee || !requestedEmployee) {
+        if (!assignedEmployee || !requestedEmployee) {
           return null
         }
         return {
           request: req,
           targetShift,
-          currentAssignedEmployee,
+          assignedEmployee,
           requestedEmployee,
         }
       })
-      .filter((item): item is PendingRequestItem => item !== null)
+      .filter((item): item is ManagerRequestItem => item !== null)
   }, [pendingRequests, allShifts, users])
 
-  const reviewedRequestItems = useMemo<ReviewedRequestItem[]>(() => {
+  const reviewedRequestItems = useMemo<ReviewedManagerRequestItem[]>(() => {
     return reviewedCoverageRequests
       .map((req) => {
         const targetShift = allShifts.find((shift) => shift.id === req.shiftId)
@@ -80,25 +75,21 @@ export const ManagerRequestsSection = ({
         const reviewedManager = users.find(
           (user) => user.id === req.reviewedByUserId,
         )
-        const originallyAssignedEmployee = users.find(
+        const assignedEmployee = users.find(
           (user) => user.id === req.originalAssignedUserId,
         )
-        if (
-          !requestedEmployee ||
-          !reviewedManager ||
-          !originallyAssignedEmployee
-        ) {
+        if (!requestedEmployee || !reviewedManager || !assignedEmployee) {
           return null
         }
         return {
           request: req,
           targetShift,
+          assignedEmployee,
           requestedEmployee,
           reviewedManager,
-          originallyAssignedEmployee,
         }
       })
-      .filter((item): item is ReviewedRequestItem => item !== null)
+      .filter((item): item is ReviewedManagerRequestItem => item !== null)
   }, [reviewedCoverageRequests, allShifts, users])
 
   return (
@@ -118,6 +109,9 @@ export const ManagerRequestsSection = ({
             value={selectedTab}
             onChange={handleChange}
             aria-label="request tabs"
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
           >
             <Tab label="Pending Requests" />
             <Tab label="Request History" />
@@ -131,12 +125,12 @@ export const ManagerRequestsSection = ({
             <EmptyState message="No requests" />
           ) : (
             pendingRequestItems.map((item) => (
-              <PendingRequestCard
+              <ManagerCoverageRequestCard
                 key={item.request.id}
-                pendingRequest={item.request}
-                currentAssignedEmployee={item.currentAssignedEmployee}
-                requestedEmployee={item.requestedEmployee}
+                request={item.request}
                 targetShift={item.targetShift}
+                assignedEmployee={item.assignedEmployee}
+                requestedEmployee={item.requestedEmployee}
                 onRequestClick={onRequestClick}
               />
             ))
@@ -149,13 +143,13 @@ export const ManagerRequestsSection = ({
             <EmptyState message="No request history" />
           ) : (
             reviewedRequestItems.map((item) => (
-              <RequestHistoryCard
+              <ManagerCoverageRequestCard
                 key={item.request.id}
                 request={item.request}
                 targetShift={item.targetShift}
+                assignedEmployee={item.assignedEmployee}
                 requestedEmployee={item.requestedEmployee}
                 reviewedManager={item.reviewedManager}
-                originallyAssignedEmployee={item.originallyAssignedEmployee}
               />
             ))
           )}

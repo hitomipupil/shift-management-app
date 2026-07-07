@@ -20,7 +20,7 @@ export const WeekNavigator = ({
   return (
     <Box
       sx={{
-        p: 2,
+        p: { xs: 1, sm: 2 },
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',

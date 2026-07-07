@@ -24,10 +24,29 @@ export const ShiftCard = ({
   onShiftClick,
   isRequestPending,
 }: ShiftCardProps) => {
+  const statusChip = isRequestPending ? (
+    <Chip label="Request Pending" size="small" color="info" />
+  ) : shift.coverageNeeded ? (
+    <Chip
+      label="Coverage Needed"
+      size="small"
+      color="warning"
+      sx={{ color: 'common.white' }}
+    />
+  ) : null
+
   return (
     <Card variant="outlined">
       <CardActionArea onClick={() => onShiftClick(shift)}>
-        <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <CardContent
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            gap: { xs: 1, sm: 2 },
+            rowGap: 1,
+          }}
+        >
           <Box
             sx={{
               display: 'flex',
@@ -49,12 +68,26 @@ export const ShiftCard = ({
             </Typography>
           </Box>
 
+          {statusChip && (
+            <Box
+              sx={{
+                order: { xs: -1, sm: 4 },
+                width: { xs: '100%', sm: 'auto' },
+              }}
+            >
+              {statusChip}
+            </Box>
+          )}
+
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
+              flexWrap: 'wrap',
               gap: 0.75,
               minWidth: 0,
+              width: { xs: '100%', sm: 'auto' },
+              order: { xs: 1, sm: 3 },
             }}
           >
             <PersonOutlinedIcon fontSize="small" color="action" />
@@ -62,17 +95,6 @@ export const ShiftCard = ({
               {assignedUserName}
             </Typography>
           </Box>
-
-          {isRequestPending ? (
-            <Chip label="Request Pending" size="small" color="info" />
-          ) : shift.coverageNeeded ? (
-            <Chip
-              label="Coverage Needed"
-              size="small"
-              color="warning"
-              sx={{ color: 'common.white' }}
-            />
-          ) : null}
         </CardContent>
       </CardActionArea>
     </Card>

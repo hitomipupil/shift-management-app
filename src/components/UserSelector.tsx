@@ -49,9 +49,10 @@ export const UserSelector = () => {
       sx={{
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: { xs: 'center', sm: 'flex-start' },
         minHeight: '100vh',
-        p: 2,
+        pt: { xs: 0, sm: '15vh' },
+        p: { xs: 1.5, sm: 2 },
       }}
     >
       <Paper
@@ -60,20 +61,23 @@ export const UserSelector = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 2,
-          p: 4,
+          gap: { xs: 1.5, sm: 2 },
+          p: { xs: 2, sm: 4 },
           width: '100%',
           maxWidth: 320,
+          boxShadow: { xs: 'none', sm: undefined },
         }}
       >
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Shift Manager
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Select a user to log in
-          </Typography>
-        </Box>
+        <Typography
+          sx={{
+            fontWeight: 'bold',
+            typography: { xs: 'h6', sm: 'h5' },
+            textAlign: 'center',
+            color: 'primary.main',
+          }}
+        >
+          Shift Manager
+        </Typography>
         <FormControl fullWidth>
           <InputLabel id="user-select-label">User</InputLabel>
           <Select

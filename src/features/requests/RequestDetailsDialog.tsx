@@ -124,7 +124,17 @@ export const RequestDetailsDialog = ({
           </Alert>
         )}
       </DialogContent>
-      <DialogActions>
+      <DialogActions
+        sx={{
+          flexDirection: { xs: 'column-reverse', sm: 'row' },
+          alignItems: { xs: 'stretch', sm: 'center' },
+          gap: { xs: 1.5, sm: 1 },
+          '& > .MuiButton-root': {
+            width: { xs: '100%', sm: 'auto' },
+            mx: { xs: 0, sm: undefined },
+          },
+        }}
+      >
         <Button disabled={isReviewing} onClick={onClose}>
           Cancel
         </Button>

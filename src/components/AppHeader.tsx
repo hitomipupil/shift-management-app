@@ -1,4 +1,11 @@
-import { AppBar, Box, Chip, IconButton, Toolbar, Typography } from '@mui/material'
+import {
+  AppBar,
+  Box,
+  Chip,
+  IconButton,
+  Toolbar,
+  Typography,
+} from '@mui/material'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useCurrentUser } from 'src/contexts/useCurrentUser'
 import { AppLogo } from 'src/components/AppLogo'
@@ -36,15 +43,22 @@ export const AppHeader = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <AppLogo />
           <Typography
-            variant="h6"
-            component="div"
-            sx={{ fontWeight: 500, color: 'primary.main' }}
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              fontWeight: 500,
+              color: 'primary.main',
+              typography: 'h6',
+            }}
           >
             Shift Manager
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Typography sx={{ fontWeight: 500 }}>{currentUser.name}</Typography>
+          <Typography
+            sx={{ fontWeight: 500, display: { xs: 'none', sm: 'block' } }}
+          >
+            {currentUser.name}
+          </Typography>
           <Chip
             label={roleLabels[currentUser.role]}
             size="small"

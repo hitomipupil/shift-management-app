@@ -1,6 +1,6 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { EmptyState } from 'src/components/EmptyState'
-import { MyCoverageRequestCard } from './MyCoverageRequestCard'
+import { EmployeeCoverageRequestCard } from './EmployeeCoverageRequestCard'
 import type { CoverageRequest } from 'src/types/coverageRequests'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
@@ -69,6 +69,9 @@ export const MyCoverageRequestsSection = ({
             value={selectedTab}
             onChange={handleChange}
             aria-label="my coverage request tabs"
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
           >
             <Tab label="Pending Requests" />
             <Tab label="Request History" />
@@ -82,7 +85,7 @@ export const MyCoverageRequestsSection = ({
             <EmptyState message="No requests" />
           ) : (
             pendingRequestItems.map((item) => (
-              <MyCoverageRequestCard
+              <EmployeeCoverageRequestCard
                 key={item.request.id}
                 request={item.request}
                 originalAssignedEmployee={item.originalAssignedEmployee}
@@ -98,7 +101,7 @@ export const MyCoverageRequestsSection = ({
             <EmptyState message="No request history" />
           ) : (
             reviewedRequestItems.map((item) => (
-              <MyCoverageRequestCard
+              <EmployeeCoverageRequestCard
                 key={item.request.id}
                 request={item.request}
                 originalAssignedEmployee={item.originalAssignedEmployee}
