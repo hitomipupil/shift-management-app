@@ -301,7 +301,7 @@ export const ScheduleView = () => {
           )}
           {isManager && (
             <ManagerRequestsSection
-              pendingRequests={pendingCoverageRequests}
+              pendingCoverageRequests={pendingCoverageRequests}
               allShifts={allShifts}
               users={users}
               onRequestClick={handleOpenRequestDetails}

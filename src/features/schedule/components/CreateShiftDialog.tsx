@@ -15,7 +15,7 @@ import {
   Select,
   TextField,
 } from '@mui/material'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { User } from 'src/types/user'
 
 type CreateShiftDialogProps = {
@@ -44,9 +44,13 @@ export const CreateShiftDialog = ({
   const [endTime, setEndTime] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const employees = users.filter((user) => user.role === 'employee')
+  const employees = useMemo(() => {
+    return users.filter((user) => user.role === 'employee')
+  }, [users])
+
   const hasInvalidTimeRange =
     startTime !== '' && endTime !== '' && startTime >= endTime
+
   const isCreateDisabled =
     !selectedEmployeeId ||
     !date ||

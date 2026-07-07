@@ -48,10 +48,27 @@ export const getShiftsByWeek = async (
   weekStartDate: string,
 ): Promise<Shift[]> => {
   const weekEndDate = addDaysToDateString(weekStartDate, 6)
-  const shifts = await getAllShifts()
-  return shifts.filter(
-    (shift) => shift.date >= weekStartDate && shift.date <= weekEndDate,
+
+  const shiftsQuery = query(
+    collection(db, 'shifts'),
+    where('date', '>=', weekStartDate),
+    where('date', '<=', weekEndDate),
   )
+
+  const shiftsSnapshot = await getDocs(shiftsQuery)
+
+  return shiftsSnapshot.docs.map((shiftDocument) => {
+    const data = shiftDocument.data()
+
+    return {
+      id: shiftDocument.id,
+      assignedUserId: data.assignedUserId,
+      coverageNeeded: data.coverageNeeded,
+      date: data.date,
+      startTime: data.startTime,
+      endTime: data.endTime,
+    } as Shift
+  })
 }
 
 export const markShiftAsCoverageNeeded = async (

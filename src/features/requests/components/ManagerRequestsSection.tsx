@@ -8,7 +8,7 @@ import { ManagerCoverageRequestCard } from './ManagerCoverageRequestCard'
 import { useManagerRequestItems } from '../hooks/useManagerRequestItems'
 
 type ManagerRequestsSectionProps = {
-  pendingRequests: CoverageRequest[]
+  pendingCoverageRequests: CoverageRequest[]
   allShifts: Shift[]
   users: User[]
   onRequestClick: (request: CoverageRequest) => void
@@ -16,7 +16,7 @@ type ManagerRequestsSectionProps = {
 }
 
 export const ManagerRequestsSection = ({
-  pendingRequests,
+  pendingCoverageRequests,
   allShifts,
   users,
   onRequestClick,
@@ -27,7 +27,7 @@ export const ManagerRequestsSection = ({
     setSelectedTab(newValue)
   }
   const { pendingRequestItems, reviewedRequestItems } = useManagerRequestItems({
-    pendingRequests,
+    pendingCoverageRequests,
     reviewedCoverageRequests,
     allShifts,
     users,
