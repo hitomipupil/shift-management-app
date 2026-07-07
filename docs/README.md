@@ -58,9 +58,9 @@ To keep the MVP focused, the following assumptions were made:
 
 Employees can:
 
-- View the weekly shift schedule
-- See their own shifts separately
+- Switch between My Shifts, Weekly Schedule, and Available to Cover views
 - Mark one of their assigned shifts as coverage needed
+- Quickly find shifts that are available to request coverage for
 - Request to cover a shift marked as coverage needed
 - View the status of their own requests
 
@@ -68,6 +68,7 @@ Employees can:
 
 Managers can:
 
+- See pending requests prominently as the primary manager workflow
 - View the weekly shift schedule
 - Create and assign shifts
 - Review pending coverage requests
@@ -101,6 +102,7 @@ The app validates the following rules:
 - Only managers can approve or reject coverage requests.
 - Managers can only assign shifts to employees.
 - Employees cannot request to cover their own shifts.
+- Past shifts cannot be modified.
 - A shift can only have one pending coverage request at a time.
 - Employees cannot have overlapping assigned shifts.
 - Employees cannot create a coverage request that overlaps with one of their assigned shifts.
@@ -125,6 +127,7 @@ The app is intentionally kept simple for the MVP:
 - UI components access Firebase through service functions
 - Firestore document IDs are used as application IDs
 - Firestore Security Rules provide authentication and role-based access control
+- Responsive layout using Material UI breakpoints for desktop and mobile screens
 
 The service function layer acts as the boundary between React components and Firebase. This keeps UI components focused on rendering and user interactions, while Firestore reads and writes are centralized in one place.
 
@@ -197,10 +200,8 @@ Given more time, I would improve the app by adding:
 - Notifications for managers and employees
 - Multi-store support
 - Production user management
-- Better mobile responsive design
-- Pagination or filtering for long request histories
-- Improve the schedule view into a compact table or employee-by-time timeline for larger stores with many overlapping shifts.
-- Add pagination, filtering, and search for large shift schedules and request histories.
+- Pagination, filtering, and search for large shift schedules and request histories
+- A more scalable schedule layout, such as a calendar grid or employee-by-time timeline
 
 ---
 
