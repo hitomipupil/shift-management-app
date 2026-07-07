@@ -1,27 +1,27 @@
 import { useEffect, useState } from 'react'
 import {
   getPendingCoverageRequests,
-  getRequestsByUser,
+  getPendingCoverageRequestsByUser,
   getReviewedCoverageRequests,
+  getReviewedCoverageRequestsByUser,
 } from 'src/services/coverageRequestService'
-import { getAllShifts, getShiftsByWeek } from 'src/services/shiftService'
+import { getAllShifts } from 'src/services/shiftService'
 import { getUsers } from 'src/services/userService'
 import type { CoverageRequest } from 'src/types/coverageRequests'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
 
-export const useScheduleData = (
-  currentUser: User | null,
-  weekStartDate: string,
-) => {
-  const [shiftsOfThisWeek, setShiftsOfThisWeek] = useState<Shift[]>([])
+export const useScheduleData = (currentUser: User | null) => {
   const [allShifts, setAllShifts] = useState<Shift[]>([])
   const [users, setUsers] = useState<User[]>([])
   const [pendingCoverageRequests, setPendingCoverageRequests] = useState<
     CoverageRequest[]
   >([])
   const [isLoading, setIsLoading] = useState(true)
-  const [myCoverageRequests, setMyCoverageRequests] = useState<
+  const [myPendingCoverageRequests, setMyPendingCoverageRequests] = useState<
+    CoverageRequest[]
+  >([])
+  const [myReviewedCoverageRequests, setMyReviewedCoverageRequests] = useState<
     CoverageRequest[]
   >([])
   const [reviewedCoverageRequests, setReviewedCoverageRequests] = useState<
@@ -29,7 +29,7 @@ export const useScheduleData = (
   >([])
 
   useEffect(() => {
-    const fetchScheduleData = async () => {
+    const fetchSharedData = async () => {
       if (!currentUser) {
         setIsLoading(false)
         return
@@ -37,26 +37,25 @@ export const useScheduleData = (
       try {
         setIsLoading(true)
         const [
-          shiftsData,
           usersData,
           pendingRequestsData,
           allShiftsData,
-          myRequestsData,
+          myPendingCoverageRequestsData,
+          myReviewedCoverageRequestsData,
           reviewedCoverageRequestsData,
         ] = await Promise.all([
-          getShiftsByWeek(weekStartDate),
           getUsers(),
           getPendingCoverageRequests(),
           getAllShifts(),
-          getRequestsByUser(currentUser.id),
+          getPendingCoverageRequestsByUser(currentUser.id),
+          getReviewedCoverageRequestsByUser(currentUser.id),
           getReviewedCoverageRequests(),
         ])
-
-        setShiftsOfThisWeek(shiftsData)
         setUsers(usersData)
         setPendingCoverageRequests(pendingRequestsData)
         setAllShifts(allShiftsData)
-        setMyCoverageRequests(myRequestsData)
+        setMyPendingCoverageRequests(myPendingCoverageRequestsData)
+        setMyReviewedCoverageRequests(myReviewedCoverageRequestsData)
         setReviewedCoverageRequests(reviewedCoverageRequestsData)
       } catch (e) {
         console.error(e)
@@ -64,20 +63,19 @@ export const useScheduleData = (
         setIsLoading(false)
       }
     }
-    fetchScheduleData()
-  }, [weekStartDate, currentUser])
+    fetchSharedData()
+  }, [currentUser])
 
   return {
-    shiftsOfThisWeek,
-    setShiftsOfThisWeek,
     allShifts,
     setAllShifts,
     users,
     pendingCoverageRequests,
     setPendingCoverageRequests,
     isLoading,
-    myCoverageRequests,
-    setMyCoverageRequests,
+    myPendingCoverageRequests,
+    setMyPendingCoverageRequests,
+    myReviewedCoverageRequests,
     reviewedCoverageRequests,
     setReviewedCoverageRequests,
   }

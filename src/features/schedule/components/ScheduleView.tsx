@@ -1,78 +1,109 @@
-import { Box, Button, Typography } from '@mui/material'
-import { WeekNavigator } from 'src/features/schedule/WeekNavigator'
-import { MyShiftsSection } from 'src/features/schedule/MyShiftsSection'
-import { WeeklyScheduleSection } from 'src/features/schedule/WeeklyScheduleSection'
+import { Box, Button, CircularProgress } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import { WeekNavigator } from 'src/features/schedule/components/WeekNavigator'
+import { EmployeeScheduleSection } from 'src/features/schedule/components/EmployeeScheduleSection'
+import { WeeklyScheduleSection } from 'src/features/schedule/components/WeeklyScheduleSection'
 import { useCurrentUser } from 'src/contexts/useCurrentUser'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   createShift,
   getAllShifts,
   getShiftsByWeek,
   markShiftAsCoverageNeeded,
 } from 'src/services/shiftService'
-import { type Shift } from 'src/types/shift'
-import { ShiftDetailsDialog } from 'src/features/schedule/ShiftDetailsDialog'
-import { type CoverageRequest } from 'src/types/coverageRequests'
+import { ShiftDetailsDialog } from 'src/features/schedule/components/ShiftDetailsDialog'
 import {
   approveCoverageRequest,
   createCoverageRequest,
   getPendingCoverageRequests,
-  getRequestsByUser,
+  getPendingCoverageRequestsByUser,
   getReviewedCoverageRequests,
   rejectCoverageRequest,
 } from 'src/services/coverageRequestService'
-import { ManagerRequestsSection } from 'src/features/requests/ManagerRequestsSection'
-import { RequestDetailsDialog } from 'src/features/requests/RequestDetailsDialog'
-import { useDisplayedWeek } from 'src/features/schedule/useDisplayedWeek'
-import { MyCoverageRequestsSection } from '../requests/MyCoverageRequestsSection'
-import { useScheduleData } from './useScheduleData'
+import { useDisplayedWeek } from 'src/features/schedule/hooks/useDisplayedWeek'
+import { useScheduleData } from '../hooks/useScheduleData'
+import { useWeekShifts } from '../hooks/useWeekShifts'
 import { CreateShiftDialog } from './CreateShiftDialog'
+import { useSelectedShiftDialog } from '../hooks/useSelectedShiftDialog'
+import { useSelectedRequestDialog } from '../hooks/useSelectedRequestDialog'
+import { ManagerRequestsSection } from '../../requests/components/ManagerRequestsSection'
+import { MyCoverageRequestsSection } from '../../requests/components/MyCoverageRequestsSection'
+import { RequestDetailsDialog } from '../../requests/components/RequestDetailsDialog'
 
 export const ScheduleView = () => {
   const { currentUser } = useCurrentUser()
-  const [selectedShift, setSelectedShift] = useState<Shift | null>(null)
-  const [selectedRequest, setSelectedRequest] =
-    useState<CoverageRequest | null>(null)
-  const [markCoverageNeededErrorMessage, setMarkCoverageNeededErrorMessage] =
-    useState<string | null>(null)
-  const [requestToCoverErrorMessage, setRequestToCoverErrorMessage] = useState<
-    string | null
-  >(null)
-  const [requestReviewErrorMessage, setRequestReviewErrorMessage] = useState<
-    string | null
-  >(null)
   const [createShiftDialogOpen, setCreateShiftDialogOpen] =
     useState<boolean>(false)
   const [createShiftErrorMessage, setCreateShiftErrorMessage] = useState<
     string | null
   >(null)
-  const { weekStartDate, weekRangeLabel, handlePreviousWeek, handleNextWeek } =
-    useDisplayedWeek()
   const {
-    shiftsOfThisWeek,
-    setShiftsOfThisWeek,
+    weekStartDate,
+    weekRangeLabel,
+    isCurrentWeek,
+    handlePreviousWeek,
+    handleNextWeek,
+    handleToday,
+  } = useDisplayedWeek()
+  const { shiftsOfThisWeek, setShiftsOfThisWeek, isWeekLoading } =
+    useWeekShifts(currentUser, weekStartDate)
+  const {
     allShifts,
     setAllShifts,
     users,
     pendingCoverageRequests,
     setPendingCoverageRequests,
     isLoading,
-    myCoverageRequests,
-    setMyCoverageRequests,
+    myPendingCoverageRequests,
+    setMyPendingCoverageRequests,
+    myReviewedCoverageRequests,
     reviewedCoverageRequests,
     setReviewedCoverageRequests,
-  } = useScheduleData(currentUser, weekStartDate)
+  } = useScheduleData(currentUser)
 
   if (!currentUser) {
     throw new Error('Current user is required to view schedule')
   }
 
+  const {
+    selectedShift,
+    setSelectedShift,
+    selectedShiftAssignedUser,
+    isSelectedShiftRequestPending,
+    markCoverageNeededErrorMessage,
+    setMarkCoverageNeededErrorMessage,
+    requestToCoverErrorMessage,
+    setRequestToCoverErrorMessage,
+    handleOpenShiftDetails,
+    handleCloseShiftDetails,
+  } = useSelectedShiftDialog({
+    users,
+    pendingCoverageRequests,
+  })
+
+  const {
+    selectedRequest,
+    setSelectedRequest,
+    selectedRequestTargetShift,
+    currentAssignedEmployee,
+    requestedEmployee,
+    requestReviewErrorMessage,
+    setRequestReviewErrorMessage,
+    handleOpenRequestDetails,
+    handleCloseRequestDetails,
+  } = useSelectedRequestDialog({
+    users,
+    allShifts,
+  })
+
   const isEmployee = currentUser.role === 'employee'
   const isManager = currentUser.role === 'manager'
 
-  const myShifts = shiftsOfThisWeek.filter(
-    (shift) => shift.assignedUserId === currentUser.id,
-  )
+  const myShifts = useMemo(() => {
+    return shiftsOfThisWeek.filter(
+      (shift) => shift.assignedUserId === currentUser.id,
+    )
+  }, [shiftsOfThisWeek, currentUser.id])
 
   const handleMarkCoverageNeeded = async (shiftId: string) => {
     try {
@@ -95,10 +126,13 @@ export const ScheduleView = () => {
       setRequestToCoverErrorMessage(null)
       await createCoverageRequest(shiftId, currentUser)
       setSelectedShift(null)
-      const updatedCoverageRequests = await getPendingCoverageRequests()
+      const [updatedCoverageRequests, updatedMyPendingCoverageRequests] =
+        await Promise.all([
+          getPendingCoverageRequests(),
+          getPendingCoverageRequestsByUser(currentUser.id),
+        ])
       setPendingCoverageRequests(updatedCoverageRequests)
-      const updatedMyCoverageRequests = await getRequestsByUser(currentUser.id)
-      setMyCoverageRequests(updatedMyCoverageRequests)
+      setMyPendingCoverageRequests(updatedMyPendingCoverageRequests)
     } catch (e) {
       if (e instanceof Error) {
         setRequestToCoverErrorMessage(e.message)
@@ -106,38 +140,6 @@ export const ScheduleView = () => {
         setRequestToCoverErrorMessage('Something went wrong')
       }
     }
-  }
-
-  const selectedShiftAssignedUser =
-    selectedShift === null
-      ? null
-      : (users.find((user) => user.id === selectedShift.assignedUserId) ?? null)
-
-  const isSelectedShiftRequestPending =
-    selectedShift !== null &&
-    pendingCoverageRequests.some(
-      (request) => request.shiftId === selectedShift.id,
-    )
-
-  const handleOpenShiftDetails = (shift: Shift) => {
-    setMarkCoverageNeededErrorMessage(null)
-    setRequestToCoverErrorMessage(null)
-    setSelectedShift(shift)
-  }
-
-  const handleCloseShiftDetails = () => {
-    setSelectedShift(null)
-    setMarkCoverageNeededErrorMessage(null)
-    setRequestToCoverErrorMessage(null)
-  }
-
-  const handleOpenRequestDetails = (request: CoverageRequest) => {
-    setSelectedRequest(request)
-  }
-
-  const handleCloseRequestDetails = () => {
-    setSelectedRequest(null)
-    setRequestReviewErrorMessage(null)
   }
 
   const handleApproveRequest = async (requestId: string) => {
@@ -190,25 +192,6 @@ export const ScheduleView = () => {
     }
   }
 
-  const selectedRequestTargetShift =
-    selectedRequest === null
-      ? null
-      : (allShifts.find((shift) => shift.id === selectedRequest.shiftId) ??
-        null)
-
-  const currentAssignedEmployee =
-    selectedRequest === null
-      ? null
-      : (users.find(
-          (user) => user.id === selectedRequest.originalAssignedUserId,
-        ) ?? null)
-
-  const requestedEmployee =
-    selectedRequest === null
-      ? null
-      : (users.find((user) => user.id === selectedRequest.requestedByUserId) ??
-        null)
-
   const handleCreateShift = async (
     assignedUserId: string,
     date: string,
@@ -242,54 +225,90 @@ export const ScheduleView = () => {
   return (
     <Box
       sx={{
-        p: 3,
+        p: { xs: 1.5, sm: 2, md: 3 },
+        width: '100%',
+        maxWidth: 900,
+        mx: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
+        gap: { xs: 3, md: 5 },
       }}
     >
       {isLoading ? (
-        <Typography>Loading schedule...</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress color="primary" />
+        </Box>
       ) : (
         <>
-          {isManager && (
-            <Button onClick={() => setCreateShiftDialogOpen(true)}>
-              Create Shift
-            </Button>
-          )}
-          <WeekNavigator
-            weekRangeLabel={weekRangeLabel}
-            onPreviousWeek={handlePreviousWeek}
-            onNextWeek={handleNextWeek}
-          />
-          {isEmployee && (
-            <>
-              <MyShiftsSection
-                currentUser={currentUser}
-                myShifts={myShifts}
-                onShiftClick={handleOpenShiftDetails}
-                coverageRequests={pendingCoverageRequests}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { sm: 'center' },
+              gap: { xs: 2, sm: 1 },
+            }}
+          >
+            <Box sx={{ flex: 1 }}>
+              <WeekNavigator
+                weekRangeLabel={weekRangeLabel}
+                isCurrentWeek={isCurrentWeek}
+                onPreviousWeek={handlePreviousWeek}
+                onNextWeek={handleNextWeek}
+                onToday={handleToday}
               />
-              <MyCoverageRequestsSection
-                myRequests={myCoverageRequests}
-                shifts={allShifts}
-                users={users}
-              />
-            </>
-          )}
-          <WeeklyScheduleSection
-            shifts={shiftsOfThisWeek}
-            users={users}
-            onShiftClick={handleOpenShiftDetails}
-            coverageRequests={pendingCoverageRequests}
-          />
+            </Box>
+            {isManager && (
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<AddIcon />}
+                onClick={() => setCreateShiftDialogOpen(true)}
+                sx={{ alignSelf: { xs: 'flex-end', sm: 'auto' } }}
+              >
+                Create Shift
+              </Button>
+            )}
+          </Box>
           {isManager && (
             <ManagerRequestsSection
-              pendingRequests={pendingCoverageRequests}
+              pendingCoverageRequests={pendingCoverageRequests}
               allShifts={allShifts}
               users={users}
               onRequestClick={handleOpenRequestDetails}
               reviewedCoverageRequests={reviewedCoverageRequests}
+            />
+          )}
+          {isWeekLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress color="primary" />
+            </Box>
+          ) : (
+            <>
+              {isEmployee ? (
+                <EmployeeScheduleSection
+                  currentUser={currentUser}
+                  myShifts={myShifts}
+                  shifts={shiftsOfThisWeek}
+                  users={users}
+                  onShiftClick={handleOpenShiftDetails}
+                  coverageRequests={pendingCoverageRequests}
+                />
+              ) : (
+                <WeeklyScheduleSection
+                  shifts={shiftsOfThisWeek}
+                  users={users}
+                  onShiftClick={handleOpenShiftDetails}
+                  coverageRequests={pendingCoverageRequests}
+                />
+              )}
+            </>
+          )}
+          {isEmployee && (
+            <MyCoverageRequestsSection
+              pendingRequests={myPendingCoverageRequests}
+              reviewedRequests={myReviewedCoverageRequests}
+              shifts={allShifts}
+              users={users}
             />
           )}
           {selectedShift && selectedShiftAssignedUser && (

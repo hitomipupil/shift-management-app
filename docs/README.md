@@ -2,165 +2,23 @@
 
 ## Overview
 
-This application replaces the current group-text workflow to manage shift changes.
+This application replaces a group-text workflow for managing shift changes in a store.
 
-The MVP focuses on providing a simple approval workflow for shift changes while preventing scheduling conflicts and preserving an approval history.
-
----
-
-## Assumptions
-
-- The application is used by a single store.
-- Users already exist in the system.
-- There are two roles:
-  - Manager
-  - Employee
-- Managers create shifts and review coverage requests.
-- Managers do not work employee shifts in the MVP.
-- Only employees can offer shifts for coverage or request to cover shifts.
-- Only managers can approve or reject shift change requests.
-- Employees can view the weekly schedule for all staff.
-- Employees can interact with:
-  - their own assigned shifts
-  - shifts that have been marked as needing coverage by another employee
-- A shift remains assigned to its current employee until a manager approves a change.
-- One employee cannot have overlapping assigned shifts.
-- Employees cannot create a coverage request if it overlaps with one of their assigned shifts.
-- Employees cannot create a coverage request if it overlaps with another pending coverage request they have already submitted.
-- Pending coverage requests are tentative and are not treated as confirmed assigned shifts.
-- Shifts start and end on the same calendar date. Overnight shifts are out of scope for the MVP.
+The MVP provides a simple approval flow for shift coverage requests. It helps managers track who is working, prevents overlapping assignments, and keeps a review history of approved and rejected requests.
 
 ---
 
-## Architecture
+## Demo
 
-- Single-page React application without React Router
-- Role-based UI rendering for Manager and Employee users
-- Firebase Auth is used for demo login accounts
-- The Firebase Auth UID is used as the Firestore user document ID
-- UI components access data through service functions
-- Firestore document IDs are used as application IDs
-- Firestore documents do not store duplicate `id` fields
-- Firestore Security Rules provide basic authentication and role-based access control
+Deployed app: https://shift-management-demo.web.app
 
----
+Demo accounts:
 
-## MVP Scope
-
-### Employee
-
-An employee can:
-
-- View the weekly shift schedule
-- See their own shifts at the top of the schedule
-- Mark one of their assigned shifts as "coverage needed"
-- Request to cover a shift that has been marked as needing coverage
-- View the status of their own requests
-
-### Manager
-
-A manager can:
-
-- View the weekly shift schedule
-- Create and assign shifts for any date
-- Review pending shift change requests
-- Approve or reject requests
-- View the history of approved and rejected requests
-
----
-
-## Coverage Workflow
-
-### Offer Shift
-
-1. Employee offers one of their assigned shifts.
-2. The shift is marked as **Coverage Needed**.
-3. The shift remains assigned to the original employee until a manager approves a cover request.
-
-### Claim Shift
-
-1. Another employee requests to cover a shift marked as **Coverage Needed**.
-2. A cover request is created with the status `Pending`.
-3. The manager reviews the request.
-4. If approved, the shift is assigned to the requesting employee.
-5. If rejected, the shift remains assigned to the original employee.
-
----
-
-## Request Status
-
-Requests can have one of the following states:
-
-- Pending
-- Approved
-- Rejected
-
----
-
-## Validation Rules
-
-The application validates the following when creating or approving a coverage request:
-
-- Employees cannot request to cover their own shifts.
-- A shift can only have one pending request at a time.
-- Employees cannot create a coverage request if they already have:
-  - an assigned shift that overlaps with the target shift.
-  - a pending coverage request for another shift that overlaps with the target shift.
-- The shift is still assigned to the original employee.
-- Only managers can approve requests.
-
-When creating shifts:
-
-- Only managers can create shifts.
-- Managers can only assign shifts to employees.
-- Required fields must be provided: employee, date, start time, and end time.
-- Start time must be before end time.
-- Employees cannot have overlapping assigned shifts.
-- Pending coverage requests are not included in shift creation overlap validation.
-
----
-
-## Note on Cloud Function Implementation
-
-A Cloud Function version of the approve request flow was implemented as a Node.js backend improvement.
-
-It was separated into API, Service, and Repository layers.  
-Some approval validation is kept inside the Firestore transaction to keep the read-and-update operation atomic.
-
-A Cloud Function version of the approve request flow was implemented in the `cloud-functions-approve` branch as a Node.js backend improvement. It was not deployed because Firebase Cloud Functions requires a billing plan.
-
----
-
-## Out of Scope
-
-- Direct employee-to-employee shift swap
-- Notifications (email / push)
-- Multiple stores
-- Employee management
-- Vacation requests
-- Drag & drop scheduling
-- Recurring shifts
-- Calendar synchronization
-- Mobile application
-- Shift deletion
-- Overnight shifts
-
----
-
-## Future Improvements
-
-Possible future enhancements include:
-
-- Allow employees to withdraw a coverage request before it is claimed.
-- Direct shift swap requests
-- Notifications
-- Multi-store support
-- Employee availability
-- Shift templates
-- Delete shifts
-- Deploy the Cloud Function version of the approve request flow after upgrading the Firebase project to a billing plan.
-- Move more business-critical write operations, such as rejecting requests or creating coverage requests, to Cloud Functions.
-- The app uses predefined demo accounts for the MVP. In a production app, users would log in with their own credentials and demo passwords would not be stored in the frontend.
+- Manager: `manager1@mail.com` / `manager1`
+- Manager: `manager2@mail.com` / `manager2`
+- Employee 1: `employee1@mail.com` / `employee1`
+- Employee 2: `employee2@mail.com` / `employee2`
+- Employee 3: `employee3@mail.com` / `employee3`
 
 ---
 
@@ -174,8 +32,176 @@ Possible future enhancements include:
 - Cloud Firestore
 - Firestore Security Rules
 - Firebase Hosting
-- Firebase Emulator Suite
-- Firebase Cloud Functions was explored as a backend improvement but not deployed because it requires a billing plan
+
+---
+
+## Assumptions
+
+To keep the MVP focused, the following assumptions were made:
+
+- The app is used by a single store.
+- Users already exist in the system.
+- There are two roles: Manager and Employee.
+- Managers create shifts and review coverage requests.
+- Employees can view the weekly schedule for all staff.
+- Employees can offer their own shifts for coverage.
+- Employees can request to cover shifts marked as coverage needed.
+- A shift remains assigned to the original employee until a manager approves a request.
+- Employees cannot have overlapping assigned shifts.
+- Overnight shifts, recurring shifts, vacation requests, and multi-store support are out of scope.
+
+---
+
+## Core Features
+
+### Employee
+
+Employees can:
+
+- Switch between My Shifts, Weekly Schedule, and Available to Cover views
+- Mark one of their assigned shifts as coverage needed
+- Quickly find shifts that are available to request coverage for
+- Request to cover a shift marked as coverage needed
+- View the status of their own requests
+
+### Manager
+
+Managers can:
+
+- See pending requests prominently as the primary manager workflow
+- View the weekly shift schedule
+- Create and assign shifts
+- Review pending coverage requests
+- Approve or reject requests
+- View approved and rejected request history
+
+---
+
+## Coverage Workflow
+
+1. An employee marks one of their assigned shifts as **Coverage Needed**.
+2. Another employee requests to cover that shift.
+3. A coverage request is created with the status `pending`.
+4. A manager reviews the request.
+5. If approved, the shift is assigned to the requesting employee.
+6. If rejected, the shift remains assigned to the original employee.
+
+Request statuses:
+
+- `pending`
+- `approved`
+- `rejected`
+
+---
+
+## Key Validation Rules
+
+The app validates the following rules:
+
+- Only managers can create shifts.
+- Only managers can approve or reject coverage requests.
+- Managers can only assign shifts to employees.
+- Employees cannot request to cover their own shifts.
+- Past shifts cannot be modified.
+- A shift can only have one pending coverage request at a time.
+- Employees cannot have overlapping assigned shifts.
+- Employees cannot create a coverage request that overlaps with one of their assigned shifts.
+- Employees cannot create a coverage request that overlaps with another pending request they already submitted.
+- A request can only be approved if it is still pending.
+- A request can only be approved if the shift is still assigned to the original employee.
+- Shift start time must be before end time.
+
+---
+
+## Architecture
+
+The app is intentionally kept simple for the MVP:
+
+- Single-page React application
+- No React Router
+- No Redux
+- Role-based UI rendering for Manager and Employee users
+- Dialog-based workflows for shift and request actions
+- Firebase Auth for login
+- Firebase Auth UID is used as the Firestore `users/{uid}` document ID
+- UI components access Firebase through service functions
+- Firestore document IDs are used as application IDs
+- Firestore Security Rules provide authentication and role-based access control
+- Responsive layout using Material UI breakpoints for desktop and mobile screens
+
+The service function layer acts as the boundary between React components and Firebase. This keeps UI components focused on rendering and user interactions, while Firestore reads and writes are centralized in one place.
+
+---
+
+## Data Model
+
+### users
+
+```ts
+type User = {
+  id: string
+  name: string
+  role: 'manager' | 'employee'
+}
+```
+
+### shifts
+
+```ts
+type Shift = {
+  id: string
+  assignedUserId: string
+  coverageNeeded: boolean
+  date: string
+  startTime: string
+  endTime: string
+}
+```
+
+### coverageRequests
+
+```ts
+type CoverageRequest = {
+  id: string
+  shiftId: string
+  originalAssignedUserId: string
+  requestedByUserId: string
+  status: 'pending' | 'approved' | 'rejected'
+  reviewedByUserId: string | null
+  reviewedAt: string | null
+  createdAt: string
+}
+```
+
+Firestore documents do not store duplicate `id` fields. The document ID is used as the application ID.
+
+---
+
+## Note on Cloud Functions
+
+The deployed `main` version does not use Cloud Functions.
+
+It uses Firebase Auth, Firestore Security Rules, frontend service functions, and Firestore transactions for the approval flow.
+
+A Node.js Cloud Function version of the approve request flow was implemented in the `cloud-functions-approve` branch. It was not deployed because Firebase Cloud Functions requires a billing plan.
+
+In a production version, business-critical write operations such as approving requests would be good candidates for Cloud Functions.
+
+---
+
+## Future Improvements
+
+Given more time, I would improve the app by adding:
+
+- Cloud Function based approval and rejection workflows
+- Firestore `Timestamp` / `serverTimestamp`
+- Automated tests for service functions and Firestore Security Rules
+- Employee request withdrawal
+- Notifications for managers and employees
+- Multi-store support
+- Production user management
+- Pagination, filtering, and search for large shift schedules and request histories
+- A more scalable schedule layout, such as a calendar grid or employee-by-time timeline
 
 ---
 
@@ -187,13 +213,7 @@ Install dependencies:
 npm install
 ```
 
-Start Firebase emulators:
-
-```bash
-firebase emulators:start
-```
-
-In another terminal, start the Vite dev server:
+Start the Vite dev server:
 
 ```bash
 npm run dev
@@ -203,4 +223,12 @@ Open:
 
 ```text
 http://localhost:5173
+```
+
+By default, local development connects to the configured Firebase project.
+
+Firebase Emulator Suite can also be used for local development by setting:
+
+```env
+VITE_USE_FIREBASE_EMULATOR=true
 ```

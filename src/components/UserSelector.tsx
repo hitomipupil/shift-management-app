@@ -1,8 +1,11 @@
 import {
+  Box,
   Button,
+  CircularProgress,
   FormControl,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   Typography,
 } from '@mui/material'
@@ -43,32 +46,73 @@ export const UserSelector = () => {
   }
 
   return (
-    <>
-      <Typography>Select User</Typography>
-      <FormControl fullWidth>
-        <InputLabel id="user-select-label">User</InputLabel>
-        <Select
-          labelId="user-select-label"
-          id="user-select"
-          value={selectedEmail}
-          label="User"
-          onChange={(e) => setSelectedEmail(e.target.value)}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        p: { xs: 1.5, sm: 2 },
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: { xs: 1.5, sm: 2 },
+          p: { xs: 2, sm: 4 },
+          width: '100%',
+          maxWidth: 320,
+          boxShadow: { xs: 'none', sm: 1 },
+        }}
+      >
+        <Typography
+          sx={{
+            fontWeight: 'bold',
+            typography: { xs: 'h6', sm: 'h5' },
+            textAlign: 'center',
+            color: 'primary.main',
+          }}
         >
-          {demoLoginUsers.map((user) => {
-            return (
-              <MenuItem key={user.email} value={user.email}>
-                {user.label}
-              </MenuItem>
-            )
-          })}
-        </Select>
-      </FormControl>
+          Shift Manager
+        </Typography>
+        <FormControl fullWidth>
+          <InputLabel id="user-select-label">User</InputLabel>
+          <Select
+            labelId="user-select-label"
+            id="user-select"
+            value={selectedEmail}
+            label="User"
+            onChange={(e) => setSelectedEmail(e.target.value)}
+          >
+            {demoLoginUsers.map((user) => {
+              return (
+                <MenuItem key={user.email} value={user.email}>
+                  {user.label}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </FormControl>
 
-      {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+        {errorMessage && <Typography color="error">{errorMessage}</Typography>}
 
-      <Button disabled={!selectedEmail || isLoggingIn} onClick={handleClick}>
-        {isLoggingIn ? 'Logging in...' : 'Go to App'}
-      </Button>
-    </>
+        <Button
+          variant="contained"
+          fullWidth
+          disabled={!selectedEmail || isLoggingIn}
+          onClick={handleClick}
+          startIcon={
+            isLoggingIn ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : undefined
+          }
+        >
+          {isLoggingIn ? 'Logging in...' : 'Go to App'}
+        </Button>
+      </Paper>
+    </Box>
   )
 }

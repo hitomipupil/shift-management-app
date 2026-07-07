@@ -1,14 +1,17 @@
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
-import { ShiftCard } from 'src/features/schedule/ShiftCard'
-import { Typography } from '@mui/material'
+import { ShiftCard } from 'src/features/schedule/components/ShiftCard'
+import { Box, Typography } from '@mui/material'
+import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined'
 import type { CoverageRequest } from 'src/types/coverageRequests'
+import { EmptyState } from 'src/components/EmptyState'
 
 type MyShiftsSectionProps = {
   currentUser: User
   myShifts: Shift[]
   onShiftClick: (shift: Shift) => void
   coverageRequests: CoverageRequest[]
+  hideTitle?: boolean
 }
 
 export const MyShiftsSection = ({
@@ -16,14 +19,26 @@ export const MyShiftsSection = ({
   myShifts,
   onShiftClick,
   coverageRequests,
+  hideTitle = false,
 }: MyShiftsSectionProps) => {
   return (
-    <>
-      <Typography>My Shifts</Typography>
-      {myShifts.length === 0 ? (
-        <Typography color="text.secondary">
-          You have no shifts this week.
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1.5,
+      }}
+    >
+      {!hideTitle && (
+        <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+          My Shifts
         </Typography>
+      )}
+      {myShifts.length === 0 ? (
+        <EmptyState
+          message="You have no shifts this week."
+          icon={<EventBusyOutlinedIcon fontSize="large" />}
+        />
       ) : (
         myShifts.map((myShift) => (
           <ShiftCard
@@ -37,6 +52,6 @@ export const MyShiftsSection = ({
           />
         ))
       )}
-    </>
+    </Box>
   )
 }
