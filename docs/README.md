@@ -8,17 +8,35 @@ The MVP provides a simple approval flow for shift coverage requests. It helps ma
 
 ---
 
-## Demo
+## Demo Flow
 
 Deployed app: https://shift-management-demo.web.app
 
-Demo accounts:
+The demo environment starts with no shifts or coverage requests. Use the login dropdown to switch between demo users.
 
-- Manager: `manager1@mail.com` / `manager1`
-- Manager: `manager2@mail.com` / `manager2`
-- Employee 1: `employee1@mail.com` / `employee1`
-- Employee 2: `employee2@mail.com` / `employee2`
-- Employee 3: `employee3@mail.com` / `employee3`
+### Demo Users
+
+| User            | Role     |
+| --------------- | -------- |
+| Hitomi Yamamoto | Manager  |
+| Emily Johnson   | Manager  |
+| Haruto Sato     | Employee |
+| Yuki Tanaka     | Employee |
+| Jean Laurent    | Employee |
+
+### Main Workflow
+
+1. Sign in as **Hitomi Yamamoto** or **Emily Johnson**.
+2. Click **Create Shift**, assign it to **Haruto Sato**, choose a date in the current week, and create the shift.
+3. Log out and sign in as **Haruto Sato**.
+4. Open **My Shifts**, select the shift, and click **Need Coverage**.
+5. Log out and sign in as **Yuki Tanaka**.
+6. Open **Available to Cover**, select Haruto’s shift, and click **Request to cover this shift**.
+7. Log out and sign in as a manager.
+8. Open **Requests > Pending Requests**, select the request, and click **Approve**.
+9. Confirm that the shift is reassigned to **Yuki Tanaka** and that the approved request appears in **Request History**.
+
+To test rejection, repeat the same flow and click **Reject** instead of **Approve**. The shift remains assigned to the original employee.
 
 ---
 
