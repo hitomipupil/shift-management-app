@@ -10,54 +10,89 @@ import {
   runTransaction,
   updateDoc,
   where,
+  type QueryDocumentSnapshot,
+  type DocumentData,
 } from 'firebase/firestore'
 import { db } from 'src/firebase'
 import type { Shift } from 'src/types/shift'
 import { isPastShift } from 'src/utils/isPastShift'
 
-const getAllCoverageRequests = async (): Promise<CoverageRequest[]> => {
-  const requestsSnapshot = await getDocs(collection(db, 'coverageRequests'))
+const mapCoverageRequestDocument = (
+  requestDocument: QueryDocumentSnapshot<DocumentData>,
+): CoverageRequest => {
+  const data = requestDocument.data()
 
-  return requestsSnapshot.docs.map((requestDocument) => {
-    const data = requestDocument.data()
-
-    return {
-      id: requestDocument.id,
-      shiftId: data.shiftId,
-      originalAssignedUserId: data.originalAssignedUserId,
-      requestedByUserId: data.requestedByUserId,
-      status: data.status,
-      reviewedByUserId: data.reviewedByUserId,
-      reviewedAt: data.reviewedAt,
-      createdAt: data.createdAt,
-    } as CoverageRequest
-  })
+  return {
+    id: requestDocument.id,
+    shiftId: data.shiftId,
+    originalAssignedUserId: data.originalAssignedUserId,
+    requestedByUserId: data.requestedByUserId,
+    status: data.status,
+    reviewedByUserId: data.reviewedByUserId,
+    reviewedAt: data.reviewedAt,
+    createdAt: data.createdAt,
+  } as CoverageRequest
 }
 
 export const getPendingCoverageRequests = async (): Promise<
   CoverageRequest[]
 > => {
-  const requests = await getAllCoverageRequests()
-  return requests.filter((req) => req.status === 'pending')
+  const requestsQuery = query(
+    collection(db, 'coverageRequests'),
+    where('status', '==', 'pending'),
+  )
+  const requestsSnapshot = await getDocs(requestsQuery)
+  return requestsSnapshot.docs.map(mapCoverageRequestDocument)
 }
-export const getRequestsByUser = async (
+
+export const getPendingCoverageRequestsByUser = async (
   userId: string,
 ): Promise<CoverageRequest[]> => {
-  const requests = await getAllCoverageRequests()
-  return requests.filter((req) => req.requestedByUserId === userId)
+  const requestsQuery = query(
+    collection(db, 'coverageRequests'),
+    where('requestedByUserId', '==', userId),
+    where('status', '==', 'pending'),
+  )
+
+  const requestsSnapshot = await getDocs(requestsQuery)
+
+  return requestsSnapshot.docs.map(mapCoverageRequestDocument)
 }
 
 export const getReviewedCoverageRequests = async (): Promise<
   CoverageRequest[]
 > => {
-  const requests = await getAllCoverageRequests()
-  const reviewedRequests = requests.filter(
-    (req) => req.status === 'approved' || req.status === 'rejected',
+  const requestsQuery = query(
+    collection(db, 'coverageRequests'),
+    where('status', 'in', ['approved', 'rejected']),
   )
+  const requestsSnapshot = await getDocs(requestsQuery)
+  const reviewedRequests = requestsSnapshot.docs.map(mapCoverageRequestDocument)
   return reviewedRequests.sort((a, b) => {
     if (!a.reviewedAt || !b.reviewedAt) {
       return 0
     }
+
+    return Date.parse(b.reviewedAt) - Date.parse(a.reviewedAt)
+  })
+}
+
+export const getReviewedCoverageRequestsByUser = async (
+  userId: string,
+): Promise<CoverageRequest[]> => {
+  const requestsQuery = query(
+    collection(db, 'coverageRequests'),
+    where('requestedByUserId', '==', userId),
+    where('status', 'in', ['approved', 'rejected']),
+  )
+
+  const requestsSnapshot = await getDocs(requestsQuery)
+  const reviewedRequests = requestsSnapshot.docs.map(mapCoverageRequestDocument)
+  return reviewedRequests.sort((a, b) => {
+    if (!a.reviewedAt || !b.reviewedAt) {
+      return 0
+    }
+
     return Date.parse(b.reviewedAt) - Date.parse(a.reviewedAt)
   })
 }
@@ -136,20 +171,7 @@ export const createCoverageRequest = async (
   )
 
   const requesterPendingRequests = requesterPendingRequestsSnapshot.docs.map(
-    (requestDocument) => {
-      const data = requestDocument.data()
-
-      return {
-        id: requestDocument.id,
-        shiftId: data.shiftId,
-        originalAssignedUserId: data.originalAssignedUserId,
-        requestedByUserId: data.requestedByUserId,
-        status: data.status,
-        reviewedByUserId: data.reviewedByUserId,
-        reviewedAt: data.reviewedAt,
-        createdAt: data.createdAt,
-      } as CoverageRequest
-    },
+    mapCoverageRequestDocument,
   )
 
   const requesterPendingRequestShifts = await Promise.all(
@@ -355,6 +377,7 @@ export const rejectCoverageRequest = async (
   if (currentUser.role !== 'manager') {
     throw new Error('Only managers can reject requests')
   }
+  const reviewedAt = new Date().toISOString()
   const requestRef = doc(db, 'coverageRequests', requestId)
   const requestSnapshot = await getDoc(requestRef)
   if (!requestSnapshot.exists()) {
@@ -368,7 +391,7 @@ export const rejectCoverageRequest = async (
   await updateDoc(requestRef, {
     status: 'rejected',
     reviewedByUserId: currentUser.id,
-    reviewedAt: new Date().toISOString(),
+    reviewedAt,
   })
 
   return {
@@ -378,7 +401,7 @@ export const rejectCoverageRequest = async (
     requestedByUserId: data.requestedByUserId,
     status: 'rejected',
     reviewedByUserId: currentUser.id,
-    reviewedAt: data.reviewedAt,
+    reviewedAt,
     createdAt: data.createdAt,
   }
 }

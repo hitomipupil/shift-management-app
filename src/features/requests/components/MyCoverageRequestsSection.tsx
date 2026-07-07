@@ -8,13 +8,15 @@ import { useState, type SyntheticEvent } from 'react'
 import { useMyCoverageRequestItems } from '../hooks/useMyCoverageRequestItems'
 
 type MyCoverageRequestsSectionProps = {
-  myRequests: CoverageRequest[]
+  pendingRequests: CoverageRequest[]
+  reviewedRequests: CoverageRequest[]
   shifts: Shift[]
   users: User[]
 }
 
 export const MyCoverageRequestsSection = ({
-  myRequests,
+  pendingRequests,
+  reviewedRequests,
   shifts,
   users,
 }: MyCoverageRequestsSectionProps) => {
@@ -25,7 +27,8 @@ export const MyCoverageRequestsSection = ({
 
   const { pendingRequestItems, reviewedRequestItems } =
     useMyCoverageRequestItems({
-      myRequests,
+      pendingRequests,
+      reviewedRequests,
       shifts,
       users,
     })

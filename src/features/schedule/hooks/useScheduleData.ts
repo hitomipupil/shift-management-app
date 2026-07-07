@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import {
   getPendingCoverageRequests,
-  getRequestsByUser,
+  getPendingCoverageRequestsByUser,
   getReviewedCoverageRequests,
+  getReviewedCoverageRequestsByUser,
 } from 'src/services/coverageRequestService'
 import { getAllShifts } from 'src/services/shiftService'
 import { getUsers } from 'src/services/userService'
@@ -17,7 +18,10 @@ export const useScheduleData = (currentUser: User | null) => {
     CoverageRequest[]
   >([])
   const [isLoading, setIsLoading] = useState(true)
-  const [myCoverageRequests, setMyCoverageRequests] = useState<
+  const [myPendingCoverageRequests, setMyPendingCoverageRequests] = useState<
+    CoverageRequest[]
+  >([])
+  const [myReviewedCoverageRequests, setMyReviewedCoverageRequests] = useState<
     CoverageRequest[]
   >([])
   const [reviewedCoverageRequests, setReviewedCoverageRequests] = useState<
@@ -36,19 +40,22 @@ export const useScheduleData = (currentUser: User | null) => {
           usersData,
           pendingRequestsData,
           allShiftsData,
-          myRequestsData,
+          myPendingCoverageRequestsData,
+          myReviewedCoverageRequestsData,
           reviewedCoverageRequestsData,
         ] = await Promise.all([
           getUsers(),
           getPendingCoverageRequests(),
           getAllShifts(),
-          getRequestsByUser(currentUser.id),
+          getPendingCoverageRequestsByUser(currentUser.id),
+          getReviewedCoverageRequestsByUser(currentUser.id),
           getReviewedCoverageRequests(),
         ])
         setUsers(usersData)
         setPendingCoverageRequests(pendingRequestsData)
         setAllShifts(allShiftsData)
-        setMyCoverageRequests(myRequestsData)
+        setMyPendingCoverageRequests(myPendingCoverageRequestsData)
+        setMyReviewedCoverageRequests(myReviewedCoverageRequestsData)
         setReviewedCoverageRequests(reviewedCoverageRequestsData)
       } catch (e) {
         console.error(e)
@@ -66,8 +73,9 @@ export const useScheduleData = (currentUser: User | null) => {
     pendingCoverageRequests,
     setPendingCoverageRequests,
     isLoading,
-    myCoverageRequests,
-    setMyCoverageRequests,
+    myPendingCoverageRequests,
+    setMyPendingCoverageRequests,
+    myReviewedCoverageRequests,
     reviewedCoverageRequests,
     setReviewedCoverageRequests,
   }

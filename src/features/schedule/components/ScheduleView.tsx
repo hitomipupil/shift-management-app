@@ -16,7 +16,7 @@ import {
   approveCoverageRequest,
   createCoverageRequest,
   getPendingCoverageRequests,
-  getRequestsByUser,
+  getPendingCoverageRequestsByUser,
   getReviewedCoverageRequests,
   rejectCoverageRequest,
 } from 'src/services/coverageRequestService'
@@ -54,8 +54,9 @@ export const ScheduleView = () => {
     pendingCoverageRequests,
     setPendingCoverageRequests,
     isLoading,
-    myCoverageRequests,
-    setMyCoverageRequests,
+    myPendingCoverageRequests,
+    setMyPendingCoverageRequests,
+    myReviewedCoverageRequests,
     reviewedCoverageRequests,
     setReviewedCoverageRequests,
   } = useScheduleData(currentUser)
@@ -125,10 +126,13 @@ export const ScheduleView = () => {
       setRequestToCoverErrorMessage(null)
       await createCoverageRequest(shiftId, currentUser)
       setSelectedShift(null)
-      const updatedCoverageRequests = await getPendingCoverageRequests()
+      const [updatedCoverageRequests, updatedMyPendingCoverageRequests] =
+        await Promise.all([
+          getPendingCoverageRequests(),
+          getPendingCoverageRequestsByUser(currentUser.id),
+        ])
       setPendingCoverageRequests(updatedCoverageRequests)
-      const updatedMyCoverageRequests = await getRequestsByUser(currentUser.id)
-      setMyCoverageRequests(updatedMyCoverageRequests)
+      setMyPendingCoverageRequests(updatedMyPendingCoverageRequests)
     } catch (e) {
       if (e instanceof Error) {
         setRequestToCoverErrorMessage(e.message)
@@ -289,7 +293,8 @@ export const ScheduleView = () => {
           )}
           {isEmployee && (
             <MyCoverageRequestsSection
-              myRequests={myCoverageRequests}
+              pendingRequests={myPendingCoverageRequests}
+              reviewedRequests={myReviewedCoverageRequests}
               shifts={allShifts}
               users={users}
             />
