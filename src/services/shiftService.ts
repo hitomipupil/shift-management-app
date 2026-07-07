@@ -12,6 +12,7 @@ import { db } from 'src/firebase'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
 import { addDaysToDateString } from 'src/utils/dateUtils'
+import { isPastShift } from 'src/utils/isPastShift'
 import { getUserById } from './userService'
 
 const sortShiftsByDateAndTime = (shifts: Shift[]): Shift[] => {
@@ -68,6 +69,17 @@ export const markShiftAsCoverageNeeded = async (
   }
   if (data.coverageNeeded === true) {
     throw new Error('Shift already offered')
+  }
+  const shift: Shift = {
+    id: shiftSnapshot.id,
+    assignedUserId: data.assignedUserId,
+    coverageNeeded: data.coverageNeeded,
+    date: data.date,
+    startTime: data.startTime,
+    endTime: data.endTime,
+  }
+  if (isPastShift(shift)) {
+    throw new Error('Cannot modify a past shift')
   }
   await updateDoc(shiftRef, {
     coverageNeeded: true,

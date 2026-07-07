@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   FormControl,
   InputLabel,
   MenuItem,
@@ -104,6 +105,11 @@ export const UserSelector = () => {
           fullWidth
           disabled={!selectedEmail || isLoggingIn}
           onClick={handleClick}
+          startIcon={
+            isLoggingIn ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : undefined
+          }
         >
           {isLoggingIn ? 'Logging in...' : 'Go to App'}
         </Button>

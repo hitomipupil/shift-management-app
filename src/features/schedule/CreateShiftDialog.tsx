@@ -3,6 +3,7 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -164,6 +165,11 @@ export const CreateShiftDialog = ({
           variant="contained"
           onClick={handleSubmit}
           disabled={isCreateDisabled}
+          startIcon={
+            isSubmitting ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : undefined
+          }
         >
           {isSubmitting ? 'Creating...' : 'Create'}
         </Button>

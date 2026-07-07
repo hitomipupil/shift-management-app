@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { db } from 'src/firebase'
 import type { Shift } from 'src/types/shift'
+import { isPastShift } from 'src/utils/isPastShift'
 
 const getAllCoverageRequests = async (): Promise<CoverageRequest[]> => {
   const requestsSnapshot = await getDocs(collection(db, 'coverageRequests'))
@@ -100,6 +101,9 @@ export const createCoverageRequest = async (
   const targetShift = await getShiftById(shiftId)
   if (!targetShift) {
     throw new Error('Shift not found')
+  }
+  if (isPastShift(targetShift)) {
+    throw new Error('Cannot modify a past shift')
   }
   if (targetShift.coverageNeeded === false) {
     throw new Error('This shift does not need coverage')

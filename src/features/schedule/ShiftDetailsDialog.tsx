@@ -3,6 +3,7 @@ import {
   Alert,
   Button,
   Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -17,6 +18,7 @@ import {
 } from 'src/features/requests/requestStatusChip'
 import type { Shift } from 'src/types/shift'
 import type { User } from 'src/types/user'
+import { isPastShift } from 'src/utils/isPastShift'
 
 type ShiftDetailsDialogProps = {
   open: boolean
@@ -44,6 +46,7 @@ export const ShiftDetailsDialog = ({
   requestToCoverErrorMessage,
 }: ShiftDetailsDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isPast = isPastShift(targetShift)
   const isEmployee = currentUser.role === 'employee'
   const isOwnShift = targetShift.assignedUserId === currentUser.id
   const canMarkCoverageNeeded =
@@ -145,7 +148,12 @@ export const ShiftDetailsDialog = ({
             <Button
               variant="contained"
               onClick={handleCoverageNeeded}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isPast}
+              startIcon={
+                isSubmitting ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : undefined
+              }
             >
               {isSubmitting ? 'Saving...' : 'Need Coverage'}
             </Button>
@@ -154,7 +162,12 @@ export const ShiftDetailsDialog = ({
             <Button
               variant="contained"
               onClick={handleRequestToCover}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isPast}
+              startIcon={
+                isSubmitting ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : undefined
+              }
             >
               {isSubmitting ? 'Requesting...' : 'Request to cover this shift'}
             </Button>

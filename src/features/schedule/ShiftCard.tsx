@@ -14,6 +14,7 @@ import {
   type StatusChipConfig,
 } from 'src/features/requests/requestStatusChip'
 import type { Shift } from 'src/types/shift'
+import { isPastShift } from 'src/utils/isPastShift'
 
 type ShiftCardProps = {
   shift: Shift
@@ -28,6 +29,7 @@ export const ShiftCard = ({
   onShiftClick,
   isRequestPending,
 }: ShiftCardProps) => {
+  const isPast = isPastShift(shift)
   const statusChipConfig: StatusChipConfig | null = isRequestPending
     ? SHIFT_STATUS_CHIP.requestPending
     : shift.coverageNeeded
@@ -35,7 +37,14 @@ export const ShiftCard = ({
       : null
 
   return (
-    <Card variant="outlined">
+    <Card
+      variant="outlined"
+      sx={
+        isPast
+          ? { opacity: 0.55, bgcolor: 'action.hover' }
+          : undefined
+      }
+    >
       <CardActionArea onClick={() => onShiftClick(shift)}>
         <CardContent
           sx={{

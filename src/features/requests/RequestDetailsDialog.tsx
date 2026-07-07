@@ -4,6 +4,7 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -143,6 +144,11 @@ export const RequestDetailsDialog = ({
           color="error"
           disabled={isReviewing}
           onClick={handleReject}
+          startIcon={
+            isRejecting ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : undefined
+          }
         >
           {isRejecting ? 'Rejecting...' : 'Reject'}
         </Button>
@@ -150,6 +156,11 @@ export const RequestDetailsDialog = ({
           variant="contained"
           disabled={isReviewing}
           onClick={handleApprove}
+          startIcon={
+            isApproving ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : undefined
+          }
         >
           {isApproving ? 'Approving...' : 'Approve'}
         </Button>
