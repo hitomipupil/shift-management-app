@@ -26,7 +26,7 @@ The demo environment starts with no shifts or coverage requests. Use the login d
 
 ### Main Workflow
 
-1. Sign in as **Hitomi Yamamoto** or **Emily Johnson** (manaer).
+1. Sign in as **Hitomi Yamamoto** or **Emily Johnson** (manager).
 2. Click **Create Shift**, assign it to **Haruto Sato**, choose a date in the current week with an end time in the future, and create the shift.
 3. Log out and sign in as **Haruto Sato** (employee).
 4. Open **My Shifts**, select the shift, and click **Need Coverage**.
